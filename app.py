@@ -261,3 +261,87 @@ with c1:
 with c2:
     if st.button("📊 Ir al Análisis Interactivo"):
         st.switch_page("pages/2_📊_Analisis.py")
+
+
+import streamlit as st
+
+st.set_page_config(layout="wide")
+
+st.title("📘 Infografía Interactiva")
+
+st.markdown("""
+# 🚨 Problema Inicial
+
+La base original poseía:
+
+- 17.553 registros
+- 8 variables categóricas
+- 1 variable numérica
+
+K-Means requiere variables numéricas para calcular distancias.
+""")
+
+st.markdown("---")
+
+st.markdown("""
+# 🔄 Transformación de Datos
+
+Las variables categóricas fueron transformadas usando:
+
+- pivot_table()
+- conteos
+- consolidación municipal
+
+Esto permitió convertir categorías en variables numéricas.
+""")
+
+st.code("""
+pivot_accion = df_original.pivot_table(
+    index=index_cols,
+    columns='ACCION',
+    values='CANTIDAD',
+    aggfunc='sum',
+    fill_value=0
+)
+""")
+
+st.markdown("---")
+
+st.markdown("""
+# 📏 Estandarización
+
+Todas las variables fueron escaladas usando StandardScaler.
+""")
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+st.markdown("---")
+
+st.markdown("""
+# 📉 Método del Codo
+
+Se utilizó el método del codo para encontrar el número óptimo de clusters.
+""")
+
+:contentReference[oaicite:1]{index=1}
+
+st.markdown("---")
+
+st.markdown("""
+# 🤖 K-Means
+
+El algoritmo agrupó municipios similares automáticamente.
+""")
+
+st.markdown("---")
+
+st.markdown("""
+# 🌌 PCA
+
+PCA permitió reducir dimensiones y visualizar patrones ocultos.
+""")
+
+if st.button("📊 Ir al análisis completo"):
+    st.switch_page("pages/2_📊_Analisis.py")
