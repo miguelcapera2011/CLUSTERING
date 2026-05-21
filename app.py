@@ -33,7 +33,6 @@ def cargar_datos_automatico():
             break
             
     if archivo_encontrado is None:
-        # Intento por defecto si no encuentra coincidencias
         return None, "No se encontró ningún archivo que contenga 'AFECTACIÓN' o 'FUERZA' en la carpeta."
     
     try:
@@ -98,6 +97,7 @@ total_municipio = df_original.groupby(['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'])
 
 # Unimos las tablas convirtiendo las categorías en columnas numéricas reales
 datos = total_municipio.join([pivot_accion, pivot_fuerza]).reset_index()
+datos = datos.rename(columns={'MUNICIPIO': 'Municipio'})
         """, language="python")
 
     # Paso 2: Escalamiento
@@ -142,7 +142,7 @@ elif st.session_state.page == 'analisis':
     
     if df_original is None:
         st.error(f"❌ {resultado_carga}")
-        st.info("💡 Por favor, coloca tu archivo de Excel o CSV (sin importar el nombre exacto) en el mismo directorio donde guardaste este script.")
+        st.info("💡 Por favor, coloca tu archivo de Excel o CSV en el mismo directorio donde guardaste este script.")
         st.stop()
     else:
         st.success(f"📦 Archivo detectado y cargado con éxito: `{resultado_carga}`")
@@ -163,7 +163,8 @@ elif st.session_state.page == 'analisis':
     total_municipio = df_original.groupby(index_cols)['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
 
     datos = total_municipio.join([pivot_accion, pivot_fuerza, pivot_cat]).reset_index()
-    datos = datos.rename(columns={'MUNICIPIO': 'State'})
+    # CAMBIO SOLICITADO: 'MUNICIPIO' pasa a llamarse 'Municipio' en vez de 'State'
+    datos = datos.rename(columns={'MUNICIPIO': 'Municipio'})
     datos = datos.dropna()
 
     # Métricas principales en pantalla
@@ -204,7 +205,7 @@ elif st.session_state.page == 'analisis':
     # 4. ESTANDARIZACIÓN
     # ==============================================================================
     scaler = StandardScaler()
-    columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
+    columnas_omitir = ['COD_MUNI', 'Municipio', 'DEPARTAMENTO']
     numericas = [col for col in datos.columns if col not in columnas_omitir]
     
     datos_originales_num = datos.copy()
@@ -286,7 +287,7 @@ elif st.session_state.page == 'analisis':
     # Muestra de etiquetas de municipios para evitar saturación de texto
     for i, row in datos_pca_df.iterrows():
         if i % 20 == 0:
-            ax_pca.text(row['PCA1'], row['PCA2'] + 0.06, datos['State'][i], fontsize=7, ha='center', alpha=0.8)
+            ax_pca.text(row['PCA1'], row['PCA2'] + 0.06, datos['Municipio'][i], fontsize=7, ha='center', alpha=0.8)
             
     ax_pca.set_title('Algoritmo K-means con Elipses (Municipios de Colombia)', fontsize=14)
     ax_pca.grid(True)
@@ -296,7 +297,7 @@ elif st.session_state.page == 'analisis':
     # 9 Y 10. MUESTRAS, CONTEOS Y CRUCE DE VARIABLES
     # ==============================================================================
     st.subheader("📊 Frecuencia e Impacto de Clústeres")
-    G = pd.DataFrame({'State': datos['State'].values, 'DEPARTAMENTO': datos['DEPARTAMENTO'].values, 'label': km4_clusters.labels_})
+    G = pd.DataFrame({'Municipio': datos['Municipio'].values, 'DEPARTAMENTO': datos['DEPARTAMENTO'].values, 'label': km4_clusters.labels_})
     
     c1, c2 = st.columns(2)
     with c1:
@@ -340,9 +341,10 @@ elif st.session_state.page == 'analisis':
     pca_scores_4d = pca_4d.fit_transform(X_scaled)
     pca_df = pd.DataFrame(pca_scores_4d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
     pca_df['Cluster'] = km4_clusters.labels_.astype(str)
-    pca_df['Etiqueta'] = datos['State'] + " (" + datos['DEPARTAMENTO'] + ")"
+    # CAMBIO SOLICITADO: Ajustamos la etiqueta interactiva usando el nuevo nombre de columna 'Municipio'
+    pca_df['Etiqueta'] = datos['Municipio'] + " (" + datos['DEPARTAMENTO'] + ")"
 
-    # Gráfico Interactivo 2D (Optimizado con Hover para máxima velocidad web)
+    # Gráfico Interactivo 2D
     fig_2d = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', hover_name='Etiqueta',
                         title='Visualización PCA Interactiva en 2D (Pasa el cursor sobre los municipios)',
                         labels={'PC1': 'Componente Principal 1', 'PC2': 'Componente Principal 2'},
