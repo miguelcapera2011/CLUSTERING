@@ -1,25 +1,35 @@
 # =============================================================================
-# APP STREAMLIT - EXPOSICIÓN INTERACTIVA K-MEANS
+# APP STREAMLIT - EXPOSICIÓN MINERÍA DE DATOS
+# CLUSTERIZACIÓN DE MUNICIPIOS COLOMBIANOS
 # =============================================================================
 
+# =========================
+# LIBRERÍAS
+# =========================
 import streamlit as st
 import pandas as pd
 import numpy as np
+import time
+
 import plotly.express as px
 import plotly.graph_objects as go
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
+
 from sklearn.metrics.pairwise import euclidean_distances
 from scipy.spatial.distance import pdist, squareform
-import time
 
 # =============================================================================
-# CONFIGURACIÓN
+# CONFIGURACIÓN GENERAL
 # =============================================================================
 
 st.set_page_config(
-    page_title="Minería de Datos - KMeans",
+    page_title="Minería de Datos - Clustering",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -32,64 +42,116 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* FONDO GENERAL */
+/* =========================
+FONDO GENERAL
+========================= */
 .stApp{
-    background: linear-gradient(135deg, #06131f, #0b1f33);
-    color: white;
+    background: linear-gradient(135deg,#06141f,#0b1120,#071c2f);
+    color:white;
 }
 
-/* SIDEBAR */
-[data-testid="stSidebar"]{
-    background: rgba(5,15,25,0.95);
-    border-right: 1px solid rgba(0,255,255,0.2);
+/* =========================
+SIDEBAR
+========================= */
+section[data-testid="stSidebar"]{
+    background: linear-gradient(180deg,#04101c,#081726,#0b2239);
+    border-right:1px solid rgba(255,255,255,0.1);
 }
 
-/* TITULOS */
-h1,h2,h3{
-    color: #00ffd5;
-    font-family: 'Segoe UI';
+/* =========================
+TÍTULOS
+========================= */
+h1{
+    color:#00ffd5;
+    font-weight:800;
+    letter-spacing:1px;
 }
 
-/* TARJETAS */
+h2,h3{
+    color:#7ef9ff;
+}
+
+/* =========================
+CARDS
+========================= */
 .card{
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 25px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0px 0px 20px rgba(0,255,255,0.08);
-    margin-bottom: 20px;
-}
-
-/* METRICAS */
-.metric-box{
-    background: linear-gradient(145deg,#0f2236,#132b43);
-    padding:20px;
+    border:1px solid rgba(255,255,255,0.08);
     border-radius:20px;
-    text-align:center;
-    border:1px solid rgba(0,255,255,0.15);
+    padding:25px;
+    backdrop-filter: blur(10px);
+    box-shadow:0px 4px 20px rgba(0,0,0,0.4);
     transition:0.3s;
 }
 
-.metric-box:hover{
+.card:hover{
     transform:translateY(-5px);
-    box-shadow:0px 0px 25px rgba(0,255,255,0.25);
+    box-shadow:0px 6px 25px rgba(0,255,213,0.2);
 }
 
-/* TEXTO */
-p{
-    color:#d6e2f0;
-    font-size:17px;
+/* =========================
+MÉTRICAS
+========================= */
+.metric-card{
+    background: linear-gradient(135deg,#071b2d,#0f2c47);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+    border:1px solid rgba(0,255,213,0.15);
 }
 
-/* BOTONES */
+.metric-title{
+    color:#8fb3c9;
+    font-size:15px;
+}
+
+.metric-value{
+    font-size:32px;
+    color:#00ffd5;
+    font-weight:bold;
+}
+
+/* =========================
+BOTONES
+========================= */
 .stButton>button{
-    background: linear-gradient(90deg,#00ffd5,#008cff);
-    color:white;
+    background: linear-gradient(90deg,#00ffd5,#00a8ff);
+    color:black;
     border:none;
     border-radius:12px;
-    padding:0.6rem 1.5rem;
+    padding:0.6rem 1.2rem;
     font-weight:bold;
+}
+
+.stButton>button:hover{
+    background: linear-gradient(90deg,#00a8ff,#00ffd5);
+    color:white;
+}
+
+/* =========================
+TABLAS
+========================= */
+[data-testid="stDataFrame"]{
+    border-radius:15px;
+    overflow:hidden;
+}
+
+/* =========================
+SEPARADORES
+========================= */
+hr{
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+/* =========================
+CAJAS DE TEXTO
+========================= */
+.info-box{
+    background: rgba(0,255,213,0.08);
+    border-left:5px solid #00ffd5;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:15px;
 }
 
 </style>
@@ -99,31 +161,33 @@ p{
 # SIDEBAR
 # =============================================================================
 
-st.sidebar.title("🧠 MINERÍA DE DATOS")
+st.sidebar.title("📊 Minería de Datos")
+st.sidebar.markdown("### Clusterización de Municipios")
 
 menu = st.sidebar.radio(
     "Navegación",
     [
-        "🏠 Introducción",
-        "📂 Carga de Datos",
-        "📊 Análisis Exploratorio",
-        "📏 Distancias",
-        "📉 Método del Codo",
-        "🤖 K-Means",
-        "🌌 PCA Interactivo",
-        "📌 Conclusiones"
+        "Inicio",
+        "Carga de Datos",
+        "Análisis Exploratorio",
+        "Método del Codo",
+        "K-Means",
+        "PCA 2D",
+        "PCA 3D",
+        "Boxplots",
+        "Conclusiones"
     ]
 )
 
 # =============================================================================
-# CARGA ARCHIVO
+# CARGA DE DATOS
 # =============================================================================
 
 @st.cache_data
 def cargar_datos():
 
     df_original = pd.read_excel(
-        "AFECTACIÓN A LA FUERZA PÚBLICA.xlsx",
+        'AFECTACIÓN A LA FUERZA PÚBLICA.xlsx',
         header=0
     )
 
@@ -153,8 +217,9 @@ def cargar_datos():
         fill_value=0
     )
 
-    total_municipio = df_original.groupby(index_cols)['CANTIDAD'] \
-        .sum().to_frame(name='TOTAL_AFECTADOS')
+    total_municipio = df_original.groupby(index_cols)['CANTIDAD'].sum().to_frame(
+        name='TOTAL_AFECTADOS'
+    )
 
     datos = total_municipio.join(
         [pivot_accion, pivot_fuerza, pivot_cat]
@@ -162,178 +227,193 @@ def cargar_datos():
 
     datos = datos.rename(columns={'MUNICIPIO': 'State'})
 
+    datos = datos.dropna()
+
     return datos
 
 datos = cargar_datos()
 
 # =============================================================================
-# INTRODUCCIÓN
+# PREPARACIÓN
 # =============================================================================
 
-if menu == "🏠 Introducción":
+columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
 
-    st.title("📊 ANÁLISIS DE AFECTACIÓN A LA FUERZA PÚBLICA")
+numericas = [
+    col for col in datos.columns
+    if col not in columnas_omitir
+]
+
+scaler = StandardScaler()
+
+datos_scaled = datos.copy()
+
+datos_scaled[numericas] = scaler.fit_transform(
+    datos_scaled[numericas]
+)
+
+X_scaled = datos_scaled.drop(columns=columnas_omitir)
+
+# =============================================================================
+# MODELO KMEANS
+# =============================================================================
+
+kmeans = KMeans(
+    n_clusters=4,
+    n_init=50,
+    random_state=42
+)
+
+clusters = kmeans.fit_predict(X_scaled)
+
+datos["Cluster"] = clusters
+
+# =============================================================================
+# PCA
+# =============================================================================
+
+pca = PCA(n_components=3)
+
+pca_result = pca.fit_transform(X_scaled)
+
+pca_df = pd.DataFrame(
+    pca_result,
+    columns=['PC1','PC2','PC3']
+)
+
+pca_df["Cluster"] = clusters.astype(str)
+
+pca_df["Municipio"] = (
+    datos["State"] + " - " + datos["DEPARTAMENTO"]
+)
+
+# =============================================================================
+# INICIO
+# =============================================================================
+
+if menu == "Inicio":
+
+    st.title("📊 Análisis de Afectación a la Fuerza Pública")
 
     st.markdown("""
-    ### Clusterización de Municipios Colombianos usando K-Means
-    
-    Esta aplicación presenta una exposición interactiva del proceso de:
-    
-    - Limpieza y transformación de datos
-    - Estandarización de variables
-    - Cálculo de distancias
-    - Método del Codo
-    - Aplicación de K-Means
-    - Reducción dimensional PCA
-    
-    El objetivo principal fue identificar grupos de municipios con
-    características similares mediante aprendizaje no supervisado.
-    """)
+    <div class="info-box">
+    Proyecto de minería de datos enfocado en la clusterización de municipios
+    colombianos mediante el algoritmo K-Means.
+    </div>
+    """, unsafe_allow_html=True)
 
-    col1,col2,col3,col4 = st.columns(4)
+    c1,c2,c3,c4 = st.columns(4)
 
-    with col1:
-        st.markdown("""
-        <div class="metric-box">
-        <h2>884</h2>
-        <p>Municipios</p>
+    with c1:
+        st.markdown(f"""
+        <div class="metric-card">
+        <div class="metric-title">Municipios</div>
+        <div class="metric-value">{datos.shape[0]}</div>
         </div>
         """, unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("""
-        <div class="metric-box">
-        <h2>4</h2>
-        <p>Clusters</p>
+    with c2:
+        st.markdown(f"""
+        <div class="metric-card">
+        <div class="metric-title">Variables</div>
+        <div class="metric-value">{len(numericas)}</div>
         </div>
         """, unsafe_allow_html=True)
 
-    with col3:
-        st.markdown("""
-        <div class="metric-box">
-        <h2>K-Means</h2>
-        <p>Algoritmo</p>
+    with c3:
+        st.markdown(f"""
+        <div class="metric-card">
+        <div class="metric-title">Clusters</div>
+        <div class="metric-value">4</div>
         </div>
         """, unsafe_allow_html=True)
 
-    with col4:
-        st.markdown("""
-        <div class="metric-box">
-        <h2>PCA</h2>
-        <p>Visualización</p>
+    with c4:
+        st.markdown(f"""
+        <div class="metric-card">
+        <div class="metric-title">Inercia</div>
+        <div class="metric-value">{round(kmeans.inertia_,2)}</div>
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.image(
+        "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a",
+        use_container_width=True
+    )
 
 # =============================================================================
 # CARGA DE DATOS
 # =============================================================================
 
-elif menu == "📂 Carga de Datos":
+elif menu == "Carga de Datos":
 
     st.title("📂 Carga y Consolidación")
 
     st.dataframe(datos.head(20), use_container_width=True)
 
-    st.success(f"""
-    Base consolidada correctamente:
-    
-    ✅ Municipios: {datos.shape[0]}
-    ✅ Variables: {datos.shape[1]}
+    st.markdown("""
+    ### Explicación
+
+    - Se cargó el archivo Excel original.
+    - Se consolidaron municipios.
+    - Las variables categóricas fueron convertidas a conteos.
+    - Se creó una base lista para clustering.
     """)
 
 # =============================================================================
-# ANALISIS EXPLORATORIO
+# EXPLORATORIO
 # =============================================================================
 
-elif menu == "📊 Análisis Exploratorio":
+elif menu == "Análisis Exploratorio":
 
-    st.title("📊 Análisis Exploratorio")
+    st.title("📈 Análisis Exploratorio")
 
-    fig = px.histogram(
-        datos,
-        x="TOTAL_AFECTADOS",
-        nbins=40,
-        title="Distribución TOTAL_AFECTADOS",
-        template="plotly_dark"
+    fig, ax = plt.subplots(2,2, figsize=(15,10))
+
+    sns.histplot(datos["TOTAL_AFECTADOS"], bins=20, kde=True, ax=ax[0,0], color='cyan')
+    ax[0,0].set_title("TOTAL_AFECTADOS")
+
+    sns.histplot(datos["ASESINADO"], bins=20, kde=True, ax=ax[0,1], color='red')
+    ax[0,1].set_title("ASESINADO")
+
+    sns.histplot(datos["HERIDO"], bins=20, kde=True, ax=ax[1,0], color='green')
+    ax[1,0].set_title("HERIDO")
+
+    sns.histplot(
+        datos["EJERCITO NACIONAL DE COLOMBIA"],
+        bins=20,
+        kde=True,
+        ax=ax[1,1],
+        color='purple'
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    ax[1,1].set_title("EJÉRCITO")
+
+    st.pyplot(fig)
 
 # =============================================================================
-# DISTANCIAS
+# MÉTODO DEL CODO
 # =============================================================================
 
-elif menu == "📏 Distancias":
-
-    st.title("📏 Distancias")
-
-    columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
-
-    numericas = [
-        col for col in datos.columns
-        if col not in columnas_omitir
-    ]
-
-    scaler = StandardScaler()
-
-    datos_scaled = datos.copy()
-
-    datos_scaled[numericas] = scaler.fit_transform(
-        datos_scaled[numericas]
-    )
-
-    X_scaled = datos_scaled.drop(columns=columnas_omitir)
-
-    st.subheader("Distancia Euclideana")
-
-    distancias_eu = euclidean_distances(X_scaled.iloc[:40])
-
-    fig = px.imshow(
-        distancias_eu,
-        color_continuous_scale="Turbo",
-        aspect="auto"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-# =============================================================================
-# METODO DEL CODO
-# =============================================================================
-
-elif menu == "📉 Método del Codo":
+elif menu == "Método del Codo":
 
     st.title("📉 Método del Codo")
-
-    columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
-
-    numericas = [
-        col for col in datos.columns
-        if col not in columnas_omitir
-    ]
-
-    scaler = StandardScaler()
-
-    datos_scaled = datos.copy()
-
-    datos_scaled[numericas] = scaler.fit_transform(
-        datos_scaled[numericas]
-    )
-
-    X_scaled = datos_scaled.drop(columns=columnas_omitir)
 
     wss = []
 
     for k in range(1,11):
 
-        kmeans = KMeans(
+        km = KMeans(
             n_clusters=k,
             n_init=20,
             random_state=42
         )
 
-        kmeans.fit(X_scaled)
+        km.fit(X_scaled)
 
-        wss.append(kmeans.inertia_)
+        wss.append(km.inertia_)
 
     fig = go.Figure()
 
@@ -346,7 +426,7 @@ elif menu == "📉 Método del Codo":
     fig.add_vline(
         x=4,
         line_dash="dash",
-        line_color="cyan"
+        line_color="red"
     )
 
     fig.update_layout(
@@ -362,44 +442,40 @@ elif menu == "📉 Método del Codo":
 # KMEANS
 # =============================================================================
 
-elif menu == "🤖 K-Means":
+elif menu == "K-Means":
 
-    st.title("🤖 Visualización K-Means")
+    st.title("🤖 K-Means")
 
-    columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
+    st.write("Centroides del modelo:")
 
-    numericas = [
-        col for col in datos.columns
-        if col not in columnas_omitir
-    ]
-
-    scaler = StandardScaler()
-
-    datos_scaled = datos.copy()
-
-    datos_scaled[numericas] = scaler.fit_transform(
-        datos_scaled[numericas]
+    centroides = pd.DataFrame(
+        kmeans.cluster_centers_,
+        columns=X_scaled.columns
     )
 
-    X_scaled = datos_scaled.drop(columns=columnas_omitir)
-
-    kmeans = KMeans(
-        n_clusters=4,
-        n_init=50,
-        random_state=42
+    st.dataframe(
+        centroides,
+        use_container_width=True
     )
 
-    labels = kmeans.fit_predict(X_scaled)
+    conteo = datos["Cluster"].value_counts()
 
-    pca = PCA(n_components=2)
+    fig = px.pie(
+        values=conteo.values,
+        names=conteo.index.astype(str),
+        hole=0.5,
+        template="plotly_dark"
+    )
 
-    componentes = pca.fit_transform(X_scaled)
+    st.plotly_chart(fig, use_container_width=True)
 
-    pca_df = pd.DataFrame(componentes, columns=['PC1','PC2'])
+# =============================================================================
+# PCA 2D
+# =============================================================================
 
-    pca_df['Cluster'] = labels.astype(str)
+elif menu == "PCA 2D":
 
-    pca_df['Municipio'] = datos['State']
+    st.title("🌌 PCA Interactivo 2D")
 
     fig = px.scatter(
         pca_df,
@@ -407,57 +483,20 @@ elif menu == "🤖 K-Means":
         y='PC2',
         color='Cluster',
         hover_name='Municipio',
-        title='Clusters K-Means',
         template='plotly_dark'
     )
+
+    fig.update_traces(marker=dict(size=9))
 
     st.plotly_chart(fig, use_container_width=True)
 
 # =============================================================================
-# PCA
+# PCA 3D
 # =============================================================================
 
-elif menu == "🌌 PCA Interactivo":
+elif menu == "PCA 3D":
 
-    st.title("🌌 PCA Interactivo 3D")
-
-    columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
-
-    numericas = [
-        col for col in datos.columns
-        if col not in columnas_omitir
-    ]
-
-    scaler = StandardScaler()
-
-    datos_scaled = datos.copy()
-
-    datos_scaled[numericas] = scaler.fit_transform(
-        datos_scaled[numericas]
-    )
-
-    X_scaled = datos_scaled.drop(columns=columnas_omitir)
-
-    kmeans = KMeans(
-        n_clusters=4,
-        n_init=50,
-        random_state=42
-    )
-
-    labels = kmeans.fit_predict(X_scaled)
-
-    pca = PCA(n_components=3)
-
-    componentes = pca.fit_transform(X_scaled)
-
-    pca_df = pd.DataFrame(
-        componentes,
-        columns=['PC1','PC2','PC3']
-    )
-
-    pca_df['Cluster'] = labels.astype(str)
-
-    pca_df['Municipio'] = datos['State']
+    st.title("🪐 PCA Interactivo 3D")
 
     fig = px.scatter_3d(
         pca_df,
@@ -466,8 +505,27 @@ elif menu == "🌌 PCA Interactivo":
         z='PC3',
         color='Cluster',
         hover_name='Municipio',
-        template='plotly_dark',
-        title='PCA 3D'
+        template='plotly_dark'
+    )
+
+    fig.update_layout(height=800)
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# =============================================================================
+# BOXPLOTS
+# =============================================================================
+
+elif menu == "Boxplots":
+
+    st.title("📦 Distribución por Cluster")
+
+    fig = px.box(
+        datos,
+        x='Cluster',
+        y='TOTAL_AFECTADOS',
+        color='Cluster',
+        template='plotly_dark'
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -476,22 +534,33 @@ elif menu == "🌌 PCA Interactivo":
 # CONCLUSIONES
 # =============================================================================
 
-elif menu == "📌 Conclusiones":
+elif menu == "Conclusiones":
 
-    st.title("📌 Conclusiones")
+    st.title("🧠 Conclusiones")
 
     st.markdown("""
-    ## Principales Hallazgos
+    ### Hallazgos principales
+
+    ✅ Se identificaron patrones similares entre municipios.
+
+    ✅ El algoritmo K-Means permitió separar los datos en 4 grupos.
+
+    ✅ PCA facilitó la visualización de los clústeres.
+
+    ✅ Existen municipios con afectaciones significativamente mayores.
+
+    ✅ La estandarización fue fundamental para el análisis.
+
+    ---
     
-    ✅ K-Means permitió identificar patrones similares entre municipios.
-    
-    ✅ El método del codo sugirió K=4 como número óptimo.
-    
-    ✅ La estandarización fue fundamental para evitar sesgos.
-    
-    ✅ PCA permitió visualizar la separación entre grupos.
-    
-    ✅ Los clústeres revelan comportamientos diferenciados.
+    ### Tecnologías utilizadas
+
+    - Python
+    - Streamlit
+    - Scikit-Learn
+    - Plotly
+    - PCA
+    - K-Means
     """)
 
     st.balloons()
