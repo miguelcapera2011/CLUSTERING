@@ -79,50 +79,6 @@ if st.session_state.page == 'infografia':
         * **El Resultado:** Transformación de la bitácora en una matriz estructurada de **884 municipios** apta para algoritmos de Machine Learning.
         """)
 
-    st.markdown("### 📈 Pasos Clave del Código para la Transformación")
-    
-    with st.expander("1. 🔄 Reestructuración de Datos (Matriz de Pivotado)", expanded=True):
-        st.markdown("Para cada municipio se cruzan y totalizan las variables de fuerza y tipo de afectación:")
-        st.code("""
-# Agrupamos por Municipio y pivotamos las variables de texto
-pivot_accion = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
-pivot_fuerza = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0)
-total_municipio = df_original.groupby(['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'])['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
-
-# Unimos las tablas convirtiendo las categorías en columnas numéricas reales
-datos = total_municipio.join([pivot_accion, pivot_fuerza]).reset_index()
-datos = datos.rename(columns={'MUNICIPIO': 'MUNICIPIO'})
-        """, language="python")
-
-    with st.expander("2. ⚖️ Estandarización de Distancias (StandardScaler)", expanded=False):
-        st.markdown("Evita que las variables con magnitudes numéricas colosales dominen o sesguen el cálculo de las distancias Euclidianas:")
-        st.code("""
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-# Modifica los datos para que tengan Media = 0 y Varianza = 1
-datos[numericas] = scaler.fit_transform(datos[numericas])
-        """, language="python")
-
-    with st.expander("3. 🎯 Selección de Clústeres (Método del Codo u Optimización)", expanded=False):
-        st.markdown("Se itera el modelo de 1 a 10 grupos calculando la inercia (WSS) para identificar el punto de quiebre óptimo (**K = 4**):")
-        st.code("""
-from sklearn.cluster import KMeans
-
-wss = []
-for k in range(1, 11):
-    kmeans = KMeans(n_clusters=k, n_init=50, random_state=42)
-    kmeans.fit(X_scaled)
-    wss.append(kmeans.inertia_)
-        """, language="python")
-
-    st.markdown("---")
-    st.markdown("<center>", unsafe_allow_html=True)
-    if st.button("🚀 ¡Entendido! Ir Directo a la Ejecución del Modelo", type="primary"):
-        cambiar_pagina('analisis')
-        st.rerun()
-    st.markdown("</center>", unsafe_allow_html=True)
-
 # ==============================================================================
 # PÁGINA 2: ANÁLISIS DE DATOS EN TIEMPO REAL
 # ==============================================================================
@@ -137,9 +93,8 @@ elif st.session_state.page == 'analisis':
     else:
         st.success(f"📦 Archivo detectado y cargado con éxito: `{resultado_carga}`")
 
-    # 1 Y 2. CONSOLIDACIÓN Y LIMPIEZA
+    # Consolación y limpieza de columnas
     index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
-    
     pivot_accion = df_original.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
     
     columnas_fuerza = [c for c in df_original['NOMBRE_FUERZA'].unique() if pd.notna(c)] if 'NOMBRE_FUERZA' in df_original.columns else []
@@ -161,36 +116,31 @@ elif st.session_state.page == 'analisis':
     st.subheader("📋 Matriz de Datos Numéricos Consolidados (Primeros registros)")
     st.dataframe(datos.head(10))
 
-    # Definición global de la paleta de colores para consistencia
     colores_clusters = ['red', 'green', 'blue', 'orange']
 
-    # ==============================================================================
-    # 3. HISTOGRAMAS INTERACTIVOS
-    # ==============================================================================
-    st.subheader("📊 Distribución de las Variables Principales (Interactivo)")
-    
+    # Identificación dinámica de columnas clave
     col_afectados = 'TOTAL_AFECTADOS' if 'TOTAL_AFECTADOS' in datos.columns else datos.columns[3]
     col_asesinado = 'ASESINADO' if 'ASESINADO' in datos.columns else datos.columns[4]
     col_herido = 'HERIDO' if 'HERIDO' in datos.columns else datos.columns[5]
     col_ejercito = 'EJERCITO NACIONAL DE COLOMBIA' if 'EJERCITO NACIONAL DE COLOMBIA' in datos.columns else datos.columns[6]
 
+    # ==============================================================================
+    # HISTOGRAMAS INTERACTIVOS
+    # ==============================================================================
+    st.subheader("📊 Distribución de las Variables Principales (Interactivo)")
     hist_variables = [col_afectados, col_asesinado, col_herido, col_ejercito]
     fig_hist_int = go.Figure()
-    
     for idx, col_name in enumerate(hist_variables):
         fig_hist_int.add_trace(go.Histogram(x=datos[col_name], name=col_name, nbinsx=25, visible=(idx==0)))
-        
     botones = []
     for idx, col_name in enumerate(hist_variables):
         visibilidad = [False] * len(hist_variables)
         visibilidad[idx] = True
         botones.append(dict(label=col_name, method="update", args=[{"visible": visibilidad}, {"title": f"Distribución de {col_name}"}]))
-        
-    fig_hist_int.update_layout(updatemenus=[dict(active=0, buttons=botones, x=0.1, y=1.15, xanchor="left", yanchor="top")],
-                              template="plotly_dark", height=400, title=f"Distribución de {hist_variables[0]}")
+    fig_hist_int.update_layout(updatemenus=[dict(active=0, buttons=botones, x=0.1, y=1.15, xanchor="left", yanchor="top")], template="plotly_dark", height=400)
     st.plotly_chart(fig_hist_int, use_container_width=True)
 
-    # 4. ESTANDARIZACIÓN
+    # Escalado de datos
     scaler = StandardScaler()
     columnas_omitir = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
     numericas = [col for col in datos.columns if col not in columnas_omitir]
@@ -199,143 +149,129 @@ elif st.session_state.page == 'analisis':
     datos[numericas] = scaler.fit_transform(datos[numericas])
     X_scaled = datos.drop(columns=columnas_omitir)
 
-    # ==============================================================================
-    # 5. MATRICES DE DISTANCIA
-    # ==============================================================================
+    # Mapas de calor
     st.subheader("🌡️ Mapas de Calor de Distancias (Interactivo)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     dist_matrix_manhattan = pdist(X_scaled, metric='cityblock')
     C = squareform(dist_matrix_manhattan)[:50, :50]
-    
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
 
     mapa_col1, mapa_col2 = st.columns(2)
     with mapa_col1:
-        fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
-                           labels=dict(color="Distancia"), title="Distancia Euclideana (Muestra 50x50)",
-                           color_continuous_scale='RdBu_r', template='plotly_dark')
+        fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub, labels=dict(color="Distancia"), color_continuous_scale='RdBu_r', template='plotly_dark', title="Distancia Euclideana")
         st.plotly_chart(fig_eu, use_container_width=True)
     with mapa_col2:
-        fig_man = px.imshow(C, x=nombres_municipios_sub, y=nombres_municipios_sub,
-                            labels=dict(color="Distancia"), title="Distancia Manhattan (Muestra 50x50)",
-                            color_continuous_scale='RdBu_r', template='plotly_dark')
+        fig_man = px.imshow(C, x=nombres_municipios_sub, y=nombres_municipios_sub, labels=dict(color="Distancia"), color_continuous_scale='RdBu_r', template='plotly_dark', title="Distancia Manhattan")
         st.plotly_chart(fig_man, use_container_width=True)
 
-    # 6. MÉTODO DEL CODO
+    # Curva del Codo
     st.subheader("📐 Curva de Optimización: Método del Codo")
     wss = []
     for k in range(1, 11):
         kmeans = KMeans(n_clusters=k, n_init=30, random_state=42)
         kmeans.fit(X_scaled)
         wss.append(kmeans.inertia_)
-        
-    fig_elbow_int = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación WSS (Inercia)",
-                            labels={'x': 'Número de Clústeres (k)', 'y': 'WSS / Inercia'}, template='plotly_dark')
+    fig_elbow_int = px.line(x=list(range(1, 11)), y=wss, markers=True, template='plotly_dark', labels={'x': 'Número de Clústeres (k)', 'y': 'WSS / Inercia'})
     fig_elbow_int.add_vline(x=4, line_dash="dash", line_color="cyan", annotation_text="K Óptimo = 4")
     st.plotly_chart(fig_elbow_int, use_container_width=True)
 
-    # 7. EJECUCIÓN K-MEANS CON K=4
+    # Ejecución K-Means
     kmeans = KMeans(n_clusters=4, n_init=50, random_state=42)
     start = time.time()
     km4_clusters = kmeans.fit(X_scaled)
     tiempo_ms = (time.time() - start) * 1000
     st.info(f"⚡ K-Means completado en: {tiempo_ms:.2f} ms | Inercia Final: {km4_clusters.inertia_:.2f}")
 
-    # ==============================================================================
-    # 8. REDUCCIÓN DIMENSIONAL (PCA INTERACTIVO)
-    # ==============================================================================
-    st.subheader("🎯 Agrupación Territorial en Espacio Reducido (PCA 2D)")
-    pca = PCA(n_components=2)
-    datos_pca = pca.fit_transform(X_scaled)
-    datos_pca_df = pd.DataFrame(data=datos_pca, columns=['PCA1', 'PCA2'])
-    datos_pca_df['Cluster'] = km4_clusters.labels_.astype(str)
-    datos_pca_df['MUNICIPIO'] = datos['MUNICIPIO'].values
-    datos_pca_df['DEPARTAMENTO'] = datos['DEPARTAMENTO'].values
-
-    fig_pca_int = px.scatter(datos_pca_df, x='PCA1', y='PCA2', color='Cluster',
-                             color_discrete_sequence=colores_clusters,
-                             hover_data=['MUNICIPIO', 'DEPARTAMENTO'],
-                             title="Clústeres K-Means Proyectados en PCA", template='plotly_dark')
-    
-    centroids_pca = pca.transform(kmeans.cluster_centers_)
-    fig_pca_int.add_trace(go.Scatter(x=centroids_pca[:, 0], y=centroids_pca[:, 1], mode='markers',
-                                     marker=dict(size=14, color='white', symbol='star', line=dict(width=2, color='black')),
-                                     name='Centroides'))
-    st.plotly_chart(fig_pca_int, use_container_width=True)
-
-    # 9 Y 10. MUESTRAS, CONTEOS Y CRUCE DE VARIABLES
-    st.subheader("📊 Frecuencia e Impacto de Clústeres")
-    G = pd.DataFrame({'MUNICIPIO': datos['MUNICIPIO'].values, 'DEPARTAMENTO': datos['DEPARTAMENTO'].values, 'label': km4_clusters.labels_})
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Cantidad de Individuos por Clúster:**")
-        resumen_grupos = G.groupby('label').size().reset_index(name='Municipios')
-        st.dataframe(resumen_grupos)
-    with c2:
-        st.markdown("**Muestra de listado de asignación de Grupos:**")
-        st.dataframe(G.sort_values(by='label').head(12))
-
-    # Cruce de Variables Interactivo
-    st.subheader("⚔️ Cruce Analítico Interactivo: TOTAL_AFECTADOS vs ASESINADO (Estandarizado)")
-    datos_cruce = datos.copy()
-    datos_cruce['Cluster'] = km4_clusters.labels_.astype(str)
-    
-    fig_cruzado_int = px.scatter(datos_cruce, x=col_afectados, y=col_asesinado, color='Cluster',
-                                 color_discrete_sequence=colores_clusters,
-                                 hover_data=['MUNICIPIO', 'DEPARTAMENTO'],
-                                 title="Cruce de Impacto Total vs Personal Asesinado", template='plotly_dark')
-    st.plotly_chart(fig_cruzado_int, use_container_width=True)
+    # Añadir las etiquetas de clúster a los datos reales para calcular los promedios
+    datos_originales_num['Cluster'] = km4_clusters.labels_
 
     # ==============================================================================
-    # 11. BOXPLOT INTERACTIVO
+    # CALCULAR LOS PROMEDIOS REALES POR CLÚSTER PARA LOS CENTROIDES
     # ==============================================================================
-    st.subheader("📦 Boxplot del Impacto Total Real por Clúster (Valores sin Escalar - Interactivo)")
-    datos_originales_num['Cluster'] = km4_clusters.labels_.astype(str)
+    promedios_por_cluster = datos_originales_num.groupby('Cluster')[[col_afectados, col_asesinado, col_herido, col_ejercito]].mean().reset_index()
     
-    fig_box_int = px.box(datos_originales_num, x='Cluster', y=col_afectados, color='Cluster',
-                         color_discrete_sequence=colores_clusters,
-                         hover_data=['MUNICIPIO'], title="Distribución Absoluta de Afectados por Grupo",
-                         template='plotly_dark')
-    st.plotly_chart(fig_box_int, use_container_width=True)
-
-    # ==============================================================================
-    # 12. PCA INTERACTIVO EN 2D Y 3D (CENTROIDES: ROMBOS BLANCOS MÁS GRANDES)
-    # ==============================================================================
-    st.subheader("✨ Control Final: Componentes Principales Avanzados (2D y 3D)")
-    
+    # Reducción Dimensional PCA para los gráficos
     pca_4d = PCA(n_components=4)
     pca_scores_4d = pca_4d.fit_transform(X_scaled)
     pca_df = pd.DataFrame(pca_scores_4d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
     pca_df['Cluster'] = km4_clusters.labels_.astype(str)
     pca_df['Etiqueta'] = datos['MUNICIPIO'] + " (" + datos['DEPARTAMENTO'] + ")"
 
-    fig_2d = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', hover_name='Etiqueta',
-                        color_discrete_sequence=colores_clusters,
-                        title='Visualización PCA Interactiva en 2D', template='plotly_dark')
-    st.plotly_chart(fig_2d, use_container_width=True)
-
-    # Gráfico 3D Principal
-    fig_3d = px.scatter_3d(pca_df, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
-                           color_discrete_sequence=colores_clusters,
-                           title='Modelado Espacial de Municipios en 3D', template='plotly_dark')
-
-    # Coordenadas de los centroides
+    # Proyección de los Centroides al espacio de PCA
     centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
     
-    # AJUSTE IMPLEMENTADO: Regresó a rombo ('diamond') en color blanco, pero más grande (size=12)
+    # Crear un DataFrame específico para los Centroides combinando sus coordenadas PCA y sus promedios reales
+    centroids_df = pd.DataFrame(centroids_pca_3d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
+    centroids_df['Cluster'] = promedios_por_cluster['Cluster'].astype(str)
+    centroids_df['Promedio_Afectados'] = promedios_por_cluster[col_afectados].round(2)
+    centroids_df['Promedio_Asesinados'] = promedios_por_cluster[col_asesinado].round(2)
+    centroids_df['Promedio_Heridos'] = promedios_por_cluster[col_herido].round(2)
+    centroids_df['Promedio_Ejercito'] = promedios_por_cluster[col_ejercito].round(2)
+
+    # PCA 2D Scatter de Municipios
+    st.subheader("🎯 Agrupación Territorial en Espacio Reducido (PCA 2D)")
+    fig_pca_int = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', color_discrete_sequence=colores_clusters, hover_name='Etiqueta', template='plotly_dark', title="Clústeres K-Means Proyectados en PCA")
+    st.plotly_chart(fig_pca_int, use_container_width=True)
+
+    # Conteos y Cruces
+    st.subheader("📊 Frecuencia e Impacto de Clústeres")
+    G = pd.DataFrame({'MUNICIPIO': datos['MUNICIPIO'].values, 'DEPARTAMENTO': datos['DEPARTAMENTO'].values, 'label': km4_clusters.labels_})
+    c1, c2 = st.columns(2)
+    with c1:
+        st.dataframe(G.groupby('label').size().reset_index(name='Municipios'))
+    with c2:
+        st.dataframe(G.sort_values(by='label').head(12))
+
+    # Cruce Analítico
+    fig_cruzado_int = px.scatter(datos_originales_num, x=col_afectados, y=col_asesinado, color=km4_clusters.labels_.astype(str), color_discrete_sequence=colores_clusters, hover_data=['MUNICIPIO'], template='plotly_dark', title="Cruce de Impacto Total vs Personal Asesinado")
+    st.plotly_chart(fig_cruzado_int, use_container_width=True)
+
+    # Boxplot
+    st.subheader("📦 Boxplot del Impacto Total Real por Clúster")
+    fig_box_int = px.box(datos_originales_num, x='Cluster', y=col_afectados, color='Cluster', color_discrete_sequence=colores_clusters, hover_data=['MUNICIPIO'], template='plotly_dark')
+    st.plotly_chart(fig_box_int, use_container_width=True)
+
+    # ==============================================================================
+    # 12. PCA INTERACTIVO EN 3D CON TOOLTIP MATEMÁTICO EN LOS CENTROIDES
+    # ==============================================================================
+    st.subheader("✨ Control Final: Componentes Principales Avanzados (2D y 3D)")
+    
+    fig_3d = px.scatter_3d(pca_df, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
+                           color_discrete_sequence=colores_clusters,
+                           title='Modelado Espacial de Municipios en 3D (Pasa el cursor sobre los Rombos Blancos)', 
+                           template='plotly_dark')
+
+    # AGREGAR LOS ROMBOS BLANCOS GRANDES CON LA CONFIGURACIÓN DE PROMEDIOS NUMÉRICOS
     fig_3d.add_trace(go.Scatter3d(
-        x=centroids_pca_3d[:, 0], 
-        y=centroids_pca_3d[:, 1], 
-        z=centroids_pca_3d[:, 2],
+        x=centroids_df['PC1'], 
+        y=centroids_df['PC2'], 
+        z=centroids_df['PC3'],
         mode='markers',
         marker=dict(
-            size=12,                 # Tamaño incrementado para que destaque notoriamente
-            color='white',           # Color blanco solicitado
-            symbol='diamond',        # Figura de rombo establecida
-            line=dict(width=1.5, color='black') # Borde negro fino para realzar la geometría
+            size=12,                 # Rombo grande solicitado
+            color='white',           # Color blanco clásico
+            symbol='diamond',        # Geometría de rombo
+            line=dict(width=1.5, color='black')
         ),
-        name='Centroides'
+        name='Centroides (Promedios)',
+        # Inyectamos los datos numéricos reales calculados para que Plotly los lea en el hover
+        customdata=np.stack((
+            centroids_df['Cluster'],
+            centroids_df['Promedio_Afectados'],
+            centroids_df['Promedio_Asesinados'],
+            centroids_df['Promedio_Heridos'],
+            centroids_df['Promedio_Ejercito']
+        ), axis=-1),
+        # Plantilla visual que se despliega al pasar el cursor sobre el rombo
+        hovertemplate=(
+            "<b>🎯 CENTROIDE CLÚSTER %{customdata[0]}</b><br><br>"
+            "<b>Valores Promedio del Grupo:</b><br>"
+            "• Promedio Total Afectados: %{customdata[1]}<br>"
+            "• Promedio Asesinados: %{customdata[2]}<br>"
+            "• Promedio Heridos: %{customdata[3]}<br>"
+            "• Promedio Conteo Ejército: %{customdata[4]}<br>"
+            "<extra></extra>" # Elimina la etiqueta secundaria de Plotly por limpieza visual
+        )
     ))
     
     st.plotly_chart(fig_3d, use_container_width=True)
