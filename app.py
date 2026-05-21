@@ -151,7 +151,6 @@ elif st.session_state.page == 'analisis':
     total_municipio = df_original.groupby(index_cols)['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
 
     datos = total_municipio.join([pivot_accion, pivot_fuerza, pivot_cat]).reset_index()
-    # CAMBIO SOLICITADO: El nombre de la columna queda estrictamente como 'MUNICIPIO' (Mayúsculas)
     datos = datos.rename(columns={'MUNICIPIO': 'MUNICIPIO'})
     datos = datos.dropna()
 
@@ -163,7 +162,7 @@ elif st.session_state.page == 'analisis':
     st.dataframe(datos.head(10))
 
     # ==============================================================================
-    # 3. HISTOGRAMAS (AHORA INTERACTIVOS)
+    # 3. HISTOGRAMAS INTERACTIVOS
     # ==============================================================================
     st.subheader("📊 Distribución de las Variables Principales (Interactivo)")
     
@@ -178,7 +177,6 @@ elif st.session_state.page == 'analisis':
     for idx, col_name in enumerate(hist_variables):
         fig_hist_int.add_trace(go.Histogram(x=datos[col_name], name=col_name, nbinsx=25, visible=(idx==0)))
         
-    # Añadir menú desplegable interactivo para alternar histogramas
     botones = []
     for idx, col_name in enumerate(hist_variables):
         visibilidad = [False] * len(hist_variables)
@@ -199,7 +197,7 @@ elif st.session_state.page == 'analisis':
     X_scaled = datos.drop(columns=columnas_omitir)
 
     # ==============================================================================
-    # 5. MATRICES DE DISTANCIA (AHORA INTERACTIVAS)
+    # 5. MATRICES DE DISTANCIA (SOLUCIÓN AL ERROR DE COLORSCALE)
     # ==============================================================================
     st.subheader("🌡️ Mapas de Calor de Distancias (Interactivo)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
@@ -210,14 +208,16 @@ elif st.session_state.page == 'analisis':
 
     mapa_col1, mapa_col2 = st.columns(2)
     with mapa_col1:
+        # CORRECCIÓN: Cambiado 'coolwarm' por la escala nativa e invertida 'RdBu_r'
         fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                            labels=dict(color="Distancia"), title="Distancia Euclideana (Muestra 50x50)",
-                           color_continuous_scale='coolwarm', template='plotly_dark')
+                           color_continuous_scale='RdBu_r', template='plotly_dark')
         st.plotly_chart(fig_eu, use_container_width=True)
     with mapa_col2:
+        # CORRECCIÓN: Cambiado 'coolwarm' por la escala nativa e invertida 'RdBu_r'
         fig_man = px.imshow(C, x=nombres_municipios_sub, y=nombres_municipios_sub,
                             labels=dict(color="Distancia"), title="Distancia Manhattan (Muestra 50x50)",
-                            color_continuous_scale='coolwarm', template='plotly_dark')
+                            color_continuous_scale='RdBu_r', template='plotly_dark')
         st.plotly_chart(fig_man, use_container_width=True)
 
     # 6. MÉTODO DEL CODO
@@ -241,7 +241,7 @@ elif st.session_state.page == 'analisis':
     st.info(f"⚡ K-Means completado en: {tiempo_ms:.2f} ms | Inercia Final: {km4_clusters.inertia_:.2f}")
 
     # ==============================================================================
-    # 8. REDUCCIÓN DIMENSIONAL (PCA INTERACTIVO CON ELIPSES CONCEPTUALES)
+    # 8. REDUCCIÓN DIMENSIONAL (PCA INTERACTIVO)
     # ==============================================================================
     st.subheader("🎯 Agrupación Territorial en Espacio Reducido (PCA 2D)")
     pca = PCA(n_components=2)
@@ -285,7 +285,7 @@ elif st.session_state.page == 'analisis':
     st.plotly_chart(fig_cruzado_int, use_container_width=True)
 
     # ==============================================================================
-    # 11. BOXPLOT (AHORA INTERACTIVO)
+    # 11. BOXPLOT INTERACTIVO
     # ==============================================================================
     st.subheader("📦 Boxplot del Impacto Total Real por Clúster (Valores sin Escalar - Interactivo)")
     datos_originales_num['Cluster'] = km4_clusters.labels_.astype(str)
@@ -304,7 +304,6 @@ elif st.session_state.page == 'analisis':
     pca_scores_4d = pca_4d.fit_transform(X_scaled)
     pca_df = pd.DataFrame(pca_scores_4d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
     pca_df['Cluster'] = km4_clusters.labels_.astype(str)
-    # CAMBIO SOLICITADO: Ajustamos la etiqueta interactiva usando el nombre 'MUNICIPIO' en mayúsculas
     pca_df['Etiqueta'] = datos['MUNICIPIO'] + " (" + datos['DEPARTAMENTO'] + ")"
 
     fig_2d = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', hover_name='Etiqueta',
