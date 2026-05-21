@@ -161,7 +161,7 @@ elif st.session_state.page == 'analisis':
     st.subheader("📋 Matriz de Datos Numéricos Consolidados (Primeros registros)")
     st.dataframe(datos.head(10))
 
-    # Definición global de la paleta de colores para consistencia en toda la app
+    # Definición global de la paleta de colores para consistencia
     colores_clusters = ['red', 'green', 'blue', 'orange']
 
     # ==============================================================================
@@ -300,7 +300,7 @@ elif st.session_state.page == 'analisis':
     st.plotly_chart(fig_box_int, use_container_width=True)
 
     # ==============================================================================
-    # 12. PCA INTERACTIVO EN 2D Y 3D (MEJORA DE COLOR DE CENTROIDES EN 3D)
+    # 12. PCA INTERACTIVO EN 2D Y 3D (CENTROIDES BLANCOS COMO VIÑETAS PEQUEÑAS)
     # ==============================================================================
     st.subheader("✨ Control Final: Componentes Principales Avanzados (2D y 3D)")
     
@@ -315,27 +315,27 @@ elif st.session_state.page == 'analisis':
                         title='Visualización PCA Interactiva en 2D', template='plotly_dark')
     st.plotly_chart(fig_2d, use_container_width=True)
 
-    # Construcción del Gráfico 3D
+    # Gráfico 3D Principal
     fig_3d = px.scatter_3d(pca_df, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
                            color_discrete_sequence=colores_clusters,
                            title='Modelado Espacial de Municipios en 3D', template='plotly_dark')
 
-    # Proyección de los centroides al mismo espacio 3D (PC1, PC2, PC3)
+    # Coordenadas de los centroides
     centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
     
-    # CAMBIO IMPLEMENTADO: El color se asigna dinámicamente usando la misma lista del orden de los clústeres
+    # CAMBIOS SOLICITADOS: Volvieron a color blanco, tamaño reducido (de 14 a 9) y figura de viñeta circular ('circle')
     fig_3d.add_trace(go.Scatter3d(
         x=centroids_pca_3d[:, 0], 
         y=centroids_pca_3d[:, 1], 
         z=centroids_pca_3d[:, 2],
         mode='markers',
         marker=dict(
-            size=14, 
-            color=colores_clusters,  # Toma los colores exactos: Rojo, Verde, Azul y Naranja correspondientes
-            symbol='diamond', 
-            line=dict(width=2, color='black')  # Borde negro elegante para resaltar el rombo
+            size=9,                  # Reducido para que sea discreto y elegante
+            color='white',           # Regresa a su color blanco original
+            symbol='circle',         # Cambiado de 'diamond' a viñeta esférica tradicional
+            line=dict(width=1.5, color='black') # Mantiene un pequeño borde negro de contraste
         ),
-        name='Centroides del Grupo'
+        name='Centroides'
     ))
     
     st.plotly_chart(fig_3d, use_container_width=True)
