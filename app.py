@@ -106,10 +106,10 @@ for k in range(1, 11):
 elif pd_st.session_state.page == 'analisis':
     pd_st.title("🚀 Pipeline de Machine Learning: Modelado K-Means")
     
-    # Cargar archivo de datos (CSV convertido o subido)
+    # Cargar archivo de datos (
     try:
         # Buscamos el archivo que cargaste en el entorno
-        df_original = pd.read_csv('AFECTACIÓN A LA FUERZA PÚBLICA.xlsx - Sheet 1.csv', header=0)
+        df_original = pd.read_excel('AFECTACIÓN A LA FUERZA PÚBLICA.xlsx ', header=0)
     except FileNotFoundError:
         pd_st.error("Por favor, asegúrate de que el archivo 'AFECTACIÓN A LA FUERZA PÚBLICA.xlsx - Sheet 1.csv' esté en la misma carpeta que este script.")
         pd_st.stop()
