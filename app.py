@@ -300,7 +300,7 @@ elif st.session_state.page == 'analisis':
     st.plotly_chart(fig_box_int, use_container_width=True)
 
     # ==============================================================================
-    # 12. PCA INTERACTIVO EN 2D Y 3D (CENTROIDES BLANCOS COMO VIÑETAS PEQUEÑAS)
+    # 12. PCA INTERACTIVO EN 2D Y 3D (CENTROIDES: ROMBOS BLANCOS MÁS GRANDES)
     # ==============================================================================
     st.subheader("✨ Control Final: Componentes Principales Avanzados (2D y 3D)")
     
@@ -323,17 +323,17 @@ elif st.session_state.page == 'analisis':
     # Coordenadas de los centroides
     centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
     
-    # CAMBIOS SOLICITADOS: Volvieron a color blanco, tamaño reducido (de 14 a 9) y figura de viñeta circular ('circle')
+    # AJUSTE IMPLEMENTADO: Regresó a rombo ('diamond') en color blanco, pero más grande (size=12)
     fig_3d.add_trace(go.Scatter3d(
         x=centroids_pca_3d[:, 0], 
         y=centroids_pca_3d[:, 1], 
         z=centroids_pca_3d[:, 2],
         mode='markers',
         marker=dict(
-            size=9,                  # Reducido para que sea discreto y elegante
-            color='white',           # Regresa a su color blanco original
-            symbol='circle',         # Cambiado de 'diamond' a viñeta esférica tradicional
-            line=dict(width=1.5, color='black') # Mantiene un pequeño borde negro de contraste
+            size=12,                 # Tamaño incrementado para que destaque notoriamente
+            color='white',           # Color blanco solicitado
+            symbol='diamond',        # Figura de rombo establecida
+            line=dict(width=1.5, color='black') # Borde negro fino para realzar la geometría
         ),
         name='Centroides'
     ))
