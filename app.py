@@ -161,6 +161,9 @@ elif st.session_state.page == 'analisis':
     st.subheader("📋 Matriz de Datos Numéricos Consolidados (Primeros registros)")
     st.dataframe(datos.head(10))
 
+    # Definición global de la paleta de colores para consistencia en toda la app
+    colores_clusters = ['red', 'green', 'blue', 'orange']
+
     # ==============================================================================
     # 3. HISTOGRAMAS INTERACTIVOS
     # ==============================================================================
@@ -197,7 +200,7 @@ elif st.session_state.page == 'analisis':
     X_scaled = datos.drop(columns=columnas_omitir)
 
     # ==============================================================================
-    # 5. MATRICES DE DISTANCIA (SOLUCIÓN AL ERROR DE COLORSCALE)
+    # 5. MATRICES DE DISTANCIA
     # ==============================================================================
     st.subheader("🌡️ Mapas de Calor de Distancias (Interactivo)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
@@ -208,13 +211,11 @@ elif st.session_state.page == 'analisis':
 
     mapa_col1, mapa_col2 = st.columns(2)
     with mapa_col1:
-        # CORRECCIÓN: Cambiado 'coolwarm' por la escala nativa e invertida 'RdBu_r'
         fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                            labels=dict(color="Distancia"), title="Distancia Euclideana (Muestra 50x50)",
                            color_continuous_scale='RdBu_r', template='plotly_dark')
         st.plotly_chart(fig_eu, use_container_width=True)
     with mapa_col2:
-        # CORRECCIÓN: Cambiado 'coolwarm' por la escala nativa e invertida 'RdBu_r'
         fig_man = px.imshow(C, x=nombres_municipios_sub, y=nombres_municipios_sub,
                             labels=dict(color="Distancia"), title="Distancia Manhattan (Muestra 50x50)",
                             color_continuous_scale='RdBu_r', template='plotly_dark')
@@ -252,6 +253,7 @@ elif st.session_state.page == 'analisis':
     datos_pca_df['DEPARTAMENTO'] = datos['DEPARTAMENTO'].values
 
     fig_pca_int = px.scatter(datos_pca_df, x='PCA1', y='PCA2', color='Cluster',
+                             color_discrete_sequence=colores_clusters,
                              hover_data=['MUNICIPIO', 'DEPARTAMENTO'],
                              title="Clústeres K-Means Proyectados en PCA", template='plotly_dark')
     
@@ -280,6 +282,7 @@ elif st.session_state.page == 'analisis':
     datos_cruce['Cluster'] = km4_clusters.labels_.astype(str)
     
     fig_cruzado_int = px.scatter(datos_cruce, x=col_afectados, y=col_asesinado, color='Cluster',
+                                 color_discrete_sequence=colores_clusters,
                                  hover_data=['MUNICIPIO', 'DEPARTAMENTO'],
                                  title="Cruce de Impacto Total vs Personal Asesinado", template='plotly_dark')
     st.plotly_chart(fig_cruzado_int, use_container_width=True)
@@ -291,12 +294,13 @@ elif st.session_state.page == 'analisis':
     datos_originales_num['Cluster'] = km4_clusters.labels_.astype(str)
     
     fig_box_int = px.box(datos_originales_num, x='Cluster', y=col_afectados, color='Cluster',
+                         color_discrete_sequence=colores_clusters,
                          hover_data=['MUNICIPIO'], title="Distribución Absoluta de Afectados por Grupo",
                          template='plotly_dark')
     st.plotly_chart(fig_box_int, use_container_width=True)
 
     # ==============================================================================
-    # 12. PCA INTERACTIVO EN 2D Y 3D
+    # 12. PCA INTERACTIVO EN 2D Y 3D (MEJORA DE COLOR DE CENTROIDES EN 3D)
     # ==============================================================================
     st.subheader("✨ Control Final: Componentes Principales Avanzados (2D y 3D)")
     
@@ -307,15 +311,31 @@ elif st.session_state.page == 'analisis':
     pca_df['Etiqueta'] = datos['MUNICIPIO'] + " (" + datos['DEPARTAMENTO'] + ")"
 
     fig_2d = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', hover_name='Etiqueta',
+                        color_discrete_sequence=colores_clusters,
                         title='Visualización PCA Interactiva en 2D', template='plotly_dark')
     st.plotly_chart(fig_2d, use_container_width=True)
 
+    # Construcción del Gráfico 3D
     fig_3d = px.scatter_3d(pca_df, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
+                           color_discrete_sequence=colores_clusters,
                            title='Modelado Espacial de Municipios en 3D', template='plotly_dark')
 
+    # Proyección de los centroides al mismo espacio 3D (PC1, PC2, PC3)
     centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
-    fig_3d.add_trace(go.Scatter3d(x=centroids_pca_3d[:, 0], y=centroids_pca_3d[:, 1], z=centroids_pca_3d[:, 2],
-                                  mode='markers',
-                                  marker=dict(size=12, color='white', symbol='diamond', line=dict(width=1, color='black')),
-                                  name='Centroides'))
+    
+    # CAMBIO IMPLEMENTADO: El color se asigna dinámicamente usando la misma lista del orden de los clústeres
+    fig_3d.add_trace(go.Scatter3d(
+        x=centroids_pca_3d[:, 0], 
+        y=centroids_pca_3d[:, 1], 
+        z=centroids_pca_3d[:, 2],
+        mode='markers',
+        marker=dict(
+            size=14, 
+            color=colores_clusters,  # Toma los colores exactos: Rojo, Verde, Azul y Naranja correspondientes
+            symbol='diamond', 
+            line=dict(width=2, color='black')  # Borde negro elegante para resaltar el rombo
+        ),
+        name='Centroides del Grupo'
+    ))
+    
     st.plotly_chart(fig_3d, use_container_width=True)
