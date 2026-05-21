@@ -1,9 +1,10 @@
-import streamlit as pd_st
+import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import euclidean_distances
 from scipy.spatial.distance import pdist, squareform
@@ -14,77 +15,108 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Configuración de página de Streamlit
-pd_st.set_page_config(page_title="Análisis de Clúster - Fuerza Pública", layout="wide")
+st.set_page_config(page_title="Análisis de Clúster - Fuerza Pública", layout="wide")
 
 # ==============================================================================
-# NAVEGACIÓN ENTRE PÁGINAS (Simulación de botón de paso)
+# FUNCIÓN AUTOMÁTICA PARA CARGAR LA BASE DE DATOS
 # ==============================================================================
-if 'page' not in pd_st.session_state:
-    pd_st.session_state.page = 'infografia'
+def cargar_datos_automatico():
+    """Busca y carga dinámicamente el archivo de datos en la carpeta actual"""
+    archivos_en_carpeta = os.listdir('.')
+    archivo_encontrado = None
+    
+    # Buscar un archivo que coincida con palabras clave del dataset
+    for archivo in archivos_en_carpeta:
+        nombre_minuscula = archivo.lower()
+        if ("afectacion" in nombre_minuscula or "fuerza" in nombre_minuscula or "publica" in nombre_minuscula) and (archivo.endswith('.csv') or archivo.endswith('.xlsx')):
+            archivo_encontrado = archivo
+            break
+            
+    if archivo_encontrado is None:
+        # Intento por defecto si no encuentra coincidencias
+        return None, "No se encontró ningún archivo que contenga 'AFECTACIÓN' o 'FUERZA' en la carpeta."
+    
+    try:
+        if archivo_encontrado.endswith('.csv'):
+            df = pd.read_csv(archivo_encontrado, header=0)
+        else:
+            df = pd.read_excel(archivo_encontrado, header=0)
+        return df, archivo_encontrado
+    except Exception as e:
+        return None, f"Error al leer el archivo {archivo_encontrado}: {str(e)}"
+
+# ==============================================================================
+# NAVEGACIÓN ENTRE PÁGINAS (Simulación de botones y estado de sesión)
+# ==============================================================================
+if 'page' not in st.session_state:
+    st.session_state.page = 'infografia'
 
 def cambiar_pagina(nombre_pagina):
-    pd_st.session_state.page = nombre_pagina
+    st.session_state.page = nombre_pagina
 
 # Barra lateral para navegación clara
-pd_st.sidebar.title("📌 Navegación")
-if pd_st.sidebar.button("📊 Ver Infografía del Proceso", use_container_width=True):
+st.sidebar.title("📌 Navegación Exposición")
+if st.sidebar.button("📊 Ver Infografía del Proceso", use_container_width=True):
     cambiar_pagina('infografia')
-if pd_st.sidebar.button("🚀 Ir a App de Análisis y Modelado", use_container_width=True):
+if st.sidebar.button("🚀 Ir a App de Análisis y Modelado", use_container_width=True):
     cambiar_pagina('analisis')
 
 # ==============================================================================
-# PÁGINA 1: INFOGRAFÍA INTERACTIVA
+# PÁGINA 1: INFOGRAFÍA INTERACTIVA Y ANIMADA
 # ==============================================================================
-if pd_st.session_state.page == 'infografia':
-    pd_st.title("🗺️ Infografía del Pipeline de Datos: Categórico a Clúster")
-    pd_st.markdown("---")
+if st.session_state.page == 'infografia':
+    st.title("🗺️ Infografía del Pipeline de Datos: Categórico a Clúster")
+    st.markdown("---")
     
-    # Fila 1: El problema y la solución
-    col1, col2 = pd_st.columns(2)
+    # Fila de Presentación del problema
+    col1, col2 = st.columns(2)
     with col1:
-        pd_st.error("### 🛑 El Desafío Original")
-        pd_st.markdown("""
-        * **Base inicial:** Registro plano de eventos.
-        * **Restricción:** 8 variables categóricas y solo 1 numérica (`CANTIDAD`).
-        * **Problema:** Los algoritmos de distancia como **K-Means** no pueden calcular distancias matemáticas sobre textos directos (ej: 'EJÉRCITO', 'HERIDO').
+        st.error("### 🛑 El Desafío de la Base Original")
+        st.markdown("""
+        * **Estructura Inicial:** Registro plano o bitácora de eventos de orden público.
+        * **Restricción Técnica:** Contiene **8 variables categóricas** (texto) y únicamente **1 variable numérica** (`CANTIDAD`).
+        * **El Problema:** Algoritmos basados en distancias geométricas (como **K-Means**) son incapaces de procesar texto directo o nombres de instituciones (ej: 'EJÉRCITO').
         """)
     with col2:
-        pd_st.success("### 💡 La Solución Aplicada")
-        pd_st.markdown("""
-        * **Pivotado Cruzado:** Transformar filas de texto en columnas numéricas.
-        * **Agrupación Municipal:** Consolidar todo a nivel de municipio (`COD_MUNI`).
-        * **Resultado:** Pasamos de un registro bruto a una matriz numérica de **884 municipios** listos para ser medidos en un espacio geométrico.
+        st.success("### 💡 La Solución y Adaptación Matemática")
+        st.markdown("""
+        * **Pivotado Cruzado (Reshaping):** Convertir las filas de texto en columnas numéricas de conteo independiente.
+        * **Consolidación Territorial:** Agrupar todo bajo los códigos únicos de cada municipio (`COD_MUNI`).
+        * **El Resultado:** Transformación de la bitácora en una matriz estructurada de **884 municipios** apta para algoritmos de Machine Learning.
         """)
 
-    pd_st.markdown("### 📈 El Viaje del Dato (Paso a Paso)")
+    st.markdown("### 📈 Pasos Clave del Código para la Transformación")
     
-    # Paso 1
-    with pd_st.expander("1. 🔄 Ingeniería de Características: Pivotado de Tablas", expanded=True):
-        pd_st.markdown("Utilizamos `pivot_table` para contar cuántas veces ocurre cada categoría por municipio:")
-        pd_st.code("""
-# Convertimos categorías en conteos numéricos por municipio
+    # Paso 1: Pivotado
+    with st.expander("1. 🔄 Reestructuración de Datos (Matriz de Pivotado)", expanded=True):
+        st.markdown("Para cada municipio se cruzan y totalizan las variables de fuerza y tipo de afectación:")
+        st.code("""
+# Agrupamos por Municipio y pivotamos las variables de texto
 pivot_accion = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
 pivot_fuerza = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0)
 total_municipio = df_original.groupby(['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'])['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
 
-# Consolidación final
+# Unimos las tablas convirtiendo las categorías en columnas numéricas reales
 datos = total_municipio.join([pivot_accion, pivot_fuerza]).reset_index()
         """, language="python")
 
-    # Paso 2
-    with pd_st.expander("2. ⚖️ Estandarización de Variables (StandardScaler)", expanded=False):
-        pd_st.markdown("K-Means es sensible a las escalas. Si un municipio tiene 500 heridos y 2 ataques, el 500 absorbería la distancia. Escalamos para darles el mismo peso:")
-        pd_st.code("""
+    # Paso 2: Escalamiento
+    with st.expander("2. ⚖️ Estandarización de Distancias (StandardScaler)", expanded=False):
+        st.markdown("Evita que las variables con magnitudes numéricas colosales dominen o sesguen el cálculo de las distancias Euclidianas:")
+        st.code("""
 from sklearn.preprocessing import StandardScaler
+
 scaler = StandardScaler()
-# Centra los datos en media 0 y varianza 1
+# Modifica los datos para que tengan Media = 0 y Varianza = 1
 datos[numericas] = scaler.fit_transform(datos[numericas])
         """, language="python")
 
-    # Paso 3
-    with pd_st.expander("3. 🎯 Selección de Clústeres (Método del Codo)", expanded=False):
-        pd_st.markdown("Calculamos la Inercia (WSS) para definir cuántos grupos representan mejor la realidad colombiana sin sobreajustar. **Elegimos K=4**.")
-        pd_st.code("""
+    # Paso 3: Codo
+    with st.expander("3. 🎯 Selección de Clústeres (Método del Codo u Optimización)", expanded=False):
+        st.markdown("Se itera el modelo de 1 a 10 grupos calculando la inercia (WSS) para identificar el punto de quiebre óptimo (**K = 4**):")
+        st.code("""
+from sklearn.cluster import KMeans
+
 wss = []
 for k in range(1, 11):
     kmeans = KMeans(n_clusters=k, n_init=50, random_state=42)
@@ -92,33 +124,36 @@ for k in range(1, 11):
     wss.append(kmeans.inertia_)
         """, language="python")
 
-    pd_st.markdown("---")
-    # Botón grande animado hacia la acción
-    pd_st.markdown("<center>", unsafe_allow_html=True)
-    if pd_st.button("✨ ¡Entendido! Ejecutar Modelado en Tiempo Real ->", type="primary"):
+    st.markdown("---")
+    st.markdown("<center>", unsafe_allow_html=True)
+    if st.button("🚀 ¡Entendido! Ir Directo a la Ejecución del Modelo", type="primary"):
         cambiar_pagina('analisis')
-        pd_st.rerun()
-    pd_st.markdown("</center>", unsafe_allow_html=True)
+        st.rerun()
+    st.markdown("</center>", unsafe_allow_html=True)
 
 # ==============================================================================
-# PÁGINA 2: APLICACIÓN DE ANÁLISIS DE DATOS (CÓDIGO ORIGINAL INTEGRADO)
+# PÁGINA 2: ANÁLISIS DE DATOS EN TIEMPO REAL (CÓDIGO COMPLETO INTEGRADO)
 # ==============================================================================
-elif pd_st.session_state.page == 'analisis':
-    pd_st.title("🚀 Pipeline de Machine Learning: Modelado K-Means")
+elif st.session_state.page == 'analisis':
+    st.title("🚀 Modelado Avanzado y Visualización de Clústeres (K-Means)")
     
-    # Cargar archivo de datos (
-    try:
-        # Buscamos el archivo que cargaste en el entorno
-        df_original = pd.read_excel('AFECTACIÓN A LA FUERZA PÚBLICA.xlsx ', header=0)
-    except FileNotFoundError:
-        pd_st.error("Por favor, asegúrate de que el archivo 'AFECTACIÓN A LA FUERZA PÚBLICA.xlsx - Sheet 1.csv' esté en la misma carpeta que este script.")
-        pd_st.stop()
+    # Ejecutar la búsqueda y carga automática del archivo
+    df_original, resultado_carga = cargar_datos_automatico()
+    
+    if df_original is None:
+        st.error(f"❌ {resultado_carga}")
+        st.info("💡 Por favor, coloca tu archivo de Excel o CSV (sin importar el nombre exacto) en el mismo directorio donde guardaste este script.")
+        st.stop()
+    else:
+        st.success(f"📦 Archivo detectado y cargado con éxito: `{resultado_carga}`")
 
-    # 1. CONSOLIDACIÓN DE MUNICIPIOS
+    # ==============================================================================
+    # 1 Y 2. CONSOLIDACIÓN Y LIMPIEZA
+    # ==============================================================================
     index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
+    
     pivot_accion = df_original.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
     
-    # Manejar columnas dinámicas según lo que tenga el dataset real
     columnas_fuerza = [c for c in df_original['NOMBRE_FUERZA'].unique() if pd.notna(c)] if 'NOMBRE_FUERZA' in df_original.columns else []
     pivot_fuerza = df_original.pivot_table(index=index_cols, columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0) if columnas_fuerza else pd.DataFrame(index=pivot_accion.index)
     
@@ -127,41 +162,47 @@ elif pd_st.session_state.page == 'analisis':
     
     total_municipio = df_original.groupby(index_cols)['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
 
-    # Uniones
     datos = total_municipio.join([pivot_accion, pivot_fuerza, pivot_cat]).reset_index()
     datos = datos.rename(columns={'MUNICIPIO': 'State'})
     datos = datos.dropna()
 
-    # Dashboard Informativo Inicial
-    st_col1, st_col2 = pd_st.columns(2)
-    st_col1.metric("Municipios Analizados", datos.shape[0])
-    st_col2.metric("Variables Numéricas Generadas", datos.shape[1] - 3)
+    # Métricas principales en pantalla
+    m_col1, m_col2 = st.columns(2)
+    m_col1.metric("Total de Municipios en la Muestra", datos.shape[0])
+    m_col2.metric("Nuevas Columnas Numéricas Creadas", datos.shape[1] - 3)
 
-    # Mostrar muestra de la base preparada
-    pd_st.subheader("📋 Base Preparada y Consolidada (Muestra de 5 filas)")
-    pd_st.dataframe(datos.head(5))
+    st.subheader("📋 Matriz de Datos Numéricos Consolidados (Primeros registros)")
+    st.dataframe(datos.head(10))
 
+    # ==============================================================================
     # 3. HISTOGRAMAS
-    pd_st.subheader("📊 Análisis Exploratorio: Histogramas de Variables Clave")
-    fig_hist, axes = plt.subplots(1, 3, figsize=(15, 4))
+    # ==============================================================================
+    st.subheader("📊 Distribución Bruta de las Variables Principales")
+    fig_hist, axes = plt.subplots(1, 4, figsize=(16, 4))
     
-    # Validaciones por si los nombres varían ligeramente en el archivo
     col_afectados = 'TOTAL_AFECTADOS' if 'TOTAL_AFECTADOS' in datos.columns else datos.columns[3]
     col_asesinado = 'ASESINADO' if 'ASESINADO' in datos.columns else datos.columns[4]
     col_herido = 'HERIDO' if 'HERIDO' in datos.columns else datos.columns[5]
+    col_ejercito = 'EJERCITO NACIONAL DE COLOMBIA' if 'EJERCITO NACIONAL DE COLOMBIA' in datos.columns else datos.columns[6]
 
     sns.histplot(datos[col_afectados], bins=15, kde=True, color='blue', ax=axes[0])
-    axes[0].set_title(f'{col_afectados} Original')
+    axes[0].set_title('TOTAL_AFECTADOS Original')
     
     sns.histplot(datos[col_asesinado], bins=15, kde=True, color='green', ax=axes[1])
-    axes[1].set_title(f'{col_asesinado} Original')
+    axes[1].set_title('ASESINADO Original')
     
     sns.histplot(datos[col_herido], bins=15, kde=True, color='red', ax=axes[2])
-    axes[2].set_title(f'{col_herido} Original')
+    axes[2].set_title('HERIDO Original')
     
-    pd_st.pyplot(fig_hist)
+    sns.histplot(datos[col_ejercito], bins=15, kde=True, color='purple', ax=axes[3])
+    axes[3].set_title('EJÉRCITO Original')
+    
+    plt.tight_layout()
+    st.pyplot(fig_hist)
 
+    # ==============================================================================
     # 4. ESTANDARIZACIÓN
+    # ==============================================================================
     scaler = StandardScaler()
     columnas_omitir = ['COD_MUNI', 'State', 'DEPARTAMENTO']
     numericas = [col for col in datos.columns if col not in columnas_omitir]
@@ -170,56 +211,68 @@ elif pd_st.session_state.page == 'analisis':
     datos[numericas] = scaler.fit_transform(datos[numericas])
     X_scaled = datos.drop(columns=columnas_omitir)
 
+    # ==============================================================================
     # 5. MATRICES DE DISTANCIA
-    pd_st.subheader("🌡️ Mapas de Calor: Matrices de Distancias (Muestra de Primeros Municipios)")
+    # ==============================================================================
+    st.subheader("🌡️ Mapas de Calor: Comparación de Métrica Euclideana vs Manhattan")
     distancias_eu = euclidean_distances(X_scaled)
     dist_matrix_manhattan = pdist(X_scaled, metric='cityblock')
     C = squareform(dist_matrix_manhattan)
     
-    fig_maps, ax = plt.subplots(1, 2, figsize=(14, 5))
-    sns.heatmap(distancias_eu[:40, :40], cmap='coolwarm', ax=ax[0])
-    ax[0].set_title('Distancia Euclideana (Muestra 40x40)')
-    sns.heatmap(C[:40, :40], cmap='coolwarm', ax=ax[1])
-    ax[1].set_title('Distancia Manhattan (Muestra 40x40)')
-    pd_st.pyplot(fig_maps)
+    fig_maps, ax = plt.subplots(1, 2, figsize=(16, 6))
+    sns.heatmap(distancias_eu[:50, :50], cmap='coolwarm', annot=False, ax=ax[0])
+    ax[0].set_title('Distancia Euclideana (Submuestra de 50 Municipios)', fontsize=12)
+    
+    sns.heatmap(C[:50, :50], cmap='coolwarm', annot=False, ax=ax[1])
+    ax[1].set_title('Distancia Manhattan (Submuestra de 50 Municipios)', fontsize=12)
+    st.pyplot(fig_maps)
 
+    # ==============================================================================
     # 6. MÉTODO DEL CODO
-    pd_st.subheader("📐 Optimización: Método del Codo")
+    # ==============================================================================
+    st.subheader("📐 Curva de Optimización: Método del Codo (Elbow Method)")
     wss = []
     for k in range(1, 11):
         kmeans = KMeans(n_clusters=k, n_init=30, random_state=42)
         kmeans.fit(X_scaled)
         wss.append(kmeans.inertia_)
         
-    fig_elbow, ax_el = plt.subplots(figsize=(8, 3.5))
-    ax_el.plot(range(1, 11), wss, marker='o', color='green')
-    ax_el.axvline(x=4, color='blue', linestyle='--')
-    ax_el.set_title('Método del Codo (K Óptimo = 4)')
-    pd_st.pyplot(fig_elbow)
+    fig_elbow, ax_el = plt.subplots(figsize=(10, 4))
+    ax_el.plot(range(1, 11), wss, marker='o', color='green', linestyle='-')
+    ax_el.axvline(x=4, color='blue', linestyle='--', linewidth=2)
+    ax_el.set_title('Evaluación de la Suma de Cuadrados Intra-Clúster (WSS)', fontsize=14, color="red")
+    ax_el.set_xlabel('Número de Clústeres (k)')
+    ax_el.set_ylabel('WSS / Inercia')
+    ax_el.grid(True)
+    st.pyplot(fig_elbow)
 
-    # 7. EJECUCIÓN K-MEANS
-    random_seed = 42
-    kmeans = KMeans(n_clusters=4, n_init=50, random_state=random_seed)
+    # ==============================================================================
+    # 7. EJECUCIÓN K-MEANS CON K=4
+    # ==============================================================================
+    kmeans = KMeans(n_clusters=4, n_init=50, random_state=42)
     start = time.time()
     km4_clusters = kmeans.fit(X_scaled)
-    tiempo_ejecucion = (time.time() - start) * 1000
+    tiempo_ms = (time.time() - start) * 1000
     
-    pd_st.info(f"⚡ Algoritmo K-Means completado en: {tiempo_ejecucion:.2f} ms | Inercia Final: {km4_clusters.inertia_:.2f}")
+    st.info(f"⚡ Algoritmo K-Means ejecutado de forma nativa en: {tiempo_ms:.2f} ms | Inercia Final Obtenida: {km4_clusters.inertia_:.2f}")
 
-    # 8. PCA REDUCCIÓN Y ELIPSES ESTÁTICAS
-    pd_st.subheader("🎯 Visualización de Clústeres en Espacio PCA con Elipses de Covarianza")
+    # ==============================================================================
+    # 8. REDUCCIÓN DIMENSIONAL (PCA) CON ELIPSES ESTÁTICAS
+    # ==============================================================================
+    st.subheader("🎯 Agrupación Territorial en Espacio Reducido (PCA 2D)")
     pca = PCA(n_components=2)
     datos_pca = pca.fit_transform(X_scaled)
     datos_pca_df = pd.DataFrame(data=datos_pca, columns=['PCA1', 'PCA2'])
     datos_pca_df['Cluster'] = km4_clusters.labels_
 
-    fig_pca, ax_pca = plt.subplots(figsize=(10, 6))
+    fig_pca, ax_pca = plt.subplots(figsize=(12, 7))
     colores = ['red', 'green', 'blue', 'orange']
-    sns.scatterplot(x='PCA1', y='PCA2', hue='Cluster', data=datos_pca_df, palette=colores, s=40, alpha=0.7, ax=ax_pca)
+    sns.scatterplot(x='PCA1', y='PCA2', hue='Cluster', data=datos_pca_df, palette=colores, s=55, alpha=0.7, ax=ax_pca)
     
     centroids_pca = pca.transform(kmeans.cluster_centers_)
-    ax_pca.scatter(centroids_pca[:, 0], centroids_pca[:, 1], s=200, c=colores, marker='*', edgecolor='black', label='Centroides')
+    ax_pca.scatter(centroids_pca[:, 0], centroids_pca[:, 1], s=300, c=colores, marker='*', edgecolor='black', label='Centroides')
     
+    # Trazar elipses de covarianza por clúster
     for i, color in enumerate(colores):
         cluster_points = datos_pca_df[datos_pca_df['Cluster'] == i][['PCA1', 'PCA2']]
         if len(cluster_points) > 1:
@@ -227,19 +280,61 @@ elif pd_st.session_state.page == 'analisis':
             eigenvalues, eigenvectors = np.linalg.eigh(cov)
             angle = np.degrees(np.arctan2(eigenvectors[1, 0], eigenvectors[0, 0]))
             width, height = 2 * np.sqrt(eigenvalues) * 2
-            ellipse = Ellipse(xy=centroids_pca[i], width=width, height=height, angle=angle, color=color, alpha=0.1)
+            ellipse = Ellipse(xy=centroids_pca[i], width=width, height=height, angle=angle, color=color, alpha=0.12)
             ax_pca.add_patch(ellipse)
+            
+    # Muestra de etiquetas de municipios para evitar saturación de texto
+    for i, row in datos_pca_df.iterrows():
+        if i % 20 == 0:
+            ax_pca.text(row['PCA1'], row['PCA2'] + 0.06, datos['State'][i], fontsize=7, ha='center', alpha=0.8)
+            
+    ax_pca.set_title('Algoritmo K-means con Elipses (Municipios de Colombia)', fontsize=14)
     ax_pca.grid(True)
-    pd_st.pyplot(fig_pca)
+    st.pyplot(fig_pca)
 
-    # 9. CANTIDAD POR GRUPO
-    pd_st.subheader("📊 Distribución de Municipios por Clúster")
+    # ==============================================================================
+    # 9 Y 10. MUESTRAS, CONTEOS Y CRUCE DE VARIABLES
+    # ==============================================================================
+    st.subheader("📊 Frecuencia e Impacto de Clústeres")
     G = pd.DataFrame({'State': datos['State'].values, 'DEPARTAMENTO': datos['DEPARTAMENTO'].values, 'label': km4_clusters.labels_})
-    resumen_grupos = G.groupby('label').size().reset_index(name='Cantidad de Municipios')
-    pd_st.bar_chart(data=resumen_grupos, x='label', y='Cantidad de Municipios', color='#FF4B4B')
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Cantidad de Individuos (Municipios) por Clúster:**")
+        resumen_grupos = G.groupby('label').size().reset_index(name='Municipios')
+        st.dataframe(resumen_grupos)
+    with c2:
+        st.markdown("**Muestra de listado de asignación de Grupos:**")
+        st.dataframe(G.sort_values(by='label').head(12))
 
-    # 12. INTERACTIVOS DE PLOTLY (2D Y 3D)
-    pd_st.subheader("✨ Gráficos de Control Interactivos (Explora pasando el mouse)")
+    # Gráfico Cruzado (TOTAL_AFECTADOS vs ASESINADO)
+    st.subheader("⚔️ Cruce Analítico: TOTAL_AFECTADOS vs ASESINADO (Estandarizado)")
+    f1 = datos[col_afectados].values
+    f2 = datos[col_asesinado].values
+    asignar_colores = [colores[row] for row in km4_clusters.labels_]
+    
+    fig_cruzado, ax_cr = plt.subplots(figsize=(10, 5))
+    ax_cr.scatter(f1, f2, c=asignar_colores, s=45, alpha=0.6)
+    ax_cr.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], marker='*', c=colores, s=300, edgecolor='black', label='Centroides')
+    ax_cr.set_xlabel('TOTAL_AFECTADOS')
+    ax_cr.set_ylabel('ASESINADO')
+    ax_cr.grid(True)
+    st.pyplot(fig_cruzado)
+
+    # ==============================================================================
+    # 11. BOXPLOT (DATOS REALES)
+    # ==============================================================================
+    st.subheader("📦 Boxplot del Impacto Total Real por Clúster (Valores sin Escalar)")
+    datos_originales_num['Cluster'] = km4_clusters.labels_
+    fig_box, ax_box = plt.subplots(figsize=(10, 5))
+    sns.boxplot(x='Cluster', y=col_afectados, data=datos_originales_num, palette="Set1", ax=ax_box)
+    ax_box.set_ylabel('Cantidad Real Absoluta de Afectados')
+    st.pyplot(fig_box)
+
+    # ==============================================================================
+    # 12. PCA INTERACTIVO EN 2D Y 3D CON PLOTLY EXPRESS
+    # ==============================================================================
+    st.subheader("✨ Componentes Principales Interactivos (2D y 3D)")
     
     pca_4d = PCA(n_components=4)
     pca_scores_4d = pca_4d.fit_transform(X_scaled)
@@ -247,27 +342,22 @@ elif pd_st.session_state.page == 'analisis':
     pca_df['Cluster'] = km4_clusters.labels_.astype(str)
     pca_df['Etiqueta'] = datos['State'] + " (" + datos['DEPARTAMENTO'] + ")"
 
-    # Plotly 2D (Optimizado con hover en vez de texto fijo para fluidez)
+    # Gráfico Interactivo 2D (Optimizado con Hover para máxima velocidad web)
     fig_2d = px.scatter(pca_df, x='PC1', y='PC2', color='Cluster', hover_name='Etiqueta',
-                        title='Componentes Principales 2D',
+                        title='Visualización PCA Interactiva en 2D (Pasa el cursor sobre los municipios)',
+                        labels={'PC1': 'Componente Principal 1', 'PC2': 'Componente Principal 2'},
                         template='plotly_dark')
-    pd_st.plotly_chart(fig_2d, use_container_width=True)
+    st.plotly_chart(fig_2d, use_container_width=True)
 
-    # Plotly 3D
+    # Gráfico Interactivo 3D
     fig_3d = px.scatter_3d(pca_df, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
-                           title='Modelado Espacial de Municipios en 3D',
+                           title='Visualización PCA Interactiva en 3D de tus Municipios',
+                           labels={'PC1': 'PC1', 'PC2': 'PC2', 'PC3': 'PC3'},
                            template='plotly_dark')
+
     centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
     fig_3d.add_trace(go.Scatter3d(x=centroids_pca_3d[:, 0], y=centroids_pca_3d[:, 1], z=centroids_pca_3d[:, 2],
                                   mode='markers',
-                                  marker=dict(size=10, color='white', symbol='diamond'),
+                                  marker=dict(size=12, color='white', symbol='diamond'),
                                   name='Centroides'))
-    pd_st.plotly_chart(fig_3d, use_container_width=True)
-
-    # 11. BOXPLOT CON VALORES REALES
-    pd_st.subheader("📦 Distribución del Impacto Real (Datos sin Escalar)")
-    datos_originales_num['Cluster'] = km4_clusters.labels_
-    fig_box, ax_box = plt.subplots(figsize=(10, 5))
-    sns.boxplot(x='Cluster', y=col_afectados, data=datos_originales_num, palette="Set2", ax=ax_box)
-    ax_box.set_ylabel('Cantidad Total Absoluta de Afectados')
-    pd_st.pyplot(fig_box)
+    st.plotly_chart(fig_3d, use_container_width=True)
