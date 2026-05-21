@@ -198,7 +198,8 @@ elif st.session_state.page == 'analisis':
         visibilidad[idx] = True
         botones.append(dict(label=col_name, method="update", args=[{"visible": visibilidad}, {"title": f"Distribución de {col_name}"}]))
         
-    fig_hist_int.update_layout(updatmenus=[dict(active=0, buttons=botones, x=0.1, y=1.15, xanchor="left", yanchor="top")],
+    # CORRECCIÓN AQUÍ: Se cambió updatmenus por updatemenus
+    fig_hist_int.update_layout(updatemenus=[dict(active=0, buttons=botones, x=0.1, y=1.15, xanchor="left", yanchor="top")],
                                template="plotly_dark", height=400, title=f"Distribución de {hist_variables[0]}")
     st.plotly_chart(fig_hist_int, use_container_width=True)
 
@@ -264,24 +265,27 @@ elif st.session_state.page == 'analisis':
     st.subheader("📋 Perfil Estadístico Medio de los Clústeres (Valores Reales Absolutos)")
     variables_perfil = [col_afectados, col_asesinado, col_herido, col_ejercito]
     
-    tabla_perfil = datos_originales_num.groupby('Cluster')[variables_perfil].mean().round(2)
-    tabla_perfil['Cantidad_Municipios'] = datos_originales_num.groupby('Cluster').size()
+    # Calcular promedios para crear los centroides y tablas
+    promedios_por_cluster = datos_originales_num.groupby('Cluster')[variables_perfil].mean().reset_index()
     
-    # Renombrar columnas para una presentación impecable en la pantalla
-    tabla_perfil = tabla_perfil.rename(columns={
+    tabla_perfil_print = promedios_por_cluster.set_index('Cluster').round(2)
+    tabla_perfil_print['Cantidad_Municipios'] = datos_originales_num.groupby('Cluster').size()
+    
+    # Renombrar columnas para la visualización en pantalla
+    tabla_perfil_print = tabla_perfil_print.rename(columns={
         col_afectados: 'Promedio Afectados Total',
         col_asesinado: 'Promedio Asesinados',
         col_herido: 'Promedio Heridos',
         col_ejercito: 'Promedio Eventos Ejército'
     })
     
-    st.dataframe(tabla_perfil, use_container_width=True)
+    st.dataframe(tabla_perfil_print, use_container_width=True)
     st.markdown("💡 *Usa esta matriz conceptual durante tu sustentación para definir el grado de vulnerabilidad y peligro latente de cada grupo.*")
 
     # ==============================================================================
     # PROCESAMIENTO DE FILTROS GEOGRÁFICOS (APLICACIÓN DE LA OPCIÓN 3)
     # ==============================================================================
-    # Creación del DataFrame de soporte PCA
+    # Reducción Dimensional PCA General de 4 Dimensiones
     pca_4d = PCA(n_components=4)
     pca_scores_4d = pca_4d.fit_transform(X_scaled)
     pca_df = pd.DataFrame(pca_scores_4d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
@@ -290,19 +294,28 @@ elif st.session_state.page == 'analisis':
     pca_df['DEPARTAMENTO'] = datos['DEPARTAMENTO'].values
     pca_df['Etiqueta'] = pca_df['MUNICIPIO'] + " (" + pca_df['DEPARTAMENTO'] + ")"
 
-    # DataFrames filtrados para la representación gráfica dinámica
+    # Generación del DataFrame estructurado de Centroides para Plotly
+    centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
+    centroids_df = pd.DataFrame(centroids_pca_3d, columns=['PC1', 'PC2', 'PC3', 'PC4'])
+    centroids_df['Cluster'] = promedios_por_cluster['Cluster'].astype(str)
+    centroids_df['Promedio_Afectados'] = promedios_por_cluster[col_afectados].round(2)
+    centroids_df['Promedio_Asesinados'] = promedios_por_cluster[col_asesinado].round(2)
+    centroids_df['Promedio_Heridos'] = promedios_por_cluster[col_herido].round(2)
+    centroids_df['Promedio_Ejercito'] = promedios_por_cluster[col_ejercito].round(2)
+
+    # DataFrames filtrados para la representación gráfica según barra lateral
     df_pca_filtrado = pca_df.copy()
     df_cruce_filtrado = datos_cruce.copy()
     df_box_filtrado = datos_originales_num.copy()
 
-    if depto_selected := (depto_seleccionado != "TODOS"):
+    if depto_seleccionado != "TODOS":
         df_pca_filtrado = df_pca_filtrado[df_pca_filtrado['DEPARTAMENTO'] == depto_seleccionado]
         df_cruce_filtrado = df_cruce_filtrado[df_cruce_filtrado['DEPARTAMENTO'] == depto_seleccionado]
         df_box_filtrado = df_box_filtrado[df_box_filtrado['DEPARTAMENTO'] == depto_seleccionado]
 
     # Alerta visual en pantalla si se realiza una búsqueda de Municipio específico
     if municipio_buscar:
-        muni_encontrado = pca_df[pca_df['MUNICIPIO'].str.contains(municipio_buscar)]
+        muni_encontrado = pca_df[pca_df['MUNICIPIO'].str.contains(municipio_buscar, na=False)]
         if not muni_encontrado.empty:
             for _, row in muni_encontrado.iterrows():
                 st.sidebar.success(f"📍 `{row['MUNICIPIO']}` pertenece al **Clúster {row['Cluster']}**")
@@ -319,8 +332,7 @@ elif st.session_state.page == 'analisis':
                              hover_name='Etiqueta',
                              title="Clústeres K-Means Proyectados en PCA 2D", template='plotly_dark')
     
-    centroids_pca = pca_4d.transform(kmeans.cluster_centers_)
-    fig_pca_int.add_trace(go.Scatter(x=centroids_pca[:, 0], y=centroids_pca[:, 1], mode='markers',
+    fig_pca_int.add_trace(go.Scatter(x=centroids_df['PC1'], y=centroids_df['PC2'], mode='markers',
                                      marker=dict(size=14, color='white', symbol='star', line=dict(width=2, color='black')),
                                      name='Centroides'))
     st.plotly_chart(fig_pca_int, use_container_width=True)
@@ -357,17 +369,43 @@ elif st.session_state.page == 'analisis':
     st.plotly_chart(fig_box_int, use_container_width=True)
 
     # ==============================================================================
-    # 12. PCA INTERACTIVO EN 3D CON CENTROIDES
+    # 12. PCA INTERACTIVO EN 3D CON CENTROIDES MATEMÁTICOS (PROMEDIOS REALES)
     # ==============================================================================
     st.subheader("✨ Control Final: Componentes Principales Avanzados (3D)")
     
     fig_3d = px.scatter_3d(df_pca_filtrado, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Etiqueta',
                            color_discrete_sequence=colores_clusters,
-                           title='Modelado Espacial de Municipios en 3D', template='plotly_dark')
+                           title='Modelado Espacial de Municipios en 3D (Pasa el cursor sobre los Rombos Blancos)', 
+                           template='plotly_dark')
 
-    centroids_pca_3d = pca_4d.transform(kmeans.cluster_centers_)
-    fig_3d.add_trace(go.Scatter3d(x=centroids_pca_3d[:, 0], y=centroids_pca_3d[:, 1], z=centroids_pca_3d[:, 2],
-                                  mode='markers',
-                                  marker=dict(size=12, color='white', symbol='diamond', line=dict(width=1, color='black')),
-                                  name='Centroides'))
+    # AGREGAR LOS ROMBOS BLANCOS GRANDES CON LA CONFIGURACIÓN DE PROMEDIOS NUMÉRICOS
+    fig_3d.add_trace(go.Scatter3d(
+        x=centroids_df['PC1'], 
+        y=centroids_df['PC2'], 
+        z=centroids_df['PC3'],
+        mode='markers',
+        marker=dict(
+            size=12,                 # Rombo grande solicitado
+            color='white',           # Color blanco clásico
+            symbol='diamond',        # Geometría de rombo
+            line=dict(width=1.5, color='black')
+        ),
+        name='Centroides (Promedios)',
+        customdata=np.stack((
+            centroids_df['Cluster'],
+            centroids_df['Promedio_Afectados'],
+            centroids_df['Promedio_Asesinados'],
+            centroids_df['Promedio_Heridos'],
+            centroids_df['Promedio_Ejercito']
+        ), axis=-1),
+        hovertemplate=(
+            "<b>🎯 CENTROIDE CLÚSTER %{customdata[0]}</b><br><br>"
+            "<b>Valores Promedio del Grupo:</b><br>"
+            "• Promedio Total Afectados: %{customdata[1]}<br>"
+            "• Promedio Asesinados: %{customdata[2]}<br>"
+            "• Promedio Heridos: %{customdata[3]}<br>"
+            "• Promedio Conteo Ejército: %{customdata[4]}<br>"
+            "<extra></extra>" 
+        )
+    ))
     st.plotly_chart(fig_3d, use_container_width=True)
