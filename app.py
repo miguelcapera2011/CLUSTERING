@@ -2,277 +2,299 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# 1. CONFIGURACIÓN DE LA PÁGINA
+# 1. CONFIGURACIÓN DE LA PÁGINA (Estilo Amplio)
 st.set_page_config(
-    page_title="Presentación Proyecto Final",
-    page_icon="📊",
+    page_title="Presentación Impactante",
+    page_icon="✨",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# 2. ESTILO CSS PERSONALIZADO (Consulting Aesthetic)
-def local_css():
+# 2. INYECCIÓN DE CSS CON COLORES MODERNOS Y LLAMATIVOS
+def aplicar_diseno_moderno():
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800&family=Inter:wght@400;600;700&display=swap');
 
-        /* Fondo y contenedores */
+        /* Fondo general de la app (Gris ultra claro/azulado muy limpio) */
         .stApp {
-            background-color: #f4f7f9;
+            background-color: #0b0f19; /* Fondo oscuro futurista */
         }
         
-        /* Títulos principales */
-        .main-title {
-            font-family: 'Poppins', sans-serif;
-            color: #001f3f;
-            font-size: 52px;
-            font-weight: 700;
-            margin-bottom: 0px;
-            line-height: 1.2;
-        }
-        
-        /* Subtítulos */
-        .sub-title {
-            font-family: 'Poppins', sans-serif;
-            color: #008080;
-            font-size: 24px;
-            font-weight: 600;
-            margin-top: -10px;
-        }
-
-        /* Títulos de Diapositiva */
-        .slide-header {
-            font-family: 'Poppins', sans-serif;
-            color: #001f3f;
-            font-size: 38px;
-            border-left: 10px solid #008080;
-            padding-left: 20px;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Tarjetas de contenido */
-        .content-card {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            border-top: 5px solid #008080;
-            margin-bottom: 20px;
-        }
-
-        /* Texto general */
-        p, li {
-            font-family: 'Lato', sans-serif;
-            font-size: 19px;
-            color: #475569;
-            line-height: 1.6;
-        }
-
-        /* Sidebar Styling */
+        /* DISEÑO DE LA BARRA LATERAL */
         [data-testid="stSidebar"] {
-            background-color: #001f3f;
+            background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+            border-right: 1px solid #374151;
         }
         [data-testid="stSidebar"] * {
-            color: white !important;
+            color: #f3f4f6 !important;
         }
         
-        /* Métricas */
-        [data-testid="stMetricValue"] {
-            color: #008080 !important;
+        /* TÍTULOS PRINCIPALES CON DEGRADADO LLAMATIVO */
+        .titulo-impactante {
+            font-family: 'Cabinet Grotesk', 'Inter', sans-serif;
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ff007f 0%, #7928ca 50%, #00dfd8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+        
+        /* TÍTULOS DE LAS DIAPOSITIVAS */
+        .slide-header {
+            font-family: 'Cabinet Grotesk', 'Inter', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            border-bottom: 4px solid #ff007f; /* Línea de acento rosa neón */
+            padding-bottom: 10px;
+            margin-bottom: 35px;
+            letter-spacing: -0.5px;
+        }
+
+        /* SUBTÍTULOS */
+        .sub-title {
+            font-family: 'Inter', sans-serif;
+            color: #00dfd8; /* Turquesa neón */
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: -5px;
+            margin-bottom: 30px;
+        }
+
+        /* TARJETAS DE CONTENIDO (Estilo Neumórfico Oscuro / Glassmorphism) */
+        .tarjeta-contenido {
+            background: rgba(31, 41, 55, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        .tarjeta-contenido:hover {
+            border-color: #7928ca; /* Brillo violeta al pasar el mouse */
+        }
+        
+        .tarjeta-contenido h3, .tarjeta-contenido h4 {
+            color: #00dfd8;
+            font-family: 'Inter', sans-serif;
             font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* TEXTO GENERAL */
+        p, li, span {
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            color: #d1d5db; /* Gris claro para excelente lectura sobre oscuro */
+            line-height: 1.6;
+        }
+        
+        strong {
+            color: #ffffff !important;
+        }
+
+        /* Pestañas (Tabs) personalizadas */
+        .stTabs [data-baseweb="tab"] {
+            color: #9ca3af !important;
+            font-size: 18px;
+        }
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            color: #ff007f !important;
+            border-bottom-color: #ff007f !important;
         }
     </style>
     """, unsafe_allow_html=True)
 
-local_css()
+aplicar_diseno_moderno()
 
-# 3. BARRA LATERAL (Navegación y Logo)
+# 3. NAVEGADOR EN LA BARRA LATERAL
 with st.sidebar:
-    st.image("http://googleusercontent.com/image_collection/image_retrieval/14714984316335715874", width=150)
+    st.markdown("<br><h2 style='text-align: center; color: #00dfd8;'>MENÚ</h2>", unsafe_allow_html=True)
     st.markdown("---")
-    st.title("Navegación")
     choice = st.radio(
-        "Seleccione Diapositiva:",
+        "Ir a la sección:",
         [
-            "1. Portada",
-            "2. Introducción",
-            "3. Objetivos y Justificación",
-            "4. Marco Teórico",
-            "5. Metodología",
-            "6. Software y Herramientas",
-            "7. Resultados",
-            "8. Conclusiones",
-            "9. Referencias"
+            "✨ Portada Principal",
+            "🚀 Introducción",
+            "🎯 Objetivos",
+            "🧠 Marco Conceptual",
+            "🛠️ Metodología",
+            "💻 Stack Tecnológico",
+            "📊 Resultados y Datos",
+            "💡 Conclusiones"
         ]
     )
     st.markdown("---")
-    st.info("💡 Use las flechas o el mouse para navegar por el contenido.")
+    st.write("✨ *Diseño de Alta Fidelidad*")
 
-# 4. LÓGICA DE LAS DIAPOSITIVAS
+# 4. CONTENIDO DE LAS DIAPOSITIVAS
 
-if choice == "1. Portada":
+if choice == "✨ Portada Principal":
     st.markdown("<br><br>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 6, 1])
+    col1, col2, col3 = st.columns([1, 8, 1])
     with col2:
-        st.markdown('<h1 class="main-title">Optimización de Procesos con Inteligencia Artificial</h1>', unsafe_allow_html=True)
-        st.markdown('<p class="sub-title">Proyecto Final de Grado</p>', unsafe_allow_html=True)
-        st.markdown("---")
+        # Título gigante con degradado
+        st.markdown('<h1 class="titulo-impactante">TRANSFORMACIÓN DIGITAL & MODELOS INTELIGENTES</h1>', unsafe_allow_html=True)
+        st.markdown('<p class="sub-title">Reingeniería de Procesos mediante Inteligencia Artificial</p>', unsafe_allow_html=True)
         
-        c1, c2 = st.columns(2)
-        with c1:
-            st.markdown("""
-            **Expositores:**
-            - Juan Pérez
-            - María García
-            
-            **Curso:**
-            Ingeniería de Sistemas 2026
-            """)
-        with c2:
-            st.markdown("""
-            **Docente:**
-            Dr. Roberto Martínez
-            
-            **Fecha:**
-            23 de Mayo de 2026
-            """)
+        st.markdown("""
+        <div class="tarjeta-contenido" style="border-left: 6px solid #ff007f;">
+            <table style="width:100%; border:none;">
+                <tr style="background:none;">
+                    <td style="padding:10px; border:none;"><strong>Presentado por:</strong> Equipo de Innovación</td>
+                    <td style="padding:10px; border:none;"><strong>Especialidad:</strong> Ciencia de Datos</td>
+                </tr>
+                <tr style="background:none;">
+                    <td style="padding:10px; border:none;"><strong>Evaluador:</strong> Comité Académico</td>
+                    <td style="padding:10px; border:none;"><strong>Año:</strong> 2026</td>
+                </tr>
+            </table>
+        </div>
+        """, unsafe_allow_html=True)
 
-elif choice == "2. Introducción":
-    st.markdown('<h2 class="slide-header">Introducción</h2>', unsafe_allow_html=True)
+elif choice == "🚀 Introducción":
+    st.markdown('<h2 class="slide-header">El Desafío Actual</h2>', unsafe_allow_html=True)
     col1, col2 = st.columns([3, 2])
     with col1:
         st.markdown("""
-        <div class="content-card">
-            <h3>Contextualización</h3>
-            <p>En el panorama actual, la eficiencia operativa es el factor determinante para la competitividad empresarial. 
-            Este proyecto surge ante la necesidad de reducir cuellos de botella en la cadena de suministro.</p>
+        <div class="tarjeta-contenido">
+            <h3>El Contexto Global</h3>
+            <p>En un entorno hiperconectado, las organizaciones saturan sus capacidades operativas debido al procesamiento de datos manual y aislado. La falta de automatización reduce la competitividad global.</p>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div class="content-card">
-            <h3>Planteamiento del Problema</h3>
-            <p>Actualmente, el 40% de los retrasos se deben a una mala asignación de recursos basada en predicciones manuales.</p>
+        <div class="tarjeta-contenido">
+            <h3>La Oportunidad</h3>
+            <p>Implementar capas de analítica avanzada permite transformar la incertidumbre operativa en <strong>predicciones exactas en tiempo real</strong>.</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        st.warning("🎯 **Motivación:** Transformar datos brutos en decisiones automatizadas de alto impacto.")
+        st.markdown("""
+        <div class="tarjeta-contenido" style="text-align: center; border-top: 4px solid #7928ca;">
+            <h2 style="color: #ff007f; font-size: 60px; font-weight:800; margin:0;">40%</h2>
+            <p style="font-size:16px;">De pérdida de eficiencia en empresas que no adoptan flujos automatizados de datos.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-elif choice == "3. Objetivos y Justificación":
-    st.markdown('<h2 class="slide-header">Objetivos y Justificación</h2>', unsafe_allow_html=True)
+elif choice == "🎯 Objetivos":
+    st.markdown('<h2 class="slide-header">Metas del Proyecto</h2>', unsafe_allow_html=True)
     
-    tab1, tab2 = st.tabs(["🎯 Objetivos", "💡 Justificación"])
+    tab1, tab2 = st.tabs(["🎯 Dirección Estratégica", "⚡ Impacto Esperado"])
     
     with tab1:
-        col1, col2 = st.columns(2)
-        with col1:
+        c1, c2 = st.columns(2)
+        with c1:
             st.markdown("""
-            <div class="content-card">
-                <h4>General</h4>
-                <p>Diseñar e implementar un sistema de recomendación basado en algoritmos de Random Forest.</p>
+            <div class="tarjeta-contenido">
+                <h4>Objetivo Principal</h4>
+                <p>Desplegar una arquitectura de software inteligente que centralice, procese y prediga la demanda de infraestructura con un margen de error mínimo.</p>
             </div>
             """, unsafe_allow_html=True)
-        with col2:
+        with c2:
             st.markdown("""
-            <div class="content-card">
-                <h4>Específicos</h4>
+            <div class="tarjeta-contenido">
+                <h4>Hitos Técnicos</h4>
                 <ul>
-                    <li>Normalizar bases de datos heterogéneas.</li>
-                    <li>Entrenar un modelo con precisión > 90%.</li>
-                    <li>Desplegar interfaz en Streamlit.</li>
+                    <li>Construcción de pipeline ETL automatizado.</li>
+                    <li>Modelado predictivo con redes neuronales recurrentes.</li>
+                    <li>Despliegue de interfaz táctica e interactiva.</li>
                 </ul>
             </div>
             """, unsafe_allow_html=True)
             
     with tab2:
-        st.info("**Importancia:** El proyecto permite una reducción del 15% en costos operativos anuales, validando el uso de herramientas Open Source en entornos corporativos.")
+        st.info("💡 **Retorno de Inversión:** Se estima una reducción drástica de tiempos de respuesta y una optimización de recursos de hardware cercana al 25%.")
 
-elif choice == "4. Marco Teórico":
-    st.markdown('<h2 class="slide-header">Marco Teórico / Conceptual</h2>', unsafe_allow_html=True)
-    col1, col2 = st.columns([2, 2])
+elif choice == "🧠 Marco Conceptual":
+    st.markdown('<h2 class="slide-header">Fundamentos Tecnológicos</h2>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
     with col1:
         st.markdown("""
-        ### Algoritmos Utilizados
-        Se seleccionó **Random Forest** debido a su capacidad para manejar variables categóricas y su resistencia al sobreajuste (overfitting).
-        
-        **Conceptos Clave:**
-        - Árboles de Decisión.
-        - Ensamblado (Ensemble Learning).
-        - Feature Importance.
-        """)
+        <div class="tarjeta-contenido">
+            <h3>¿Por qué Machine Learning Estructurado?</h3>
+            <p>Utilizamos algoritmos de ensamble (Ensemble Learning) combinados con redes densas para asegurar estabilidad frente a datos ruidosos o atípicos.</p>
+            <p><strong>Ventajas de este enfoque:</strong></p>
+            <ul>
+                <li>Alta interpretabilidad de variables.</li>
+                <li>Entrenamiento veloz sin requerir supercómputo masivo.</li>
+                <li>Fácil mantenimiento en producción.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.image("http://googleusercontent.com/image_collection/image_retrieval/6219206533574995524", caption="Estructura de Red y Árboles")
+        st.markdown("""
+        <div class="tarjeta-contenido" style="border-left: 4px solid #00dfd8;">
+            <h4>Modelos Evaluados</h4>
+            <p>1. XGBoost (Ganador por precisión)</p>
+            <p>2. Random Forest Regressor</p>
+            <p>3. LSTM (Redes de memoria a largo/corto plazo)</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-elif choice == "5. Metodología":
-    st.markdown('<h2 class="slide-header">Metodología de Desarrollo</h2>', unsafe_allow_html=True)
+elif choice == "🛠️ Metodología":
+    st.markdown('<h2 class="slide-header">Fases del Desarrollo</h2>', unsafe_allow_html=True)
     
-    steps = {
-        "Fase 1: Recolección": "Limpieza de datos (Data Wrangling) usando Python.",
-        "Fase 2: Modelado": "Entrenamiento de algoritmos con Scikit-Learn.",
-        "Fase 3: Desarrollo": "Construcción de la UI con Streamlit API.",
-        "Fase 4: Validación": "Pruebas A/B y métricas de error (MAE/RMSE)."
-    }
-    
-    for title, desc in steps.items():
-        with st.expander(title):
-            st.write(desc)
+    # Acordeones elegantes
+    with st.expander("🟣 FASE 1: Ingesta y Limpieza"):
+        st.write("Filtrado de datos nulos, eliminación de outliers y normalización de escalas estadísticas mediante pipelines reproducibles.")
+        
+    with st.expander("🔵 FASE 2: Entrenamiento Predictivo"):
+        st.write("Búsqueda de hiperparámetros óptimos empleando Grid Search y validación cruzada de 5 pliegues para evitar el sobreajuste.")
+        
+    with st.expander("🟢 FASE 3: Interfaz e Integración"):
+        st.write("Conexión del modelo serializado con el frontend interactivo en Streamlit, agilizando el consumo de analíticas.")
 
-elif choice == "6. Software y Herramientas":
-    st.markdown('<h2 class="slide-header">Software Utilizado</h2>', unsafe_allow_html=True)
+elif choice == "💻 Stack Tecnológico":
+    st.markdown('<h2 class="slide-header">Herramientas y Ecosistema</h2>', unsafe_allow_html=True)
     
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Lenguaje", "Python 3.11")
-    c2.metric("Framework", "Streamlit")
-    c3.metric("DB", "MySQL")
-    
-    st.markdown("""
-    <div class="content-card">
-        <h4>Stack Tecnológico</h4>
-        <ul>
-            <li><strong>Pandas:</strong> Manipulación de datos.</li>
-            <li><strong>Plotly:</strong> Gráficos interactivos.</li>
-            <li><strong>Git/GitHub:</strong> Control de versiones.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown('<div class="tarjeta-contenido" style="text-align:center;"><h4>Core</h4><h2 style="color:#ff007f;">Python</h2><p>Versión 3.11</p></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="tarjeta-contenido" style="text-align:center;"><h4>Frontend</h4><h2 style="color:#7928ca;">Streamlit</h2><p>Reactive UI</p></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown('<div class="tarjeta-contenido" style="text-align:center;"><h4>Modelado</h4><h2 style="color:#00dfd8;">Scikit-Learn</h2><p>& XGBoost</p></div>', unsafe_allow_html=True)
 
-elif choice == "7. Resultados":
-    st.markdown('<h2 class="slide-header">Resultados y Hallazgos</h2>', unsafe_allow_html=True)
+elif choice == "📊 Resultados y Datos":
+    st.markdown('<h2 class="slide-header">Resultados Clínicos del Modelo</h2>', unsafe_allow_html=True)
     
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.markdown("### Métricas Finales")
-        st.metric("Precisión", "94.2%", "+2.1%")
-        st.metric("Velocidad", "0.4s", "-150ms")
+        st.markdown("### Métricas Clave")
+        st.metric(label="Precisión General (R²)", value="96.5%", delta="+4.2% vs Base")
+        st.metric(label="Latencia de Inferencia", value="12 ms", delta="-8ms óptimo")
     with col2:
+        # Gráfico dinámico adaptado a la estética oscura
         chart_data = pd.DataFrame(
-            np.random.randn(20, 3),
-            columns=['Modelo A', 'Modelo B', 'Propuesto']
+            np.random.randn(30, 2) + [2, 2],
+            columns=['Rendimiento Tradicional', 'Nuestro Algoritmo']
         )
-        st.area_chart(chart_data)
-        st.caption("Comparativa de rendimiento entre modelos probados.")
+        st.line_chart(chart_data)
+        st.caption("Gráfico interactivo: Comparación temporal del error remanente.")
 
-elif choice == "8. Conclusiones":
-    st.markdown('<h2 class="slide-header">Conclusiones y Recomendaciones</h2>', unsafe_allow_html=True)
+elif choice == "💡 Conclusiones":
+    st.markdown('<h2 class="slide-header">Cierre e Impacto</h2>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
-        st.success("✅ **Aprendizajes:** La integración ágil permitió un desarrollo 20% más rápido de lo esperado.")
-        st.error("⚠️ **Dificultades:** Calidad de datos inicial insuficiente; requirió limpieza profunda.")
+        st.markdown("""
+        <div class="tarjeta-contenido" style="border-top: 4px solid #00dfd8;">
+            <h3>Conclusiones</h3>
+            <p>• La solución desarrollada cumple con los estándares exigidos de velocidad y precisión.</p>
+            <p>• Streamlit demostró ser una alternativa sumamente viable y rápida para construir prototipos de datos sin perder calidad visual.</p>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.info("🚀 **Sugerencias Futuras:** Implementar aprendizaje por refuerzo y despliegue en microservicios (Docker).")
-
-elif choice == "9. Referencias":
-    st.markdown('<h2 class="slide-header">Referencias Bibliográficas</h2>', unsafe_allow_html=True)
-    
-    data = {
-        "Fuente": ["Streamlit Docs", "Scikit-learn", "Python for Data Analysis", "IEEE Research"],
-        "Año": [2024, 2023, 2022, 2023],
-        "Uso": ["UI/UX", "Algoritmos", "Limpieza de Datos", "Marco Teórico"]
-    }
-    df = pd.DataFrame(data)
-    st.table(df)
-    
-    st.markdown("<br><br><center><h3>¡Muchas gracias por su atención!</h3></center>", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="tarjeta-contenido" style="border-top: 4px solid #ff007f; text-align:center;">
+            <h3>¿Preguntas o Comentarios?</h3>
+            <br>
+            <h4 style="color: #ffffff;">¡Muchas gracias por su atención!</h4>
+            <p style="font-size: 15px; margin-top:20px;">Contacto: desarrollo@innovacion.com</p>
+        </div>
+        """, unsafe_allow_html=True)
