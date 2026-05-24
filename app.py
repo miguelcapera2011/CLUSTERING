@@ -215,7 +215,7 @@ elif st.session_state.diapositiva == 2:
             <h3 style='color: #DC2626; margin-top:0;'>🛑 El Problema de los Datos Originales</h3>
             <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (bitácora) donde cada fila reporta un ataque individual aislado.</p>
             <ul>
-                <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> y solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
+                <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> and solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
                 <li><b>El Quiebre Matemático:</b> Los algoritmos matemáticos basados en distancias espaciales (como <i>K-Means</i>) son incapaces de calcular similitudes usando texto directo (ej. 'POLICÍA' o 'EJÉRCITO'). No se pueden promediar palabras.</li>
             </ul>
         </div>
@@ -324,7 +324,7 @@ for k in range(1, 11):
         ir_a_diapositiva(5)
 
 # ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO DE LOS CLÚSTERES (CORAZÓN DE LA EXP)
+# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO DE LOS CLÚSTERES (ENRIQUECIDA)
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
     st.markdown("""
@@ -372,7 +372,7 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO (MODIFICADO: Azul más claro)
+    # 1. ANÁLISIS DE LA CURVA DEL CODO
     st.markdown("### 📐 A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -383,7 +383,7 @@ elif st.session_state.diapositiva == 5:
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
     fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7')) # Azul intermedio/claro
+    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7'))
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -392,14 +392,22 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS (MODIFICADO: Escala de color azul más claro y nítido)
+    # NUEVO: PREGUNTA CONDUCTORA 1 PARA EL MARCO METODOLÓGICO
+    st.markdown("""
+    <div class='insight-card' style='background-color: #F8FAFC; border-left: 5px solid #0284C7;'>
+        <h4 style='margin-top:0; color:#0369A1;'>❓ ¿Por qué K-Means requiere validar la métrica del codo en este dataset?</h4>
+        <p>Al tener una distribución espacial con una alta densidad en municipios de baja afectación y pocos municipios críticos, si eligiéramos un <i>K=2</i> o <i>K=3</i>, los grupos de alta afectación forzarían que municipios intermedios o dinámicos se mezclaran inapropiadamente. <b>K=4 garantiza que la frontera geométrica separe de forma limpia la estabilidad de la emergencia.</b></p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # 2. ANÁLISIS DE DISTANCIAS 
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Cividis', template='plotly_white') # Cividis u Density dan tonos azules claros y nítidos
+                       color_continuous_scale='Cividis', template='plotly_white')
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
@@ -408,7 +416,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (MODIFICADO: El azul oscuro se cambió por un azul claro y brillante)
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -421,7 +429,6 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
-    # Se reemplazó el azul oscuro '#3B82F6' por un hermoso azul claro/celeste '#38BDF8'
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
@@ -439,6 +446,14 @@ elif st.session_state.diapositiva == 5:
         <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # NUEVO: PREGUNTA CONDUCTORA 2 RESPECTO A LOS OUTLIERS
+    st.markdown("""
+    <div class='insight-card' style='background-color: #FEF2F2; border-left: 5px solid #DC2626;'>
+        <h4 style='margin-top:0; color:#991B1B;'>❓ ¿Cómo altera la presencia de municipios del Clúster 3 al resto de grupos?</h4>
+        <p>Si no usáramos la normalización <i>StandardScaler</i> previa al K-Means, el peso numérico absoluto del <b>Clúster 3 (Emergencia Crítica)</b> atraería los centroides de los demás grupos hacia él. El algoritmo aisla estos municipios atípicos de forma exitosa para permitir que los Clústeres 0, 1 y 2 revelen variaciones territoriales más sutiles pero estratégicamente válidas.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -460,6 +475,49 @@ elif st.session_state.diapositiva == 5:
             <li><b>🔵 Clúster 1 (Impacto Moderado / Dinámico):</b> Municipios que muestran actividad delictiva constante pero con baja letalidad. Son zonas con novedades frecuentes (heridos o afectaciones logísticas) pero donde la confrontación armada no está desbordada.</li>
             <li><b>🟡 Clúster 2 (Foco de Conflicto Institucional):</b> Zonas geográficas muy particulares donde los ataques están dirigidos explícitamente a las patrullas e instalaciones físicas de la Fuerza Pública. Presentan niveles intermedios de letalidad y una alta concentración de eventos bélicos.</li>
             <li><b>🔴 Clúster 3 (Emergencia Crítica):</b> El grupo más alarmante del análisis. Contiene pocos municipios pero registra promedios de asesinados, heridos y afectaciones totales sumamente altos. Aquí es donde radican las anomalías de los datos y donde el despliegue del Estado debe pasar de ser reactivo a completamente prioritario.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ==============================================================================
+    # SECCIÓN TOTALMENTE NUEVA: COMPARATIVAS Y CRUCES INTER-CLÚSTER (MÁXIMO ENRIQUECIMIENTO)
+    # ==============================================================================
+    st.markdown("### 🔬 E. Análisis de Contrastes y Cruces Inter-Clúster")
+    
+    # Grid de dos columnas para colocar los contrastes analíticos y preguntas complejas
+    col_cc1, col_cc2 = st.columns(2)
+    
+    with col_cc1:
+        st.markdown("""
+        <div class='slide-container' style='min-height: 380px; border-top: 4px solid #16A34A;'>
+            <h4 style='color: #16A34A; margin-top:0;'>🔄 Contraste: Clúster 0 vs Clúster 1 (La Frontera Preventiva)</h4>
+            <p><b>Pregunta clave para sustentación:</b> ¿Cuándo debe encenderse la alerta si un municipio del Clúster 0 empieza a cambiar sus métricas?</p>
+            <p>El paso del <b>Clúster 0 (Riesgo Controlado)</b> al <b>Clúster 1 (Impacto Moderado)</b> representa la mutación de un evento delictivo común hacia un problema de seguridad recurrente. Mientras el Clúster 0 tiene eventos aislados en el tiempo, el Clúster 1 muestra vectores de cronicidad. 
+            <i>Geométricamente, la distancia entre sus centroides indica que la frecuencia de incidentes logísticos o heridos leves se incrementa antes que la tasa de letalidad o asesinatos.</i></p>
+            <span style='background-color: #E8F5E9; color: #1B5E20; padding: 4px 8px; border-radius: 4px; font-size:12px; font-weight:700;'>INDICADOR TÁCTICO: Frecuencia de novedades operativas</span>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col_cc2:
+        st.markdown("""
+        <div class='slide-container' style='min-height: 380px; border-top: 4px solid #F59E0B;'>
+            <h4 style='color: #F59E0B; margin-top:0;'>⚔️ Contraste: Clúster 2 vs Clúster 3 (Ataque Focalizado vs Emergencia Generalizada)</h4>
+            <p><b>Pregunta clave para sustentación:</b> ¿Cuál es la diferencia en la naturaleza del peligro entre estos dos perfiles?</p>
+            <p>El <b>Clúster 2 (Foco de Conflicto Institucional)</b> se caracteriza por asimetría: las novedades están altamente concentradas en una sola institución o en modalidades tácticas específicas (como emboscadas dirigidas). 
+            Por el contrario, el <b>Clúster 3 (Emergencia Crítica)</b> destruye toda selectividad: la afectación es masiva y multidimensional, impactando simultáneamente a múltiples fuerzas de seguridad. El Clúster 2 denota un conflicto focalizado, mientras el Clúster 3 indica control o disputa territorial delictiva a gran escala.</p>
+            <span style='background-color: #FFF3E0; color: #E65100; padding: 4px 8px; border-radius: 4px; font-size:12px; font-weight:700;'>DIFERENCIACIÓN MATEMÁTICA: Varianza Multivariada Desbordada</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Análisis avanzado de distribución y balance institucional
+    st.markdown("""
+    <div class='slide-container' style='border-left: 5px solid #0369A1;'>
+        <h4 style='margin-top:0; color:#0369A1;'>📌 Hallazgo Analítico Avanzado: El Índice de Balance Institucional en el Agrupamiento</h4>
+        <p>Al inspeccionar la matriz de centroides del modelo K-Means, se observa que la variable que mide las afectaciones a la <b>Policía Nacional</b> y al <b>Ejército Nacional</b> no crece de forma paralela en todos los grupos:</p>
+        <ul>
+            <li>En los <b>Clústeres 0 y 1</b>, la distribución mantiene proporciones estándar correlacionadas con la densidad poblacional (mayor afectación a la Policía en cascos urbanos).</li>
+            <li>En el <b>Clúster 2</b>, la balanza se inclina fuertemente hacia zonas con alta presencia de infraestructura militar dispersa, registrando picos en categorías tácticas del Ejército.</li>
+            <li>Este comportamiento demuestra que el algoritmo K-Means no solo agrupa por volumen bruto de novedades, sino por la <b>co-ocurrencia institucional del riesgo</b>, aislando dinámicas puramente rurales de las urbanas complejas.</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
