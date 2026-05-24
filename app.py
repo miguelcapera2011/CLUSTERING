@@ -172,9 +172,9 @@ st.markdown("---")
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
-        <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='190' style='margin-bottom: 20px;'>
-        <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis Estadístico Avanzado de la Fuerza Pública</div>
-        <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje Automático</div>
+        <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='199' style='margin-bottom: 20px;'>
+        <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis de Clústeres (K-Means) en Afectaciones a la Fuerza Pública</div>
+        <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje No supervisados</div>
         <div style='margin: 40px 0; border-top: 2px solid #E2E8F0;'></div>
     </div>
     """, unsafe_allow_html=True)
@@ -183,20 +183,20 @@ if st.session_state.diapositiva == 1:
     with col_p1:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#1E3A8A;'>👤 Investigador del Proyecto</h4>
-            <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Ingeniería y Analítica de Datos</p>
+            <h4 style='margin-top:0; color:#1E3A8A;'>👤 Estudiante</h4>
+            <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Matematica Con Enfasis En Estadistica</p>
         </div>
         """, unsafe_allow_html=True)
     with col_p2:
         st.markdown(f"""
         <div class='insight-success'>
-            <h4 style='margin-top:0; color:#16A34A;'>👩‍🏫 Comité Evaluador</h4>
-            <p><b>Docente: Yuri Saavedra</b><br>Cátedra de Modelado Avanzado y Ciencia de Datos<br>Año: {time.strftime('%Y')} | Sustentación Final</p>
+            <h4 style='margin-top:0; color:#16A34A;'>👩‍🏫 Profesor</h4>
+            <p><b>Docente: Yuri Saavedra</b><br>Mineria De Datos<br>Año: {time.strftime('%Y')} | Sustentación</p>
         </div>
         """, unsafe_allow_html=True)
         
     st.markdown("<br><br>", unsafe_allow_html=True)
-    if st.button("🚀 Iniciar Sustentación Académica", type="primary", use_container_width=True):
+    if st.button("🚀 Iniciar Sustentación", type="primary", use_container_width=True):
         ir_a_diapositiva(2)
 
 # ==============================================================================
