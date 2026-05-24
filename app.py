@@ -54,21 +54,21 @@ st.markdown("""
     /* Tarjetas de insights o hallazgos */
     .insight-card {
         background-color: #F1F5F9;
-        border-left: 5px solid #2563EB;
+        border-left: 5px solid #0F2042;
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
     .insight-critical {
         background-color: #FEF2F2;
-        border-left: 5px solid #DC2626;
+        border-left: 5px solid #8B263E;
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
     .insight-success {
-        background-color: #F0FDF4;
-        border-left: 5px solid #16A34A;
+        background-color: #FDFBF7;
+        border-left: 5px solid #C5A059;
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
@@ -82,6 +82,36 @@ st.markdown("""
         justify-content: space-between;
         align-items: center;
         margin-bottom: 30px;
+    }
+    
+    /* MODIFICACIÓN DE BOTONES SUPERIORES A COLORES PREMIUM (Zafiro, Oro y Platino) */
+    div.stButton > button {
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    /* Botón Secundario (Diapositivas no activas): Fondo platino suave con texto zafiro */
+    div.stButton > button[kind="secondary"] {
+        background-color: #E2E8F0 !important;
+        color: #0F2042 !important;
+        border: 1px solid #CBD5E1 !important;
+    }
+    div.stButton > button[kind="secondary"]:hover {
+        background-color: #CBD5E1 !important;
+        border-color: #94A3B8 !important;
+        color: #0F2042 !important;
+    }
+    /* Botón Primario (Diapositiva Activa): Fondo Zafiro Imperial con bordes Oro */
+    div.stButton > button[kind="primary"] {
+        background-color: #0F2042 !important;
+        color: #FFFFFF !important;
+        border: 2px solid #C5A059 !important;
+        box-shadow: 0 4px 12px rgba(15, 32, 66, 0.25) !important;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #1E3A6B !important;
+        border-color: #D4AF37 !important;
+        color: #FFFFFF !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -140,7 +170,7 @@ if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
         <img src='https://www.ut.edu.co/images/logos/logo_ut.png' width='180' style='margin-bottom: 20px;'>
-        <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis Estadístico Avanzado de la Fuerza Pública</div>
+        <div class='slide-title' style='font-size: 42px; color: #0F2042;'>Análisis Estadístico Avanzado de la Fuerza Pública</div>
         <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje Automático</div>
         <div style='margin: 40px 0; border-top: 2px solid #E2E8F0;'></div>
     </div>
@@ -150,14 +180,14 @@ if st.session_state.diapositiva == 1:
     with col_p1:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#1E3A8A;'>👤 Investigador del Proyecto</h4>
+            <h4 style='margin-top:0; color:#0F2042;'>👤 Investigador del Proyecto</h4>
             <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Ingeniería y Analítica de Datos</p>
         </div>
         """, unsafe_allow_html=True)
     with col_p2:
         st.markdown(f"""
         <div class='insight-success'>
-            <h4 style='margin-top:0; color:#16A34A;'>👩‍🏫 Comité Evaluador</h4>
+            <h4 style='margin-top:0; color:#C5A059;'>👩‍🏫 Comité Evaluador</h4>
             <p><b>Docente: Yuri Saavedra</b><br>Cátedra de Modelado Avanzado y Ciencia de Datos<br>Año: {time.strftime('%Y')} | Sustentación Final</p>
         </div>
         """, unsafe_allow_html=True)
@@ -179,7 +209,7 @@ elif st.session_state.diapositiva == 2:
     with col_i1:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #DC2626; margin-top:0;'>🛑 El Problema de los Datos Originales</h3>
+            <h3 style='color: #8B263E; margin-top:0;'>🛑 El Problema de los Datos Originales</h3>
             <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (bitácora) donde cada fila reporta un ataque individual aislado.</p>
             <ul>
                 <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> y solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
@@ -191,7 +221,7 @@ elif st.session_state.diapositiva == 2:
     with col_i2:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #2563EB; margin-top:0;'>💡 Objetivos y Justificación</h3>
+            <h3 style='color: #0F2042; margin-top:0;'>💡 Objetivos y Justificación</h3>
             <p><b>Objetivo Principal:</b> Construir un flujo de procesamiento automatizado en Python para reestructurar, unificar y agrupar numéricamente los municipios según sus patrones reales de vulnerabilidad.</p>
             <p><b>Importancia Estratégica:</b></p>
             <ul>
@@ -217,21 +247,21 @@ elif st.session_state.diapositiva == 3:
     with t_col1:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#2563EB; margin-top:0;'>🔄 1. Reestructuración de Matrices (Pivotado)</h4>
+            <h4 style='color:#0F2042; margin-top:0;'>🔄 1. Reestructuración de Matrices (Pivotado)</h4>
             <p style='font-size:14px;'>Consiste en transformar la estructura lineal del histórico para convertir las categorías cualitativas en nuevas dimensiones numéricas (columnas) indexadas por el código único del municipio.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col2:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#2563EB; margin-top:0;'>📐 2. Algoritmo K-Means</h4>
+            <h4 style='color:#0F2042; margin-top:0;'>📐 2. Algoritmo K-Means</h4>
             <p style='font-size:14px;'>Modelo de aprendizaje no supervisado que particiona las observaciones en <i>K</i> grupos homogéneos. Su meta es minimizar la varianza interna de cada grupo (Inercia o WSS), encontrando un vector promedio central llamado <b>Centroide</b>.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col3:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#2563EB; margin-top:0;'>🌐 3. Componentes Principales (PCA)</h4>
+            <h4 style='color:#0F2042; margin-top:0;'>🌐 3. Componentes Principales (PCA)</h4>
             <p style='font-size:14px;'>Técnica de reducción de dimensiones que proyecta el plano de alta complejidad hacia un nuevo sistema de ejes ortogonales (PC1, PC2, PC3). Conserva la mayor variabilidad posible permitiendo la visualización gráfica sin alterar las distancias.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -341,7 +371,7 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO
+    # 1. ANÁLISIS DE LA CURVA DEL CODO (Colores Premium: Líneas Zafiro y Corte de Control Oro Antiguo)
     st.markdown("### 📐 A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -351,8 +381,8 @@ elif st.session_state.diapositiva == 5:
         
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
-    fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#2563EB', marker=dict(size=8))
+    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#C5A059", annotation_text="K Óptimo Seleccionado = 4", annotation_position="top right")
+    fig_elbow.update_traces(line_color='#0F2042', marker=dict(size=8, color='#C5A059'))
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -361,14 +391,14 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS Y DISIMILITUDES
+    # 2. ANÁLISIS DE DISTANCIAS Y DISIMILITUDES (Color Premium: Escala de Degradado Personalizada Zafiro-Champagne)
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Blues', template='plotly_white')
+                       color_continuous_scale=[[0, '#0F2042'], [0.5, '#C5A059'], [1, '#FDFBF7']], template='plotly_white')
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
@@ -377,7 +407,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA Y DATOS ATÍPICOS
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA Y DATOS ATÍPICOS (Colores Premium: Platino, Zafiro, Bronce y Vino)
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -391,21 +421,22 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
+    # Paleta corporativa premium de alta gama para los 4 grupos de la leyenda
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
-                           color_discrete_sequence=['#16A34A', '#3B82F6', '#F59E0B', '#DC2626'], template='plotly_white')
+                           color_discrete_sequence=['#94A3B8', '#0F2042', '#C5A059', '#8B263E'], template='plotly_white')
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     fig_3d.add_trace(go.Scatter3d(x=centroids_3d[:, 0], y=centroids_3d[:, 1], z=centroids_3d[:, 2],
-                                 mode='markers', marker=dict(size=12, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
-                                 name='Centroides Matemáticos'))
+                                  mode='markers', marker=dict(size=12, color='#1E293B', symbol='diamond', line=dict(width=2, color='white')),
+                                  name='Centroides Matemáticos'))
     st.plotly_chart(fig_3d, use_container_width=True)
     
     st.markdown("""
     <div class='insight-critical'>
         <h4>🚨 Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
-        <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
+        <p>Al exploring la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
     </div>
@@ -426,7 +457,7 @@ elif st.session_state.diapositiva == 5:
     <div class='slide-container'>
         <h4 style='margin-top:0; color:#0F172A;'>🔍 Interpretación Estratégica de cada Grupo:</h4>
         <ul>
-            <li><b>🟢 Clúster 0 (Riesgo Controlado):</b> Agrupa a la inmensa mayoría de municipios del país. Los incidentes son esporádicos y aislados, manteniendo promedios cercanos a cero. Representa la estabilidad base del territorio.</li>
+            <li><b>⚪ Clúster 0 (Riesgo Controlado):</b> Agrupa a la inmensa mayoría de municipios del país. Los incidentes son esporádicos y aislados, manteniendo promedios cercanos a cero. Representa la estabilidad base del territorio.</li>
             <li><b>🔵 Clúster 1 (Impacto Moderado / Dinámico):</b> Municipios que muestran actividad delictiva constante pero con baja letalidad. Son zonas con novedades frecuentes (heridos o afectaciones logísticas) pero donde la confrontación armada no está desbordada.</li>
             <li><b>🟡 Clúster 2 (Foco de Conflicto Institucional):</b> Zonas geográficas muy particulares donde los ataques están dirigidos explícitamente a las patrullas e instalaciones físicas de la Fuerza Pública. Presentan niveles intermedios de letalidad y una alta concentración de eventos bélicos.</li>
             <li><b>🔴 Clúster 3 (Emergencia Crítica):</b> El grupo más alarmante del análisis. Contiene pocos municipios pero registra promedios de asesinados, heridos y afectaciones totales sumamente altos. Aquí es donde radican las anomalías de los datos y donde el despliegue del Estado debe pasar de ser reactivo a completamente prioritario.</li>
@@ -450,9 +481,9 @@ elif st.session_state.diapositiva == 6:
     with c_col1:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#1E3A8A; margin-top:0;'>📌 Conclusiones Clave</h3>
+            <h3 style='color:#0F2042; margin-top:0;'>📌 Conclusiones Clave</h3>
             <ol>
-                <li><b>Tratamiento Cualitativo Exitoso:</b> Se logró solucionar la limitación inicial de trabajar con columnas de texto mediante una estrategia de reestructuración matricial efectiva.</li>
+                <li><b>Tratamiento Cualitativo Exitoso:</b> Se logró solucionar la limitación inicial de trabajar con columnas de texto mediante una strategy de reestructuración matricial efectiva.</li>
                 <li><b>Consistencia Algorítmica:</b> El acoplamiento de <i>Z-Score, K-Means y PCA</i> demostró una separación clara de los municipios en el espacio geométrico, aislando de forma óptima las zonas críticas de las estables.</li>
                 <li><b>Identificación de Anomalías:</b> El modelo demostró alta sensibilidad al aislar de forma automática los datos atípicos de alto impacto operacional en el clúster de Emergencia Crítica.</li>
             </ol>
@@ -461,7 +492,7 @@ elif st.session_state.diapositiva == 6:
     with c_col2:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#16A34A; margin-top:0;'>🚀 Sugerencias para el Futuro</h3>
+            <h3 style='color:#C5A059; margin-top:0;'>🚀 Sugerencias para el Futuro</h3>
             <ul>
                 <li><b>Logística de Despliegue Preventivo:</b> Los perfiles numéricos de los centroides de los clústeres 2 y 3 permiten a los tomadores de decisiones pre-posicionar apoyo logístico y asistencia médica en los municipios prioritarios.</li>
                 <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada; ante la adición de nuevos registros mensuales en la carpeta raíz, el modelo actualizará los grupos en tiempo real de forma inmediata.</li>
@@ -471,7 +502,7 @@ elif st.session_state.diapositiva == 6:
         
     st.markdown("""
     <div style='text-align: center; padding: 40px 0;'>
-        <h2 style='color: #1E3A8A; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
+        <h2 style='color: #0F2042; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
         <p style='color: #64748B;'>Se abre el espacio para las preguntas y observaciones del comité evaluador.</p>
     </div>
     """, unsafe_allow_html=True)
