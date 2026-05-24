@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 # ==============================================================================
 st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide", initial_sidebar_state="collapsed")
 
-# Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
+# Inyección de CSS Avanzado para mejorar estética de botones y fondos
 st.markdown("""
     <style>
     /* Fondo principal claro y limpio estilo diapositiva */
@@ -73,15 +73,36 @@ st.markdown("""
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
-    /* Barra de navegación superior */
-    .nav-bar {
-        background-color: #0F172A;
-        padding: 15px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
+    
+    /* MODIFICACIÓN: Personalización premium de botones en Streamlit (Texto claro, fondo limpio) */
+    div.stButton > button {
+        background-color: #FFFFFF !important;
+        color: #1E293B !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 10px !important;
+        padding: 12px 20px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    
+    /* Estilo interactivo al pasar el cursor (Hover) */
+    div.stButton > button:hover {
+        border-color: #2563EB !important;
+        color: #2563EB !important;
+        background-color: #EFF6FF !important;
+    }
+    
+    /* Estilo especial cuando el botón está activo/seleccionado */
+    div.stButton > button[kind="primary"] {
+        background-color: #2563EB !important;
+        color: #FFFFFF !important;
+        border-color: #2563EB !important;
+    }
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #1D4ED8 !important;
+        color: #FFFFFF !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -341,7 +362,7 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO
+    # 1. ANÁLISIS DE LA CURVA DEL CODO (Mejorado con Azul Claro y Limpio)
     st.markdown("### 📐 A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -351,8 +372,16 @@ elif st.session_state.diapositiva == 5:
         
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
-    fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#2563EB', marker=dict(size=8))
+    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#EF4444", annotation_text="K Óptimo Seleccionado = 4")
+    
+    # MODIFICACIÓN: Color de línea atractivo y claro, fondo adaptado
+    fig_elbow.update_traces(line_color='#3B82F6', marker=dict(size=9, color='#60A5FA', line=dict(width=1, color='white')))
+    fig_elbow.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        title_font=dict(size=16, color='#0F172A'),
+        font=dict(color='#475569')
+    )
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -361,14 +390,21 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS Y DISIMILITUDES
+    # 2. ANÁLISIS DE DISTANCIAS Y DISIMILITUDES (Escala de color clara y atractiva)
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
+    # MODIFICACIÓN: color_continuous_scale cambiada a 'YlGnBu' (más claro y profesional) e integración de fondo transparente
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Blues', template='plotly_white')
+                       color_continuous_scale='YlGnBu', template='plotly_white')
+    fig_eu.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        title_font=dict(size=16, color='#0F172A'),
+        font=dict(color='#475569')
+    )
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
@@ -377,7 +413,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA Y DATOS ATÍPICOS
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA Y DATOS ATÍPICOS (Paleta ejecutiva moderna y clara)
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -391,15 +427,28 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
+    # MODIFICACIÓN: Colores de clústeres a tonos pasteles ejecutivos y atractivos
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
-                           color_discrete_sequence=['#16A34A', '#3B82F6', '#F59E0B', '#DC2626'], template='plotly_white')
+                           color_discrete_sequence=['#4ADE80', '#60A5FA', '#FBBF24', '#F87171'], template='plotly_white')
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     fig_3d.add_trace(go.Scatter3d(x=centroids_3d[:, 0], y=centroids_3d[:, 1], z=centroids_3d[:, 2],
-                                 mode='markers', marker=dict(size=12, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
-                                 name='Centroides Matemáticos'))
+                                  mode='markers', marker=dict(size=10, color='#1E293B', symbol='diamond', line=dict(width=2, color='white')),
+                                  name='Centroides Matemáticos'))
+    
+    fig_3d.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        scene=dict(
+            backgroundcolor="white",
+            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="#E2E8F0"),
+            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="#E2E8F0"),
+            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="#E2E8F0")
+        ),
+        title_font=dict(size=16, color='#0F172A'),
+        font=dict(color='#475569')
+    )
     st.plotly_chart(fig_3d, use_container_width=True)
     
     st.markdown("""
