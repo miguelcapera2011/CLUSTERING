@@ -172,7 +172,7 @@ st.markdown("---")
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
-        <img src='https://www.ut.edu.co/images/logos/logo_ut.png' width='180' style='margin-bottom: 20px;'>
+        <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='180' style='margin-bottom: 20px;'>
         <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis Estadístico Avanzado de la Fuerza Pública</div>
         <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje Automático</div>
         <div style='margin: 40px 0; border-top: 2px solid #E2E8F0;'></div>
