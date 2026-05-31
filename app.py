@@ -322,7 +322,7 @@ for k in range(1, 11):
         ir_a_diapositiva(5)
 
 # ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS (CON GRÁFICA GIGANTE Y FONDO PREMIUM)
+# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS (CON GRÁFICAS MEJORADAS ESTILO PREMIUM)
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
     st.markdown("""
@@ -370,8 +370,8 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO
-    st.markdown(" A. Validación Científica del Número de Grupos (K)")
+    # 1. ANÁLISIS DE LA CURVA DEL CODO (Fondo blanco pulido)
+    st.markdown("### A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
         km_test = KMeans(n_clusters=k, n_init=15, random_state=42)
@@ -380,8 +380,16 @@ elif st.session_state.diapositiva == 5:
         
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
-    fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7'))
+    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#EF4444", annotation_text="K Óptimo Seleccionado = 4")
+    fig_elbow.update_traces(line_color='#0284C7', marker=dict(size=8, color='#0369A1'))
+    
+    # Pulido estético del fondo
+    fig_elbow.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='#FFFFFF',
+        xaxis=dict(gridcolor='#F1F5F9', linecolor='#E2E8F0'),
+        yaxis=dict(gridcolor='#F1F5F9', linecolor='#E2E8F0')
+    )
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -390,14 +398,22 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS
+    # 2. ANÁLISIS DE DISTANCIAS (Color de mapa de calor corporativo sofisticado)
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
+    # MODIFICACIÓN: Cambio a escala 'Icefire' (Gama alta, azul a rojo quemado)
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Cividis', template='plotly_white')
+                       color_continuous_scale='Icefire', template='plotly_white')
+    
+    fig_eu.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='#FFFFFF',
+        xaxis=dict(tickangle=-45, gridcolor='rgba(0,0,0,0)'),
+        yaxis=dict(gridcolor='rgba(0,0,0,0)')
+    )
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
@@ -406,7 +422,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (MODIFICADO: MÁS GRANDE Y CON FONDO PREMIUM)
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (Look de estudio de consultoría con fondo unificado)
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -419,11 +435,11 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
-    # Renderizado con un alto extendido (850) para un look imponente
+    # Colores ejecutivos claros y directos
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
-                           color_discrete_sequence=['#16A34A', '#38BDF8', '#F59E0B', '#DC2626'], 
+                           color_discrete_sequence=['#10B981', '#06B6D4', '#F59E0B', '#EF4444'], 
                            template='plotly_white',
                            height=850)
     
@@ -432,32 +448,33 @@ elif st.session_state.diapositiva == 5:
                                   mode='markers', marker=dict(size=14, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
                                   name='Centroides Matemáticos'))
     
-    # Rediseño estético del cubo 3D (Fondos ejecutivos y líneas limpias)
+    # MODIFICACIÓN: Fondos blancos puros y rejillas muy tenues para eliminar el gris opaco de Plotly
     fig_3d.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
         scene=dict(
             xaxis=dict(
-                backgroundcolor="#F8FAFC", # Combinado con el fondo de la app
-                gridcolor="#E2E8F0",       # Grillas claras y sutiles
+                backgroundcolor="#FFFFFF", 
+                gridcolor="#F1F5F9",       
                 showbackground=True, 
-                zerolinecolor="white"
+                zerolinecolor="#E2E8F0"
             ),
             yaxis=dict(
-                backgroundcolor="#F8FAFC", 
-                gridcolor="#E2E8F0", 
+                backgroundcolor="#FFFFFF", 
+                gridcolor="#F1F5F9", 
                 showbackground=True, 
-                zerolinecolor="white"
+                zerolinecolor="#E2E8F0"
             ),
             zaxis=dict(
-                backgroundcolor="#E2E8F0", # Piso del cubo con un tono de contraste
-                gridcolor="#CBD5E1", 
+                backgroundcolor="#F8FAFC", # Un piso apenas grisáceo para dar perspectiva de base
+                gridcolor="#E2E8F0", 
                 showbackground=True, 
-                zerolinecolor="white"
+                zerolinecolor="#E2E8F0"
             ),
             camera=dict(
-                eye=dict(x=1.6, y=1.6, z=1.2) # Perspectiva de ángulo abierto ideal
+                eye=dict(x=1.5, y=1.5, z=1.1)
             )
         ),
-        margin=dict(l=0, r=0, b=0, t=50), # Reducción de márgenes muertos
+        margin=dict(l=0, r=0, b=0, t=50),
         legend=dict(
             yanchor="top",
             y=0.95,
