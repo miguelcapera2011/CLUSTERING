@@ -151,9 +151,9 @@ def cargar_datos_automatico():
 
 df_original, nombre_archivo_cargado = cargar_datos_automatico()
 
-# ==============================================================================
+
 # CONTROLES DE NAVEGACIÓN SUPERIOR (BOTONES ESTILO DIAPOSITIVA)
-# ==============================================================================
+
 cols_nav = st.columns(6)
 nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados", "6. Conclusiones"]
 
@@ -181,15 +181,15 @@ if st.session_state.diapositiva == 1:
     with col_p1:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#1E3A8A;'>👤 Investigador del Proyecto</h4>
-            <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Ingeniería y Analítica de Datos</p>
+            <h4 style='margin-top:0; color:#1E3A8A;'>ESTUDIANTE</h4>
+            <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Matematica con Enfasis en Estadistica</p>
         </div>
         """, unsafe_allow_html=True)
     with col_p2:
         st.markdown(f"""
         <div class='insight-success'>
-            <h4 style='margin-top:0; color:#16A34A;'> Comité Evaluador</h4>
-            <p><b>Docente: Yuri Saavedra</b><br>Cátedra de Modelado Avanzado y Ciencia de Datos<br>Año: {time.strftime('%Y')} | Sustentación Final</p>
+            <h4 style='margin-top:0; color:#16A34A;'> PROFESOR</h4>
+            <p><b>Docente: Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Aprendizaje no supervisado(Clustering)</p>
         </div>
         """, unsafe_allow_html=True)
         
