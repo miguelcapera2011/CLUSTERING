@@ -189,7 +189,7 @@ if st.session_state.diapositiva == 1:
         st.markdown(f"""
         <div class='insight-success'>
             <h4 style='margin-top:0; color:#16A34A;'> PROFESOR</h4>
-            <p><b>Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Aprendizaje no supervisado(Clustering)</p>
+            <p><b>Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Clustering</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -197,13 +197,13 @@ if st.session_state.diapositiva == 1:
     if st.button("Iniciar Sustentación", type="primary", use_container_width=True):
         ir_a_diapositiva(2)
 
-# ==============================================================================
+
 # DIAPOSITIVA 2: INTRODUCCIÓN Y PLANTEAMIENTO DEL PROBLEMA
-# ==============================================================================
+
 elif st.session_state.diapositiva == 2:
     st.markdown("""
     <div class='slide-title'> Introducción y Definición del Desafío Técnico</div>
-    <div class='slide-subtitle'>Contexto del orden público e inconsistencia geométrica de los datos</div>
+    <div class='slide-subtitle'>Contexto del orden público e inconsistencia de los datos</div>
     """, unsafe_allow_html=True)
     
     col_i1, col_i2 = st.columns(2)
@@ -211,10 +211,10 @@ elif st.session_state.diapositiva == 2:
         st.markdown("""
         <div class='slide-container'>
             <h3 style='color: #DC2626; margin-top:0;'> El Problema de los Datos Originales</h3>
-            <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (bitácora) donde cada fila reporta un ataque individual aislado.</p>
+            <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (registros) donde cada fila reporta un ataque individual aislado.</p>
             <ul>
                 <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> y solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
-                <li><b>El Quiebre Matemático:</b> Los algoritmos matemáticos basados en distancias espaciales (como <i>K-Means</i>) son incapaces de calcular similitudes usando texto directo (ej. 'POLICÍA' o 'EJÉRCITO'). No se pueden promediar palabras.</li>
+                <li><b>El Quiebre Matemático:</b> Los algoritmos matemáticos basados en distancias espaciales (como <i>K-Means</i>) son incapaces de calcular similitudes usando texto directo (ej. 'POLICÍA' o 'EJÉRCITO'). No se pueden promediar palabras (variables categoricas).</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -322,7 +322,7 @@ for k in range(1, 11):
         ir_a_diapositiva(5)
 
 # ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO DE LOS CLÚSTERES (CORAZÓN DE LA EXP)
+# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS (CON GRÁFICA GIGANTE Y FONDO PREMIUM)
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
     st.markdown("""
@@ -370,7 +370,7 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO (MODIFICADO: Azul más claro)
+    # 1. ANÁLISIS DE LA CURVA DEL CODO
     st.markdown(" A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -381,7 +381,7 @@ elif st.session_state.diapositiva == 5:
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
     fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7')) # Azul intermedio/claro
+    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7'))
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -390,14 +390,14 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS (MODIFICADO: Escala de color azul más claro y nítido)
+    # 2. ANÁLISIS DE DISTANCIAS
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Cividis', template='plotly_white') # Cividis u Density dan tonos azules claros y nítidos
+                       color_continuous_scale='Cividis', template='plotly_white')
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
@@ -406,7 +406,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (MODIFICADO: El azul oscuro se cambió por un azul claro y brillante)
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (MODIFICADO: MÁS GRANDE Y CON FONDO PREMIUM)
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -419,16 +419,53 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
-    # Se reemplazó el azul oscuro '#3B82F6' por un hermoso azul claro/celeste '#38BDF8'
+    # Renderizado con un alto extendido (850) para un look imponente
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
-                           color_discrete_sequence=['#16A34A', '#38BDF8', '#F59E0B', '#DC2626'], template='plotly_white')
+                           color_discrete_sequence=['#16A34A', '#38BDF8', '#F59E0B', '#DC2626'], 
+                           template='plotly_white',
+                           height=850)
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     fig_3d.add_trace(go.Scatter3d(x=centroids_3d[:, 0], y=centroids_3d[:, 1], z=centroids_3d[:, 2],
-                                 mode='markers', marker=dict(size=12, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
-                                 name='Centroides Matemáticos'))
+                                  mode='markers', marker=dict(size=14, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
+                                  name='Centroides Matemáticos'))
+    
+    # Rediseño estético del cubo 3D (Fondos ejecutivos y líneas limpias)
+    fig_3d.update_layout(
+        scene=dict(
+            xaxis=dict(
+                backgroundcolor="#F8FAFC", # Combinado con el fondo de la app
+                gridcolor="#E2E8F0",       # Grillas claras y sutiles
+                showbackground=True, 
+                zerolinecolor="white"
+            ),
+            yaxis=dict(
+                backgroundcolor="#F8FAFC", 
+                gridcolor="#E2E8F0", 
+                showbackground=True, 
+                zerolinecolor="white"
+            ),
+            zaxis=dict(
+                backgroundcolor="#E2E8F0", # Piso del cubo con un tono de contraste
+                gridcolor="#CBD5E1", 
+                showbackground=True, 
+                zerolinecolor="white"
+            ),
+            camera=dict(
+                eye=dict(x=1.6, y=1.6, z=1.2) # Perspectiva de ángulo abierto ideal
+            )
+        ),
+        margin=dict(l=0, r=0, b=0, t=50), # Reducción de márgenes muertos
+        legend=dict(
+            yanchor="top",
+            y=0.95,
+            xanchor="left",
+            x=0.05,
+            font=dict(size=13)
+        )
+    )
     st.plotly_chart(fig_3d, use_container_width=True)
     
     st.markdown("""
