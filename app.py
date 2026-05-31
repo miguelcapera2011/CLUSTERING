@@ -188,13 +188,13 @@ if st.session_state.diapositiva == 1:
     with col_p2:
         st.markdown(f"""
         <div class='insight-success'>
-            <h4 style='margin-top:0; color:#16A34A;'>👩‍🏫 Comité Evaluador</h4>
+            <h4 style='margin-top:0; color:#16A34A;'> Comité Evaluador</h4>
             <p><b>Docente: Yuri Saavedra</b><br>Cátedra de Modelado Avanzado y Ciencia de Datos<br>Año: {time.strftime('%Y')} | Sustentación Final</p>
         </div>
         """, unsafe_allow_html=True)
         
     st.markdown("<br><br>", unsafe_allow_html=True)
-    if st.button("🚀 Iniciar Sustentación Académica", type="primary", use_container_width=True):
+    if st.button("Iniciar Sustentación", type="primary", use_container_width=True):
         ir_a_diapositiva(2)
 
 # ==============================================================================
@@ -202,7 +202,7 @@ if st.session_state.diapositiva == 1:
 # ==============================================================================
 elif st.session_state.diapositiva == 2:
     st.markdown("""
-    <div class='slide-title'>🎯 Introducción y Definición del Desafío Técnico</div>
+    <div class='slide-title'> Introducción y Definición del Desafío Técnico</div>
     <div class='slide-subtitle'>Contexto del orden público e inconsistencia geométrica de los datos</div>
     """, unsafe_allow_html=True)
     
@@ -210,7 +210,7 @@ elif st.session_state.diapositiva == 2:
     with col_i1:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #DC2626; margin-top:0;'>🛑 El Problema de los Datos Originales</h3>
+            <h3 style='color: #DC2626; margin-top:0;'> El Problema de los Datos Originales</h3>
             <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (bitácora) donde cada fila reporta un ataque individual aislado.</p>
             <ul>
                 <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> y solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
@@ -222,7 +222,7 @@ elif st.session_state.diapositiva == 2:
     with col_i2:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #0284C7; margin-top:0;'>💡 Objetivos y Justificación</h3>
+            <h3 style='color: #0284C7; margin-top:0;'> Objetivos y Justificación</h3>
             <p><b>Objetivo Principal:</b> Construir un flujo de procesamiento automatizado en Python para reestructurar, unificar y agrupar numéricamente los municipios según sus patrones reales de vulnerabilidad.</p>
             <p><b>Importancia Estratégica:</b></p>
             <ul>
@@ -240,7 +240,7 @@ elif st.session_state.diapositiva == 2:
 # ==============================================================================
 elif st.session_state.diapositiva == 3:
     st.markdown("""
-    <div class='slide-title'>📖 Fundamentos Teóricos y Algorítmicos</div>
+    <div class='slide-title'> Fundamentos Teóricos y Algorítmicos</div>
     <div class='slide-subtitle'>Sustentación matemática para el agrupamiento y reducción espacial</div>
     """, unsafe_allow_html=True)
     
@@ -248,33 +248,33 @@ elif st.session_state.diapositiva == 3:
     with t_col1:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'>🔄 1. Reestructuración de Matrices (Pivotado)</h4>
+            <h4 style='color:#0284C7; margin-top:0;'> 1. Reestructuración de Matrices (Pivotado)</h4>
             <p style='font-size:14px;'>Consiste en transformar la estructura lineal del histórico para convertir las categorías cualitativas en nuevas dimensiones numéricas (columnas) indexadas por el código único del municipio.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col2:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'>📐 2. Algoritmo K-Means</h4>
+            <h4 style='color:#0284C7; margin-top:0;'> 2. Algoritmo K-Means</h4>
             <p style='font-size:14px;'>Modelo de aprendizaje no supervisado que particiona las observaciones en <i>K</i> grupos homogéneos. Su meta es minimizar la varianza interna de cada grupo (Inercia o WSS), encontrando un vector promedio central llamado <b>Centroide</b>.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col3:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'>🌐 3. Componentes Principales (PCA)</h4>
+            <h4 style='color:#0284C7; margin-top:0;'> 3. Componentes Principales (PCA)</h4>
             <p style='font-size:14px;'>Técnica de reducción de dimensiones que proyecta el plano de alta complejidad hacia un nuevo sistema de ejes ortogonales (PC1, PC2, PC3). Conserva la mayor variabilidad posible permitiendo la visualización gráfica sin alterar las distancias.</p>
         </div>
         """, unsafe_allow_html=True)
         
     st.markdown("""
     <div class='insight-card'>
-        <h4 style='margin-top:0; color:#1E293B;'>⚖️ Rol Crítico de la Normalización Estadística (Z-Score)</h4>
+        <h4 style='margin-top:0; color:#1E293B;'> Rol Crítico de la Normalización Estadística (Z-Score)</h4>
         <p>Para asegurar que las distancias geométricas calculadas por el modelo sean confiables, se aplicó un ajuste de escala para obtener una <b>Media = 0 y Varianza = 1</b> (StandardScaler). Sin este paso, las variables masivas (como el conteo total de incidentes) eclipsarían por completo indicadores de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad o pérdidas de vidas humanas.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ➡️", type="primary"):
+    if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ", type="primary"):
         ir_a_diapositiva(4)
 
 # ==============================================================================
@@ -286,7 +286,7 @@ elif st.session_state.diapositiva == 4:
     <div class='slide-subtitle'>Ingeniería de características implementada en Python para la transformación de la información</div>
     """, unsafe_allow_html=True)
     
-    st.markdown("### 🛠️ Código de Ingeniería de Características implementado:")
+    st.markdown(" Código Implementado:")
     
     with st.expander("Fase 1: Pivotado Estructurado y Agrupación Territorial", expanded=True):
         st.code("""
@@ -326,7 +326,7 @@ for k in range(1, 11):
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
     st.markdown("""
-    <div class='slide-title'>📊 Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
+    <div class='slide-title'> Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
     <div class='slide-subtitle'>Inspección profunda de patrones, métricas de separación y detección de datos atípicos</div>
     """, unsafe_allow_html=True)
     
@@ -371,7 +371,7 @@ elif st.session_state.diapositiva == 5:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
     # 1. ANÁLISIS DE LA CURVA DEL CODO (MODIFICADO: Azul más claro)
-    st.markdown("### 📐 A. Validación Científica del Número de Grupos (K)")
+    st.markdown(" A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
         km_test = KMeans(n_clusters=k, n_init=15, random_state=42)
@@ -433,7 +433,7 @@ elif st.session_state.diapositiva == 5:
     
     st.markdown("""
     <div class='insight-critical'>
-        <h4>🚨 Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
+        <h4> Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
         <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
@@ -441,7 +441,7 @@ elif st.session_state.diapositiva == 5:
     """, unsafe_allow_html=True)
 
     # 4. RADIOGRAFÍA PROFUNDA DE LOS RESULTADOS
-    st.markdown("### 📊 D. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
+    st.markdown("### D. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
     variables_interes = [v for v in [col_afectados, col_asesinado, col_herido] if v in datos_originales_num.columns]
     tabla_perfil = datos_originales_num.groupby('Cluster')[variables_interes].mean().round(2)
     tabla_perfil['Municipios Asignados'] = datos_originales_num.groupby('Cluster').size()
@@ -478,7 +478,7 @@ elif st.session_state.diapositiva == 6:
     with c_col1:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#0369A1; margin-top:0;'>📌 Conclusiones Clave</h3>
+            <h3 style='color:#0369A1; margin-top:0;'> Conclusiones Clave</h3>
             <ol>
                 <li><b>Tratamiento Cualitativo Exitoso:</b> Se logró solucionar la limitación inicial de trabajar con columnas de texto mediante una estrategia de reestructuración matricial efectiva.</li>
                 <li><b>Consistencia Algorítmica:</b> El acoplamiento de <i>Z-Score, K-Means y PCA</i> demostró una separación clara de los municipios en el espacio geométrico, aislando de forma óptima las zonas críticas de las estables.</li>
@@ -489,7 +489,7 @@ elif st.session_state.diapositiva == 6:
     with c_col2:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#16A34A; margin-top:0;'>🚀 Sugerencias para el Futuro</h3>
+            <h3 style='color:#16A34A; margin-top:0;'> Sugerencias para el Futuro</h3>
             <ul>
                 <li><b>Logística de Despliegue Preventivo:</b> Los perfiles numéricos de los centroides de los clústeres 2 y 3 permiten a los tomadores de decisiones pre-posicionar apoyo logístico y asistencia médica en los municipios prioritarios.</li>
                 <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada; ante la adición de nuevos registros mensuales en la carpeta raíz, el modelo actualizará los grupos en tiempo real de forma inmediata.</li>
