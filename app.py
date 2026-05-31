@@ -172,7 +172,7 @@ if st.session_state.diapositiva == 1:
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
         <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='197' style='margin-bottom: 20px;'>
         <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis de Clústeres (K-Means) En Afectaciones a la Fuerza Pública</div>
-        <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje Automático</div>
+        <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje no Supervisados</div>
         <div style='margin: 40px 0; border-top: 2px solid #E2E8F0;'></div>
     </div>
     """, unsafe_allow_html=True)
@@ -189,7 +189,7 @@ if st.session_state.diapositiva == 1:
         st.markdown(f"""
         <div class='insight-success'>
             <h4 style='margin-top:0; color:#16A34A;'> PROFESOR</h4>
-            <p><b>Docente: Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Aprendizaje no supervisado(Clustering)</p>
+            <p><b>Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Aprendizaje no supervisado(Clustering)</p>
         </div>
         """, unsafe_allow_html=True)
         
