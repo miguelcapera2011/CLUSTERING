@@ -10,9 +10,8 @@ from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
 
-# ==============================================================================
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
-# ==============================================================================
+
 st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide", initial_sidebar_state="collapsed")
 
 # Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
@@ -128,9 +127,8 @@ def ir_a_diapositiva(num):
     st.session_state.diapositiva = num
     st.rerun()
 
-# ==============================================================================
 # CARGA AUTOMÁTICA DE DATOS DESDE EL REGISTRO HISTÓRICO
-# ==============================================================================
+
 def cargar_datos_automatico():
     archivos_en_carpeta = os.listdir('.')
     archivo_encontrado = None
@@ -157,7 +155,7 @@ df_original, nombre_archivo_cargado = cargar_datos_automatico()
 # CONTROLES DE NAVEGACIÓN SUPERIOR (BOTONES ESTILO DIAPOSITIVA)
 # ==============================================================================
 cols_nav = st.columns(6)
-nombres_diapo = ["🏠 1. Portada", "🎯 2. Introducción", "📖 3. Marco Teórico", "⚙️ 4. Metodología", "📊 5. Resultados", "🏁 6. Conclusiones"]
+nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados", "6. Conclusiones"]
 
 for i, nombre in enumerate(nombres_diapo):
     tipo_boton = "primary" if st.session_state.diapositiva == (i + 1) else "secondary"
@@ -166,9 +164,9 @@ for i, nombre in enumerate(nombres_diapo):
 
 st.markdown("---")
 
-# ==============================================================================
+
 # DIAPOSITIVA 1: PORTADA OFICIAL
-# ==============================================================================
+
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
