@@ -10,111 +10,119 @@ from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
 
-# CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
+# ==============================================================================
+# CONFIGURACIÓN GENERAL Y ESTILO VISUAL "INFOGRAFÍA PREMIUM DEEP TEAL"
+# ==============================================================================
 
 st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide", initial_sidebar_state="collapsed")
 
-# Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
+# Inyección de CSS Avanzado inspirado en la imagen de referencia (Fondo Azul con Degradado y Contrastes Vivos)
 st.markdown("""
     <style>
-    /* Fondo principal claro y limpio estilo diapositiva */
+    /* Fondo principal con degradado azul oscuro/turquesa de la imagen */
     .stApp {
-        background-color: #F8FAFC;
-        color: #1E293B;
+        background: linear-gradient(135deg, #0A2530 0%, #114B5F 50%, #0F3D4C 100%) !important;
+        color: #F8FAFC !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
-    /* Ocultar barra lateral por defecto para enfocar la presentación */
+    
+    /* Barra lateral adaptada */
     [data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E2E8F0;
+        background-color: #0A2530 !important;
+        border-right: 1px solid #114B5F;
     }
-    /* Contenedor de la diapositiva */
+    
+    /* Contenedores de las diapositivas estilo bloques de infografía */
     .slide-container {
-        background-color: #FFFFFF;
+        background-color: rgba(11, 75, 95, 0.4);
         padding: 40px;
         border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         margin-bottom: 25px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid #1A6278;
+        color: #F8FAFC;
     }
-    /* Estilos de títulos estilo McKinsey */
+    
+    /* Estilos de títulos estilizados */
     .slide-title {
-        color: #0F172A;
+        color: #FFFFFF;
         font-size: 36px;
         font-weight: 700;
         margin-bottom: 5px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
     .slide-subtitle {
-        color: #64748B;
+        color: #38BDF8; /* Azul cielo brillante para destacar */
         font-size: 18px;
         margin-bottom: 25px;
         font-weight: 400;
     }
     
-    /* MODIFICACIÓN: Botones superiores más bonitos, claros y con letras muy legibles */
+    /* Modificación de textos en Streamlit para legibilidad */
+    p, li, span, label, h3, h4 {
+        color: #E2E8F0 !important;
+    }
+    
+    /* Botones de navegación superiores - Colores adaptados de la infografía */
     div.stButton > button {
-        background-color: #E0F2FE !important; /* Azul cielo muy claro */
-        color: #0369A1 !important;            /* Texto azul oscuro de alto contraste */
-        border: 1px solid #BAE6FD !important; /* Borde sutil */
+        background-color: #0F3D4C !important; 
+        color: #38BDF8 !important;            
+        border: 1px solid #1A6278 !important; 
         border-radius: 8px !important;
-        font-weight: 700 !important;          /* Texto en negrita para máxima legibilidad */
+        font-weight: 700 !important;          
         font-size: 14px !important;
         padding: 8px 16px !important;
         transition: all 0.3s ease-in-out !important;
     }
     
-    /* Efecto al pasar el mouse por encima del botón */
+    /* Efecto Hover en botones */
     div.stButton > button:hover {
-        background-color: #7DD3FC !important; /* Azul claro un poco más vivo */
-        color: #0369A1 !important;
-        border-color: #7DD3FC !important;
-        box-shadow: 0 4px 12px rgba(3, 105, 161, 0.15) !important;
+        background-color: #2563EB !important; /* Azul eléctrico de la infografía */
+        color: #FFFFFF !important;
+        border-color: #3B82F6 !important;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4) !important;
     }
 
-    /* Estilo exclusivo para el botón de la página activa */
+    /* Botón de la página activa */
     div.stButton > button[kind="primary"] {
-        background-color: #0284C7 !important; /* Azul intermedio vivo */
-        color: #FFFFFF !important;            /* Texto blanco */
-        border: 1px solid #0284C7 !important;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3) !important;
+        background-color: #2563EB !important; 
+        color: #FFFFFF !important;            
+        border: 1px solid #3B82F6 !important;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4) !important;
     }
     
     div.stButton > button[kind="primary"]:hover {
-        background-color: #0369A1 !important;
+        background-color: #1D4ED8 !important;
         color: #FFFFFF !important;
     }
 
-    /* Tarjetas de insights o hallazgos */
+    /* Tarjetas de insights adaptadas a las alertas por colores de la imagen */
     .insight-card {
-        background-color: #F1F5F9;
-        border-left: 5px solid #38BDF8; /* Azul más claro en el borde */
+        background-color: rgba(37, 99, 235, 0.15);
+        border-left: 5px solid #2563EB; /* Azul */
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
     .insight-critical {
-        background-color: #FEF2F2;
-        border-left: 5px solid #DC2626;
+        background-color: rgba(220, 38, 38, 0.15);
+        border-left: 5px solid #DC2626; /* Rojo */
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
     .insight-success {
-        background-color: #F0FDF4;
-        border-left: 5px solid #16A34A;
+        background-color: rgba(74, 222, 128, 0.15);
+        border-left: 5px solid #4ADE80; /* Verde */
         padding: 18px;
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
     }
-    /* Barra de navegación superior */
-    .nav-bar {
-        background-color: #0F172A;
-        padding: 15px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
+    
+    /* Dataframes en modo oscuro integrado */
+    [data-testid="stDataFrame"] {
+        background-color: #0A2530 !important;
+        border-radius: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -127,7 +135,9 @@ def ir_a_diapositiva(num):
     st.session_state.diapositiva = num
     st.rerun()
 
+# ==============================================================================
 # CARGA AUTOMÁTICA DE DATOS DESDE EL REGISTRO HISTÓRICO
+# ==============================================================================
 
 def cargar_datos_automatico():
     archivos_en_carpeta = os.listdir('.')
@@ -152,8 +162,7 @@ def cargar_datos_automatico():
 df_original, nombre_archivo_cargado = cargar_datos_automatico()
 
 
-# CONTROLES DE NAVEGACIÓN SUPERIOR (BOTONES ESTILO DIAPOSITIVA)
-
+# CONTROLES DE NAVEGACIÓN SUPERIOR
 cols_nav = st.columns(6)
 nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados", "6. Conclusiones"]
 
@@ -165,15 +174,16 @@ for i, nombre in enumerate(nombres_diapo):
 st.markdown("---")
 
 
+# ==============================================================================
 # DIAPOSITIVA 1: PORTADA OFICIAL
-
+# ==============================================================================
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
-        <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='197' style='margin-bottom: 20px;'>
-        <div class='slide-title' style='font-size: 42px; color: #1E3A8A;'>Análisis de Clústeres (K-Means) En Afectaciones a la Fuerza Pública</div>
-        <div class='slide-subtitle' style='font-size: 22px;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje no Supervisados</div>
-        <div style='margin: 40px 0; border-top: 2px solid #E2E8F0;'></div>
+        <img src='https://administrativos.ut.edu.co/images/Home/simbolos/logo_oficial.png' width='197' style='margin-bottom: 20px; filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.5));'>
+        <div class='slide-title' style='font-size: 42px; color: #FFFFFF;'>Análisis de Clústeres (K-Means) En Afectaciones a la Fuerza Pública</div>
+        <div class='slide-subtitle' style='font-size: 22px; color: #38BDF8;'>Segmentación Territorial de Incidentes de Orden Público Mediante Modelos de Aprendizaje no Supervisados</div>
+        <div style='margin: 40px 0; border-top: 2px solid #1A6278;'></div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -181,15 +191,15 @@ if st.session_state.diapositiva == 1:
     with col_p1:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#1E3A8A;'>ESTUDIANTE</h4>
-            <p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Matematica con Enfasis en Estadistica</p>
+            <h4 style='margin-top:0; color:#38BDF8 !important;'>ESTUDIANTE</h4>
+            <p style='color: #F8FAFC !important;'><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Matemática con Énfasis en Estadística</p>
         </div>
         """, unsafe_allow_html=True)
     with col_p2:
         st.markdown(f"""
         <div class='insight-success'>
-            <h4 style='margin-top:0; color:#16A34A;'> PROFESOR</h4>
-            <p><b>Yuri Marcela Garcia Saavedra </b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Clustering</p>
+            <h4 style='margin-top:0; color:#4ADE80 !important;'>PROFESOR</h4>
+            <p style='color: #F8FAFC !important;'><b>Yuri Marcela García Saavedra</b><br>Minería de Datos<br>Año: {time.strftime('%Y')} | Clustering</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -198,11 +208,12 @@ if st.session_state.diapositiva == 1:
         ir_a_diapositiva(2)
 
 
+# ==============================================================================
 # DIAPOSITIVA 2: INTRODUCCIÓN Y PLANTEAMIENTO DEL PROBLEMA
-
+# ==============================================================================
 elif st.session_state.diapositiva == 2:
     st.markdown("""
-    <div class='slide-title'> Introducción y Definición del Desafío Técnico</div>
+    <div class='slide-title'>Introducción y Definición del Desafío Técnico</div>
     <div class='slide-subtitle'>Contexto del orden público e inconsistencia de los datos</div>
     """, unsafe_allow_html=True)
     
@@ -210,11 +221,11 @@ elif st.session_state.diapositiva == 2:
     with col_i1:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #DC2626; margin-top:0;'> El Problema de los Datos Originales</h3>
+            <h3 style='color: #EF4444; margin-top:0;'>El Problema de los Datos Originales</h3>
             <p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i> (registros) donde cada fila reporta un ataque individual aislado.</p>
             <ul>
                 <li><b>Restricción de Estructura:</b> El archivo posee <b>8 columnas cualitativas (texto)</b> y solo <b>1 columna cuantitativa (Cantidad)</b>.</li>
-                <li><b>El Quiebre Matemático:</b> Los algoritmos matemáticos basados en distancias espaciales (como <i>K-Means</i>) son incapaces de calcular similitudes usando texto directo (ej. 'POLICÍA' o 'EJÉRCITO'). No se pueden promediar palabras (variables categoricas).</li>
+                <li><b>El Quiebre Matemático:</b> Los algoritmos matemáticos basados en distancias espaciales (como <i>K-Means</i>) son incapaces de calcular similitudes usando texto directo. No se pueden promediar palabras (variables categóricas).</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -222,7 +233,7 @@ elif st.session_state.diapositiva == 2:
     with col_i2:
         st.markdown("""
         <div class='slide-container'>
-            <h3 style='color: #0284C7; margin-top:0;'> Objetivos y Justificación</h3>
+            <h3 style='color: #38BDF8; margin-top:0;'>Objetivos y Justificación</h3>
             <p><b>Objetivo Principal:</b> Construir un flujo de procesamiento automatizado en Python para reestructurar, unificar y agrupar numéricamente los municipios según sus patrones reales de vulnerabilidad.</p>
             <p><b>Importancia Estratégica:</b></p>
             <ul>
@@ -235,12 +246,13 @@ elif st.session_state.diapositiva == 2:
     if st.button("Siguiente Diapositiva: Marco Conceptual ➡️", type="primary"):
         ir_a_diapositiva(3)
 
+
 # ==============================================================================
 # DIAPOSITIVA 3: MARCO TEÓRICO / CONCEPTUAL
 # ==============================================================================
 elif st.session_state.diapositiva == 3:
     st.markdown("""
-    <div class='slide-title'> Fundamentos Teóricos y Algorítmicos</div>
+    <div class='slide-title'>Fundamentos Teóricos y Algorítmicos</div>
     <div class='slide-subtitle'>Sustentación matemática para el agrupamiento y reducción espacial</div>
     """, unsafe_allow_html=True)
     
@@ -248,34 +260,35 @@ elif st.session_state.diapositiva == 3:
     with t_col1:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'> 1. Reestructuración de Matrices (Pivotado)</h4>
+            <h4 style='color:#38BDF8; margin-top:0;'>1. Reestructuración de Matrices (Pivotado)</h4>
             <p style='font-size:14px;'>Consiste en transformar la estructura lineal del histórico para convertir las categorías cualitativas en nuevas dimensiones numéricas (columnas) indexadas por el código único del municipio.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col2:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'> 2. Algoritmo K-Means</h4>
+            <h4 style='color:#38BDF8; margin-top:0;'>2. Algoritmo K-Means</h4>
             <p style='font-size:14px;'>Modelo de aprendizaje no supervisado que particiona las observaciones en <i>K</i> grupos homogéneos. Su meta es minimizar la varianza interna de cada grupo (Inercia o WSS), encontrando un vector promedio central llamado <b>Centroide</b>.</p>
         </div>
         """, unsafe_allow_html=True)
     with t_col3:
         st.markdown("""
         <div class='slide-container' style='min-height: 280px;'>
-            <h4 style='color:#0284C7; margin-top:0;'> 3. Componentes Principales (PCA)</h4>
+            <h4 style='color:#38BDF8; margin-top:0;'>3. Componentes Principales (PCA)</h4>
             <p style='font-size:14px;'>Técnica de reducción de dimensiones que proyecta el plano de alta complejidad hacia un nuevo sistema de ejes ortogonales (PC1, PC2, PC3). Conserva la mayor variabilidad posible permitiendo la visualización gráfica sin alterar las distancias.</p>
         </div>
         """, unsafe_allow_html=True)
         
     st.markdown("""
     <div class='insight-card'>
-        <h4 style='margin-top:0; color:#1E293B;'> Rol Crítico de la Normalización Estadística (Z-Score)</h4>
-        <p>Para asegurar que las distancias geométricas calculadas por el modelo sean confiables, se aplicó un ajuste de escala para obtener una <b>Media = 0 y Varianza = 1</b> (StandardScaler). Sin este paso, las variables masivas (como el conteo total de incidentes) eclipsarían por completo indicadores de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad o pérdidas de vidas humanas.</p>
+        <h4 style='margin-top:0; color:#38BDF8;'>Rol Crítico de la Normalización Estadística (Z-Score)</h4>
+        <p>Para asegurar que las distancias geométricas calculadas por el modelo sean confiables, se aplicó un ajuste de escala para obtener una <b>Media = 0 y Varianza = 1</b> (StandardScaler). Sin este paso, las variables masivas eclipsarían por completo indicadores de menor escala pero con un impacto estratégico crítico.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ", type="primary"):
+    if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ➡️", type="primary"):
         ir_a_diapositiva(4)
+
 
 # ==============================================================================
 # DIAPOSITIVA 4: METODOLOGÍA / DESARROLLO DEL FLUJO
@@ -286,7 +299,7 @@ elif st.session_state.diapositiva == 4:
     <div class='slide-subtitle'>Ingeniería de características implementada en Python para la transformación de la información</div>
     """, unsafe_allow_html=True)
     
-    st.markdown(" Código Implementado:")
+    st.markdown("Código Implementado:")
     
     with st.expander("Fase 1: Pivotado Estructurado y Agrupación Territorial", expanded=True):
         st.code("""
@@ -321,13 +334,14 @@ for k in range(1, 11):
     if st.button("Siguiente Diapositiva: Ejecución y Resultados del Modelo ➡️", type="primary"):
         ir_a_diapositiva(5)
 
+
 # ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS (CON GRÁFICAS MEJORADAS ESTILO PREMIUM)
+# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS (CON ENFOQUE EN EL FONDO AZUL DE TU IMAGEN)
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
     st.markdown("""
-    <div class='slide-title'> Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
-    <div class='slide-subtitle'>Inspección profunda de patrones, métricas de separación y detección de datos atípicos</div>
+    <div class='slide-title'>Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
+    <div class='slide-subtitle'>Inspección profunda de patrones, métricas de separación y detección de datos atípicos con diseño de infografía</div>
     """, unsafe_allow_html=True)
     
     if df_original is None:
@@ -363,14 +377,18 @@ elif st.session_state.diapositiva == 5:
     datos_originales_num['Cluster'] = km4_clusters.labels_
     datos['Cluster'] = km4_clusters.labels_.astype(str)
 
-    # --- MÉTRICAS GENERALES DE LA MATRIZ ---
+    # --- INDICADORES ---
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.metric("Municipios Procesados", datos.shape[0], help="Total de entidades territoriales únicas consolidadas")
+        st.metric("Municipios Procesados", datos.shape[0])
     with col_m2:
-        st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
+        st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4)
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO (Fondo blanco pulido)
+    # Variables de color extraídas exactamente de la imagen cargada por el usuario
+    FONDO_AZUL_DEGRADADO = "#114B5F"  # Color central de fondo del lienzo
+    colores_infografia = ['#4ADE80', '#2563EB', '#F97316', '#DC2626'] # Verde, Azul, Naranja, Rojo
+
+    # 1. ANÁLISIS DE LA CURVA DEL CODO
     st.markdown("### A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -379,50 +397,49 @@ elif st.session_state.diapositiva == 5:
         wss.append(km_test.inertia_)
         
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
-                        labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
-    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#EF4444", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#0284C7', marker=dict(size=8, color='#0369A1'))
+                        labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_dark')
+    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#DC2626", annotation_text="K Óptimo = 4")
     
-    # Pulido estético del fondo
+    fig_elbow.update_traces(line_color='#2563EB', marker=dict(size=9, color='#4ADE80', line=dict(width=1, color='white')))
     fig_elbow.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='#FFFFFF',
-        xaxis=dict(gridcolor='#F1F5F9', linecolor='#E2E8F0'),
-        yaxis=dict(gridcolor='#F1F5F9', linecolor='#E2E8F0')
+        paper_bgcolor=FONDO_AZUL_DEGRADADO, # Aplicación del fondo azul del lienzo de la imagen
+        plot_bgcolor='rgba(10,37,48,0.5)',     # Contraste interior sutilmente más oscuro
+        font=dict(color='#F8FAFC'),
+        xaxis=dict(gridcolor='#1A6278', title_font=dict(color='#38BDF8')),
+        yaxis=dict(gridcolor='#1A6278', title_font=dict(color='#38BDF8')),
+        margin=dict(l=40, r=40, t=50, b=40)
     )
     st.plotly_chart(fig_elbow, use_container_width=True)
-    
-    st.markdown("""
-    <div class='insight-card'>
-        <b>🔍 Análisis Crítico del Codo:</b> La gráfica evidencia que el punto de inflexión más claro ocurre en <b>K=4</b>. Antes de este punto, añadir un grupo extra reduce drásticamente el error del modelo; después de K=4, la ganancia de homogeneidad se estabiliza. Esto demuestra científicamente que clasificar el país en 4 dinámicas territoriales es estructuralmente óptimo.
-    </div>
-    """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS (Color de mapa de calor corporativo sofisticado)
+
+    # 2. ANÁLISIS DE DISTANCIAS (MAPA DE CALOR)
     st.markdown("### 🗺️ B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
-    # MODIFICACIÓN: Cambio a escala 'Icefire' (Gama alta, azul a rojo quemado)
+    # Escala de calor adaptada: va desde el azul del fondo hasta los colores vibrantes del pastel de referencia
+    escala_personalizada = [
+        [0.0, "#0A2530"],   
+        [0.4, "#114B5F"],   
+        [0.75, "#F97316"],  
+        [1.0, "#DC2626"]    
+    ]
+
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub,
                        labels=dict(color="Distancia Real"), title="Mapa de Calor de Disimilitud Espacial",
-                       color_continuous_scale='Icefire', template='plotly_white')
-    
+                       color_continuous_scale=escala_personalizada, template='plotly_dark')
     fig_eu.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='#FFFFFF',
-        xaxis=dict(tickangle=-45, gridcolor='rgba(0,0,0,0)'),
-        yaxis=dict(gridcolor='rgba(0,0,0,0)')
+        paper_bgcolor=FONDO_AZUL_DEGRADADO,
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#F8FAFC'),
+        xaxis=dict(gridcolor='rgba(0,0,0,0)', tickangle=-45),
+        yaxis=dict(gridcolor='rgba(0,0,0,0)'),
+        margin=dict(l=40, r=40, t=50, b=40)
     )
     st.plotly_chart(fig_eu, use_container_width=True)
-    
-    st.markdown("""
-    <div class='insight-card'>
-        <b>🔍 Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
-    </div>
-    """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (Look de estudio de consultoría con fondo unificado)
+
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA 3D
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -435,64 +452,43 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
-    # Colores ejecutivos claros y directos
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Nombre_Cluster', 
                            hover_name='Municipio', hover_data=['Depto'],
                            title='Dispersión Espacial e Intersección de Fronteras de Vulnerabilidad',
-                           color_discrete_sequence=['#10B981', '#06B6D4', '#F59E0B', '#EF4444'], 
-                           template='plotly_white',
+                           color_discrete_sequence=colores_infografia, 
+                           template='plotly_dark',
                            height=850)
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     fig_3d.add_trace(go.Scatter3d(x=centroids_3d[:, 0], y=centroids_3d[:, 1], z=centroids_3d[:, 2],
-                                  mode='markers', marker=dict(size=14, color='#0F172A', symbol='diamond', line=dict(width=2, color='white')),
+                                  mode='markers', marker=dict(size=14, color='#FFFFFF', symbol='diamond', line=dict(width=2, color='#0A2530')),
                                   name='Centroides Matemáticos'))
     
-    # MODIFICACIÓN: Fondos blancos puros y rejillas muy tenues para eliminar el gris opaco de Plotly
+    # Cuadrícula 3D inmersa en la caja con el fondo azul de la imagen
     fig_3d.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor=FONDO_AZUL_DEGRADADO,
         scene=dict(
-            xaxis=dict(
-                backgroundcolor="#FFFFFF", 
-                gridcolor="#F1F5F9",       
-                showbackground=True, 
-                zerolinecolor="#E2E8F0"
-            ),
-            yaxis=dict(
-                backgroundcolor="#FFFFFF", 
-                gridcolor="#F1F5F9", 
-                showbackground=True, 
-                zerolinecolor="#E2E8F0"
-            ),
-            zaxis=dict(
-                backgroundcolor="#F8FAFC", # Un piso apenas grisáceo para dar perspectiva de base
-                gridcolor="#E2E8F0", 
-                showbackground=True, 
-                zerolinecolor="#E2E8F0"
-            ),
-            camera=dict(
-                eye=dict(x=1.5, y=1.5, z=1.1)
-            )
+            xaxis=dict(backgroundcolor="#0A2530", gridcolor="#1A6278", showbackground=True, zerolinecolor="#38BDF8"),
+            yaxis=dict(backgroundcolor="#0A2530", gridcolor="#1A6278", showbackground=True, zerolinecolor="#38BDF8"),
+            zaxis=dict(backgroundcolor="#0A2530", gridcolor="#1A6278", showbackground=True, zerolinecolor="#38BDF8"),
+            camera=dict(eye=dict(x=1.6, y=1.6, z=1.2))
         ),
-        margin=dict(l=0, r=0, b=0, t=50),
+        margin=dict(l=20, r=20, b=20, t=60),
         legend=dict(
-            yanchor="top",
-            y=0.95,
-            xanchor="left",
-            x=0.05,
-            font=dict(size=13)
+            yanchor="top", y=0.95, xanchor="left", x=0.05,
+            font=dict(size=13, color='#FFFFFF'),
+            bgcolor='rgba(10,37,48,0.8)'
         )
     )
     st.plotly_chart(fig_3d, use_container_width=True)
     
     st.markdown("""
     <div class='insight-critical'>
-        <h4> Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
-        <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
-        Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
-        El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
+        <h4 style='color: #FF8A8A !important;'>Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
+        <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma de isla. Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos. El modelo los agrupa en el <b>Clúster 3 (Emergencia Crítica)</b> porque superan los promedios nacionales por más de 3 desviaciones estándar.</p>
     </div>
     """, unsafe_allow_html=True)
+
 
     # 4. RADIOGRAFÍA PROFUNDA DE LOS RESULTADOS
     st.markdown("### D. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
@@ -503,21 +499,10 @@ elif st.session_state.diapositiva == 5:
     tabla_perfil.index = ["Clúster 0 (Riesgo Controlado)", "Clúster 1 (Impacto Moderado)", 
                           "Clúster 2 (Conflicto Institucional)", "Clúster 3 (Emergencia Crítica)"]
     st.dataframe(tabla_perfil, use_container_width=True)
-    
-    st.markdown("""
-    <div class='slide-container'>
-        <h4 style='margin-top:0; color:#0F172A;'>🔍 Interpretación Estratégica de cada Grupo:</h4>
-        <ul>
-            <li><b>🟢 Clúster 0 (Riesgo Controlado):</b> Agrupa a la inmensa mayoría de municipios del país. Los incidentes son esporádicos y aislados, manteniendo promedios cercanos a cero. Representa la estabilidad base del territorio.</li>
-            <li><b>🔵 Clúster 1 (Impacto Moderado / Dinámico):</b> Municipios que muestran actividad delictiva constante pero con baja letalidad. Son zonas con novedades frecuentes (heridos o afectaciones logísticas) pero donde la confrontación armada no está desbordada.</li>
-            <li><b>🟡 Clúster 2 (Foco de Conflicto Institucional):</b> Zonas geográficas muy particulares donde los ataques están dirigidos explícitamente a las patrullas e instalaciones físicas de la Fuerza Pública. Presentan niveles intermedios de letalidad y una alta concentración de eventos bélicos.</li>
-            <li><b>🔴 Clúster 3 (Emergencia Crítica):</b> El grupo más alarmante del análisis. Contiene pocos municipios pero registra promedios de asesinados, heridos y afectaciones totales sumamente altos. Aquí es donde radican las anomalías de los datos y donde el despliegue del Estado debe pasar de ser reactivo a completamente prioritario.</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
 
     if st.button("Siguiente Diapositiva: Conclusiones y Recomendaciones ➡️", type="primary"):
         ir_a_diapositiva(6)
+
 
 # ==============================================================================
 # DIAPOSITIVA 6: CONCLUSIONES Y CIERRE ACADÉMICO
@@ -532,29 +517,29 @@ elif st.session_state.diapositiva == 6:
     with c_col1:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#0369A1; margin-top:0;'> Conclusiones Clave</h3>
+            <h3 style='color:#38BDF8; margin-top:0;'>Conclusiones Clave</h3>
             <ol>
                 <li><b>Tratamiento Cualitativo Exitoso:</b> Se logró solucionar la limitación inicial de trabajar con columnas de texto mediante una estrategia de reestructuración matricial efectiva.</li>
-                <li><b>Consistencia Algorítmica:</b> El acoplamiento de <i>Z-Score, K-Means y PCA</i> demostró una separación clara de los municipios en el espacio geométrico, aislando de forma óptima las zonas críticas de las estables.</li>
-                <li><b>Identificación de Anomalías:</b> El modelo demostró alta sensibilidad al aislar de forma automática los datos atípicos de alto impacto operacional en el clúster de Emergencia Crítica.</li>
+                <li><b>Consistencia Algorítmica:</b> El acoplamiento de <i>Z-Score, K-Means y PCA</i> demostró una separación clara de los municipios en el espacio geométrico.</li>
+                <li><b>Identificación de Anomalías:</b> El modelo demostró alta sensibilidad al aislar de forma automática los datos atípicos de alto impacto operacional.</li>
             </ol>
         </div>
         """, unsafe_allow_html=True)
     with c_col2:
         st.markdown("""
         <div class='slide-container' style='min-height:350px;'>
-            <h3 style='color:#16A34A; margin-top:0;'> Sugerencias para el Futuro</h3>
+            <h3 style='color:#4ADE80; margin-top:0;'>Sugerencias para el Futuro</h3>
             <ul>
-                <li><b>Logística de Despliegue Preventivo:</b> Los perfiles numéricos de los centroides de los clústeres 2 y 3 permiten a los tomadores de decisiones pre-posicionar apoyo logístico y asistencia médica en los municipios prioritarios.</li>
-                <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada; ante la adición de nuevos registros mensuales en la carpeta raíz, el modelo actualizará los grupos en tiempo real de forma inmediata.</li>
+                <li><b>Logística de Despliegue Preventivo:</b> Los perfiles numéricos de los centroides de los clústeres permiten a los tomadores de decisiones pre-posicionar apoyo logístico.</li>
+                <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada ante la adición de nuevos registros mensuales.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
         
     st.markdown("""
     <div style='text-align: center; padding: 40px 0;'>
-        <h2 style='color: #0369A1; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
-        <p style='color: #64748B;'>Se abre el espacio para las preguntas y observaciones del comité evaluador.</p>
+        <h2 style='color: #38BDF8; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
+        <p style='color: #94A3B8;'>Se abre el espacio para las preguntas y observaciones del comité evaluador.</p>
     </div>
     """, unsafe_allow_html=True)
     
