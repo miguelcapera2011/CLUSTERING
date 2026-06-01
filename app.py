@@ -470,7 +470,7 @@ elif st.session_state.diapositiva == 5:
     
     nombres_clusters = {"0": "Clúster 0: Riesgo Controlado", "1": "Clúster 1: Impacto Moderado", 
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
-    df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
+   df_pca['Cluster'].map(nombres_clusters)
     
     fig_3d = px.scatter_3d(
         df_pca,
