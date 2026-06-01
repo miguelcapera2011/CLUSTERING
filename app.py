@@ -455,7 +455,7 @@ elif st.session_state.diapositiva == 5:
 
     st.markdown("""
     <div class='insight-card'>
-        <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
+        <b>Análisis del Mapa de Calor:</b> Los bloques identifies municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
     """, unsafe_allow_html=True)
 
@@ -470,7 +470,7 @@ elif st.session_state.diapositiva == 5:
     
     nombres_clusters = {"0": "Clúster 0: Riesgo Controlado", "1": "Clúster 1: Impacto Moderado", 
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
-    df_pca['Cluster'].map(nombres_clusters)
+    df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
     fig_3d = px.scatter_3d(
         df_pca,
@@ -486,60 +486,55 @@ elif st.session_state.diapositiva == 5:
             "Clúster 1: Impacto Moderado": "#0EA5E9",
             "Clúster 2: Conflicto Institucional": "#F59E0B",
             "Clúster 3: Emergencia Crítica": "#EF4444"
-           }
-        )
+        }
+    )
 
-        fig_3d.update_layout(
+    fig_3d.update_layout(
         height=900,
         paper_bgcolor="#EAF4FF",
         plot_bgcolor="#F4F9FF",
         font=dict(
             color="black",
             size=14
-         ),
-
+        ),
         legend=dict(
             font=dict(
-               color="black",
-               size=14
-         ),
-         title=dict(
-            text="Clusters",
-            font=dict(
                 color="black",
-                size=16
-               )
+                size=14
+            ),
+            title=dict(
+                text="Clusters",
+                font=dict(
+                    color="black",
+                    size=16
+                )
             )
-          ),
-
-         scene=dict(
-             bgcolor="#F4F9FF",
-
+        ),
+        scene=dict(
+            bgcolor="#F4F9FF",
             xaxis=dict(
                 title="PC1",
                 title_font=dict(color="black"),
                 tickfont=dict(color="black"),
                 backgroundcolor="#F4F9FF",
                 gridcolor="#CBD5E1"
-         ),
-
-          yaxis=dict(
-            title="PC2",
-            title_font=dict(color="black"),
-            tickfont=dict(color="black"),
-            backgroundcolor="#F4F9FF",
-            gridcolor="#CBD5E1"
-        ),
-
-        zaxis=dict(
-            title="PC3",
-            title_font=dict(color="black"),
-            tickfont=dict(color="black"),
-            backgroundcolor="#F4F9FF",
-            gridcolor="#CBD5E1"
+            ),
+            yaxis=dict(
+                title="PC2",
+                title_font=dict(color="black"),
+                tickfont=dict(color="black"),
+                backgroundcolor="#F4F9FF",
+                gridcolor="#CBD5E1"
+            ),
+            zaxis=dict(
+                title="PC3",
+                title_font=dict(color="black"),
+                tickfont=dict(color="black"),
+                backgroundcolor="#F4F9FF",
+                gridcolor="#CBD5E1"
             )
-         )
-      )
+        )
+    )
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     colores = ["#22C55E", "#0EA5E9", "#F59E0B", "#EF4444"]
