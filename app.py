@@ -10,10 +10,7 @@ from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
 
-
-# ==================================================
 # ESTILO PREMIUM PARA GRAFICAS
-# ==================================================
 
 def aplicar_estilo_premium(fig):
     fig.update_layout(
@@ -309,7 +306,7 @@ elif st.session_state.diapositiva == 3:
 
 elif st.session_state.diapositiva == 4:
     st.markdown("""
-    <div class='slide-title'>⚙️ Arquitectura del Flujo y Procesamiento de Datos</div>
+    <div class='slide-title'>Arquitectura del Flujo y Procesamiento de Datos</div>
     <div class='slide-subtitle'>Ingeniería de características implementada en Python para la transformación de la información</div>
     """, unsafe_allow_html=True)
     
@@ -418,7 +415,7 @@ elif st.session_state.diapositiva == 5:
     
     st.markdown("""
     <div class='insight-card'>
-        <b>🔍 Análisis Crítico del Codo:</b> La gráfica evidencia que el punto de inflexión más claro ocurre en <b>K=4</b>. Antes de este punto, añadir un grupo extra reduce drásticamente el error del modelo; después de K=4, la ganancia de homogeneidad se estabiliza. Esto demuestra científicamente que clasificar el país en 4 dinámicas territoriales es estructuralmente óptimo.
+        <b>Análisis de la grafica del Codo:</b> La gráfica evidencia que el punto de inflexión más claro ocurre en <b>K=4</b>. Antes de este punto, añadir un grupo extra reduce drásticamente el error del modelo; después de K=4, la ganancia de homogeneidad se estabiliza. Esto demuestra científicamente que clasificar el país en 4 dinámicas territoriales es estructuralmente óptimo.
     </div>
     """, unsafe_allow_html=True)
 
