@@ -417,10 +417,10 @@ elif st.session_state.diapositiva == 5:
 
     fig_elbow = aplicar_estilo_premium(fig_elbow)
 
-fig_elbow.update_traces(
-    line=dict(width=5),
-    marker=dict(size=10)
-)
+    fig_elbow.update_traces(
+       line=dict(width=5),
+       marker=dict(size=10)
+       )
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -433,7 +433,7 @@ fig_elbow.update_traces(
     st.markdown("### B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
-   fig_eu = px.imshow(
+    fig_eu = px.imshow(
 
     distancias_eu,
 
@@ -448,14 +448,14 @@ fig_elbow.update_traces(
         [0.50, "#38BDF8"],
         [0.75, "#0284C7"],
         [1, "#0369A1"]
-    ]
+       ]
 
-)
+     )
 
-fig_eu = aplicar_estilo_premium(fig_eu)
+    fig_eu = aplicar_estilo_premium(fig_eu)
     st.plotly_chart(fig_eu, use_container_width=True)
     
-    st.markdown("""
+   st.markdown("""
     <div class='insight-card'>
         <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
@@ -497,21 +497,21 @@ fig_eu = aplicar_estilo_premium(fig_eu)
         "Clúster 2: Conflicto Institucional":"#F59E0B",
         "Clúster 3: Emergencia Crítica":"#EF4444"
 
-    }
+       }
 
-)
+    )
 
-fig_3d.update_layout(
+    fig_3d.update_layout(
 
-    height=900,
+      height=900,
 
-    paper_bgcolor="#EAF4FF",
+      paper_bgcolor="#EAF4FF",
 
-    font=dict(
-        color="#0F172A"
-    ),
+      font=dict(
+          color="#0F172A"
+      ),
 
-    scene=dict(
+     scene=dict(
 
         bgcolor="#F4F9FF",
 
@@ -528,44 +528,44 @@ fig_3d.update_layout(
         zaxis=dict(
             backgroundcolor="#F4F9FF",
             gridcolor="#CBD5E1"
-        )
-    )
-)
+           )
+         )
+       )
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
-   colores = [
-    "#22C55E",
-    "#0EA5E9",
-    "#F59E0B",
-    "#EF4444"
-]
+    colores = [
+     "#22C55E",
+     "#0EA5E9",
+     "#F59E0B",
+     "#EF4444"
+        ]
 
-for i in range(4):
+     for i in range(4):
 
-    fig_3d.add_trace(
+         fig_3d.add_trace(
 
-        go.Scatter3d(
+            go.Scatter3d(
 
-            x=[centroids_3d[i,0]],
-            y=[centroids_3d[i,1]],
-            z=[centroids_3d[i,2]],
+               x=[centroids_3d[i,0]],
+               y=[centroids_3d[i,1]],
+               z=[centroids_3d[i,2]],
 
-            mode='markers',
+               mode='markers',
 
-            marker=dict(
+               marker=dict(
 
-                size=18,
-                color=colores[i],
-                symbol='diamond'
+                  size=18,
+                  color=colores[i],
+                  symbol='diamond'
 
-            ),
+               ),
 
-            name=f'Centroide {i}'
+             name=f'Centroide {i}'
+
+          )
 
         )
 
-    )
-
-     for cluster in sorted(df_pca["Cluster"].unique()):
+      for cluster in sorted(df_pca["Cluster"].unique()):
 
       temp = df_pca[df_pca["Cluster"] == cluster]
 
@@ -630,11 +630,11 @@ for i in range(4):
 
 # DIAPOSITIVA 6: CONCLUSIONES Y CIERRE ACADÉMICO
 
-elif st.session_state.diapositiva == 6:
-    st.markdown("""
-    <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
-    <div class='slide-subtitle'>Cierre formal de la investigación estadística</div>
-    """, unsafe_allow_html=True)
+  elif st.session_state.diapositiva == 6:
+     st.markdown("""
+     <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
+     <div class='slide-subtitle'>Cierre formal de la investigación estadística</div>
+     """, unsafe_allow_html=True)
     
     c_col1, c_col2 = st.columns(2)
     with c_col1:
