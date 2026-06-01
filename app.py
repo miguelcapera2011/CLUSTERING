@@ -474,7 +474,7 @@ elif st.session_state.diapositiva == 5:
                         "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
-   fig_3d = px.scatter_3d(
+    fig_3d = px.scatter_3d(
 
     df_pca,
 
@@ -497,11 +497,11 @@ elif st.session_state.diapositiva == 5:
         "Clúster 2: Conflicto Institucional":"#F59E0B",
         "Clúster 3: Emergencia Crítica":"#EF4444"
 
-       }
+        }
 
-    )
+     )
 
-    fig_3d.update_layout(
+     fig_3d.update_layout(
 
       height=900,
 
@@ -511,7 +511,7 @@ elif st.session_state.diapositiva == 5:
           color="#0F172A"
       ),
 
-     scene=dict(
+      scene=dict(
 
         bgcolor="#F4F9FF",
 
@@ -531,15 +531,15 @@ elif st.session_state.diapositiva == 5:
            )
          )
        )
-    centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
-    colores = [
-     "#22C55E",
-     "#0EA5E9",
-     "#F59E0B",
-     "#EF4444"
+     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
+     colores = [
+      "#22C55E",
+      "#0EA5E9",
+      "#F59E0B",
+      "#EF4444"
         ]
 
-     for i in range(4):
+      for i in range(4):
 
          fig_3d.add_trace(
 
