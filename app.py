@@ -40,7 +40,7 @@ def aplicar_estilo_premium(fig):
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
 
-st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Exposición Mineria De Datos - Orden Público en colombia", layout="wide", initial_sidebar_state="collapsed")
 
 # Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
 st.markdown("""
