@@ -460,7 +460,7 @@ elif st.session_state.diapositiva == 5:
     """, unsafe_allow_html=True)
 
     # 3. ANÁLISIS TRIDIMENSIONAL DE PCA
-    st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
+    st.markdown("C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
     df_pca = pd.DataFrame(scores_pca, columns=['PC1', 'PC2', 'PC3'])
@@ -578,7 +578,7 @@ elif st.session_state.diapositiva == 5:
     st.markdown("""
     <div class='insight-critical'>
         <h4> Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
-        <p>Al exploring la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
+        <p>Al explorarr la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
     </div>
@@ -596,7 +596,7 @@ elif st.session_state.diapositiva == 5:
     
     st.markdown("""
     <div class='slide-container'>
-        <h4 style='margin-top:0; color:#0F172A;'>🔍 Interpretación Estratégica de cada Grupo:</h4>
+        <h4 style='margin-top:0; color:#0F172A;'> Interpretación Estratégica de cada Grupo:</h4>
         <ul>
             <li><b>🟢 Clúster 0 (Riesgo Controlado):</b> Agrupa a la inmensa mayoría de municipios del país. Los incidentes son esporádicos y aislados, manteniendo promedios cercanos a cero. Representa la estabilidad base del territorio.</li>
             <li><b>🔵 Clúster 1 (Impacto Moderado / Dinámico):</b> Municipios que muestran actividad delictiva constante pero con baja letalidad. Son zonas con novedades frecuentes (heridos o afectaciones logísticas) pero donde la confrontación armada no está desbordada.</li>
@@ -644,7 +644,7 @@ elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div style='text-align: center; padding: 40px 0;'>
         <h2 style='color: #0369A1; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
-        <p style='color: #64748B;'>Se abre el espacio para las preguntas y observaciones del comité evaluador.</p>
+        <p style='color: #64748B;'>Se abre el espacio para las preguntas y observaciones.</p>
     </div>
     """, unsafe_allow_html=True)
     
