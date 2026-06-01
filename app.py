@@ -455,7 +455,7 @@ elif st.session_state.diapositiva == 5:
     fig_eu = aplicar_estilo_premium(fig_eu)
     st.plotly_chart(fig_eu, use_container_width=True)
     
-   st.markdown("""
+    st.markdown("""
     <div class='insight-card'>
         <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
