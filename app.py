@@ -235,9 +235,8 @@ elif st.session_state.diapositiva == 2:
     if st.button("Siguiente Diapositiva: Marco Conceptual ➡️", type="primary"):
         ir_a_diapositiva(3)
 
-# ==============================================================================
 # DIAPOSITIVA 3: MARCO TEÓRICO / CONCEPTUAL
-# ==============================================================================
+
 elif st.session_state.diapositiva == 3:
     st.markdown("""
     <div class='slide-title'> Fundamentos Teóricos y Algorítmicos</div>
@@ -277,9 +276,9 @@ elif st.session_state.diapositiva == 3:
     if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ", type="primary"):
         ir_a_diapositiva(4)
 
-# ==============================================================================
+
 # DIAPOSITIVA 4: METODOLOGÍA / DESARROLLO DEL FLUJO
-# ==============================================================================
+
 elif st.session_state.diapositiva == 4:
     st.markdown("""
     <div class='slide-title'>⚙️ Arquitectura del Flujo y Procesamiento de Datos</div>
@@ -321,9 +320,8 @@ for k in range(1, 11):
     if st.button("Siguiente Diapositiva: Ejecución y Resultados del Modelo ➡️", type="primary"):
         ir_a_diapositiva(5)
 
-# ==============================================================================
 # DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO DE LOS CLÚSTERES (CORAZÓN DE LA EXP)
-# ==============================================================================
+
 elif st.session_state.diapositiva == 5:
     st.markdown("""
     <div class='slide-title'> Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
@@ -465,9 +463,9 @@ elif st.session_state.diapositiva == 5:
     if st.button("Siguiente Diapositiva: Conclusiones y Recomendaciones ➡️", type="primary"):
         ir_a_diapositiva(6)
 
-# ==============================================================================
+
 # DIAPOSITIVA 6: CONCLUSIONES Y CIERRE ACADÉMICO
-# ==============================================================================
+
 elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
