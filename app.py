@@ -16,24 +16,19 @@ import plotly.graph_objects as go
 # ==================================================
 
 def aplicar_estilo_premium(fig):
-
     fig.update_layout(
-
         paper_bgcolor="#EAF4FF",
         plot_bgcolor="#F4F9FF",
-
         font=dict(
             color="#0F172A",
             size=14
         ),
-
         title=dict(
             font=dict(
                 size=22,
                 color="#0F172A"
             )
         ),
-
         margin=dict(
             l=20,
             r=20,
@@ -41,7 +36,6 @@ def aplicar_estilo_premium(fig):
             b=20
         )
     )
-
     return fig
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
@@ -420,7 +414,7 @@ elif st.session_state.diapositiva == 5:
     fig_elbow.update_traces(
        line=dict(width=5),
        marker=dict(size=10)
-       )
+    )
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -434,30 +428,25 @@ elif st.session_state.diapositiva == 5:
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     fig_eu = px.imshow(
-
-    distancias_eu,
-
-    x=nombres_municipios_sub,
-    y=nombres_municipios_sub,
-
-    title="Mapa de Distancias Euclidianas",
-
-    color_continuous_scale=[
-        [0, "#E0F2FE"],
-        [0.25, "#7DD3FC"],
-        [0.50, "#38BDF8"],
-        [0.75, "#0284C7"],
-        [1, "#0369A1"]
-       ]
-
-     )
+        distancias_eu,
+        x=nombres_municipios_sub,
+        y=nombres_municipios_sub,
+        title="Mapa de Distancias Euclidianas",
+        color_continuous_scale=[
+            [0, "#E0F2FE"],
+            [0.25, "#7DD3FC"],
+            [0.50, "#38BDF8"],
+            [0.75, "#0284C7"],
+            [1, "#0369A1"]
+        ]
+    )
 
     fig_eu = aplicar_estilo_premium(fig_eu)
     st.plotly_chart(fig_eu, use_container_width=True)
     
     st.markdown("""
     <div class='insight-card'>
-        <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
+        <b>Análisis del Mapa de Calor:</b> Los bloques identifies municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
     """, unsafe_allow_html=True)
 
@@ -475,122 +464,82 @@ elif st.session_state.diapositiva == 5:
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
     fig_3d = px.scatter_3d(
-
-    df_pca,
-
-    x='PC1',
-    y='PC2',
-    z='PC3',
-
-    color='Nombre_Cluster',
-
-    hover_name='Municipio',
-
-    hover_data=['Depto'],
-
-    title='Distribución Espacial de Municipios',
-
-    color_discrete_map={
-
-        "Clúster 0: Riesgo Controlado":"#22C55E",
-        "Clúster 1: Impacto Moderado":"#0EA5E9",
-        "Clúster 2: Conflicto Institucional":"#F59E0B",
-        "Clúster 3: Emergencia Crítica":"#EF4444"
-
+        df_pca,
+        x='PC1',
+        y='PC2',
+        z='PC3',
+        color='Nombre_Cluster',
+        hover_name='Municipio',
+        hover_data=['Depto'],
+        title='Distribución Espacial de Municipios',
+        color_discrete_map={
+            "Clúster 0: Riesgo Controlado":"#22C55E",
+            "Clúster 1: Impacto Moderado":"#0EA5E9",
+            "Clúster 2: Conflicto Institucional":"#F59E0B",
+            "Clúster 3: Emergencia Crítica":"#EF4444"
         }
-
-     )
-
-     fig_3d.update_layout(
-
-      height=900,
-
-      paper_bgcolor="#EAF4FF",
-
-      font=dict(
-          color="#0F172A"
-      ),
-
-      scene=dict(
-
-        bgcolor="#F4F9FF",
-
-        xaxis=dict(
-            backgroundcolor="#F4F9FF",
-            gridcolor="#CBD5E1"
-        ),
-
-        yaxis=dict(
-            backgroundcolor="#F4F9FF",
-            gridcolor="#CBD5E1"
-        ),
-
-        zaxis=dict(
-            backgroundcolor="#F4F9FF",
-            gridcolor="#CBD5E1"
-           )
-         )
-       )
-     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
-     colores = [
-      "#22C55E",
-      "#0EA5E9",
-      "#F59E0B",
-      "#EF4444"
-        ]
-
-      for i in range(4):
-
-         fig_3d.add_trace(
-
-            go.Scatter3d(
-
-               x=[centroids_3d[i,0]],
-               y=[centroids_3d[i,1]],
-               z=[centroids_3d[i,2]],
-
-               mode='markers',
-
-               marker=dict(
-
-                  size=18,
-                  color=colores[i],
-                  symbol='diamond'
-
-               ),
-
-             name=f'Centroide {i}'
-
-          )
-
-        )
-
-      for cluster in sorted(df_pca["Cluster"].unique()):
-
-      temp = df_pca[df_pca["Cluster"] == cluster]
-
-      fig_3d.add_trace(
-
-        go.Mesh3d(
-
-            x=temp["PC1"],
-            y=temp["PC2"],
-            z=temp["PC3"],
-
-            opacity=0.10,
-
-            color={
-                "0":"#22C55E",
-                "1":"#0EA5E9",
-                "2":"#F59E0B",
-                "3":"#EF4444"
-            }[cluster],
-
-            name=f"Área Cluster {cluster}"
-
-        )
-
     )
+
+    fig_3d.update_layout(
+        height=900,
+        paper_bgcolor="#EAF4FF",
+        font=dict(
+            color="#0F172A"
+        ),
+        scene=dict(
+            bgcolor="#F4F9FF",
+            xaxis=dict(
+                backgroundcolor="#F4F9FF",
+                gridcolor="#CBD5E1"
+            ),
+            yaxis=dict(
+                backgroundcolor="#F4F9FF",
+                gridcolor="#CBD5E1"
+            ),
+            zaxis=dict(
+                backgroundcolor="#F4F9FF",
+                gridcolor="#CBD5E1"
+            )
+        )
+    )
+    
+    centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
+    colores = ["#22C55E", "#0EA5E9", "#F59E0B", "#EF4444"]
+
+    for i in range(4):
+        fig_3d.add_trace(
+            go.Scatter3d(
+                x=[centroids_3d[i,0]],
+                y=[centroids_3d[i,1]],
+                z=[centroids_3d[i,2]],
+                mode='markers',
+                marker=dict(
+                    size=18,
+                    color=colores[i],
+                    symbol='diamond'
+                ),
+                name=f'Centroide {i}'
+            )
+        )
+
+    for cluster in sorted(df_pca["Cluster"].unique()):
+        temp = df_pca[df_pca["Cluster"] == cluster]
+        fig_3d.add_trace(
+            go.Mesh3d(
+                x=temp["PC1"],
+                y=temp["PC2"],
+                z=temp["PC3"],
+                opacity=0.10,
+                color={
+                    "0":"#22C55E",
+                    "1":"#0EA5E9",
+                    "2":"#F59E0B",
+                    "3":"#EF4444"
+                }[cluster],
+                name=f"Área Cluster {cluster}"
+            )
+        )
+        
     st.plotly_chart(fig_3d, use_container_width=True)
     
     st.markdown("""
@@ -630,11 +579,11 @@ elif st.session_state.diapositiva == 5:
 
 # DIAPOSITIVA 6: CONCLUSIONES Y CIERRE ACADÉMICO
 
-  elif st.session_state.diapositiva == 6:
-     st.markdown("""
-     <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
-     <div class='slide-subtitle'>Cierre formal de la investigación estadística</div>
-     """, unsafe_allow_html=True)
+elif st.session_state.diapositiva == 6:
+    st.markdown("""
+    <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
+    <div class='slide-subtitle'>Cierre formal de la investigación estadística</div>
+    """, unsafe_allow_html=True)
     
     c_col1, c_col2 = st.columns(2)
     with c_col1:
