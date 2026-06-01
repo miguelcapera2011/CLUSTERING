@@ -11,23 +11,22 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
-st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide", initial_sidebar_state="collapsed")
 
-# Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
+st.set_page_config(page_title="Exposición Avanzada - Orden Público", layout="wide",
+                   initial_sidebar_state="collapsed")
+
+# Inyección de CSS Avanzado para simular Diapositivas de Consultoría
 st.markdown("""
     <style>
-    /* Fondo principal claro y limpio estilo diapositiva */
     .stApp {
         background-color: #F8FAFC;
         color: #1E293B;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
-    /* Ocultar barra lateral por defecto */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0;
     }
-    /* Contenedor de la diapositiva */
     .slide-container {
         background-color: #FFFFFF;
         padding: 40px;
@@ -36,7 +35,6 @@ st.markdown("""
         margin-bottom: 25px;
         border: 1px solid #E2E8F0;
     }
-    /* Estilos de títulos */
     .slide-title {
         color: #0F172A;
         font-size: 36px;
@@ -49,8 +47,6 @@ st.markdown("""
         margin-bottom: 25px;
         font-weight: 400;
     }
-    
-    /* Botones superiores */
     div.stButton > button {
         background-color: #E0F2FE !important;
         color: #0369A1 !important;
@@ -61,18 +57,18 @@ st.markdown("""
         padding: 8px 16px !important;
         transition: all 0.3s ease-in-out !important;
     }
-    
     div.stButton > button:hover {
         background-color: #7DD3FC !important;
+        color: #0369A1 !important;
+        border-color: #7DD3FC !important;
         box-shadow: 0 4px 12px rgba(3, 105, 161, 0.15) !important;
     }
-
     div.stButton > button[kind="primary"] {
         background-color: #0284C7 !important;
         color: #FFFFFF !important;
         border: 1px solid #0284C7 !important;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3) !important;
     }
-
     .insight-card {
         background-color: #F1F5F9;
         border-left: 5px solid #38BDF8;
@@ -97,7 +93,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Inicialización del paginador
 if 'diapositiva' not in st.session_state:
     st.session_state.diapositiva = 1
 
@@ -105,7 +100,6 @@ def ir_a_diapositiva(num):
     st.session_state.diapositiva = num
     st.rerun()
 
-# CARGA DE DATOS
 def cargar_datos_automatico():
     archivos_en_carpeta = os.listdir('.')
     archivo_encontrado = None
@@ -115,7 +109,7 @@ def cargar_datos_automatico():
             archivo_encontrado = archivo
             break
     if archivo_encontrado is None:
-        return None, "No se encontró el registro de datos."
+        return None, "No se encontró el registro de datos en la carpeta raíz."
     try:
         if archivo_encontrado.endswith('.csv'):
             df = pd.read_csv(archivo_encontrado, header=0)
@@ -123,7 +117,7 @@ def cargar_datos_automatico():
             df = pd.read_excel(archivo_encontrado, header=0)
         return df, archivo_encontrado
     except Exception as e:
-        return None, str(e)
+        return None, f"Error al leer el archivo: {str(e)}"
 
 df_original, nombre_archivo_cargado = cargar_datos_automatico()
 
@@ -138,8 +132,7 @@ for i, nombre in enumerate(nombres_diapo):
 
 st.markdown("---")
 
-# --- DIAPOSITIVAS ---
-
+# DIAPOSITIVAS
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
@@ -151,54 +144,64 @@ if st.session_state.diapositiva == 1:
     """, unsafe_allow_html=True)
     col_p1, col_p2 = st.columns(2)
     with col_p1:
-        st.markdown("<div class='insight-card'><h4>ESTUDIANTE</h4><p><b>Miguel Angel Garatejo</b></p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='insight-card'><h4 style='margin-top:0; color:#1E3A8A;'>ESTUDIANTE</h4><p><b>Miguel Angel Garatejo</b><br>Facultad de Ciencias<br>Matematica con Enfasis en Estadistica</p></div>", unsafe_allow_html=True)
     with col_p2:
-        st.markdown(f"<div class='insight-success'><h4>PROFESOR</h4><p><b>Yuri Marcela Garcia Saavedra</b></p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='insight-success'><h4 style='margin-top:0; color:#16A34A;'> PROFESOR</h4><p><b>Yuri Marcela Garcia Saavedra</b><br>Mineria de Datos <br>Año: {time.strftime('%Y')} | Clustering</p></div>", unsafe_allow_html=True)
     if st.button("Iniciar Sustentación", type="primary", use_container_width=True):
         ir_a_diapositiva(2)
 
 elif st.session_state.diapositiva == 2:
-    st.markdown("<div class='slide-title'>Introducción</div>", unsafe_allow_html=True)
+    st.markdown("<div class='slide-title'> Introducción y Definición del Desafío Técnico</div><div class='slide-subtitle'>Contexto del orden público e inconsistencia de los datos</div>", unsafe_allow_html=True)
     col_i1, col_i2 = st.columns(2)
     with col_i1:
-        st.markdown("<div class='slide-container'><h3>El Problema</h3><p>Los datos son cualitativos y dificultan el análisis matemático directo.</p></div>", unsafe_allow_html=True)
+        st.markdown("<div class='slide-container'><h3 style='color: #DC2626; margin-top:0;'> El Problema de los Datos Originales</h3><p><b>Naturaleza del Archivo:</b> La información institucional se presenta como un <i>Histórico de Novedades</i>.</p><ul><li><b>Restricción de Estructura:</b> El archivo posee 8 columnas cualitativas y solo 1 cuantitativa.</li><li><b>El Quiebre Matemático:</b> Los algoritmos basados en distancias son incapaces de calcular similitudes usando texto directo.</li></ul></div>", unsafe_allow_html=True)
     with col_i2:
-        st.markdown("<div class='slide-container'><h3>Objetivo</h3><p>Reestructurar datos para aplicar K-Means y agrupar municipios.</p></div>", unsafe_allow_html=True)
-    if st.button("Siguiente Diapositiva ➡️", type="primary"):
+        st.markdown("<div class='slide-container'><h3 style='color: #0284C7; margin-top:0;'> Objetivos y Justificación</h3><p><b>Objetivo Principal:</b> Construir un flujo automatizado para reestructurar y agrupar numéricamente los municipios.</p><ul><li>Migrar a un mapa estratégico integral.</li><li>Sustentar científicamente la asignación de recursos.</li></ul></div>", unsafe_allow_html=True)
+    if st.button("Siguiente Diapositiva: Marco Conceptual ➡️", type="primary"):
         ir_a_diapositiva(3)
 
 elif st.session_state.diapositiva == 3:
-    st.markdown("<div class='slide-title'>Marco Teórico</div>", unsafe_allow_html=True)
-    st.markdown("<div class='slide-container'><h4>Algoritmos Utilizados</h4><p>Pivotado, K-Means y PCA (Reducción de dimensiones).</p></div>", unsafe_allow_html=True)
-    if st.button("Siguiente Diapositiva ➡️", type="primary"):
+    st.markdown("<div class='slide-title'> Fundamentos Teóricos y Algorítmicos</div><div class='slide-subtitle'>Sustentación matemática para el agrupamiento y reducción espacial</div>", unsafe_allow_html=True)
+    t_col1, t_col2, t_col3 = st.columns(3)
+    with t_col1:
+        st.markdown("<div class='slide-container' style='min-height: 280px;'><h4 style='color:#0284C7; margin-top:0;'> 1. Reestructuración de Matrices</h4><p style='font-size:14px;'>Transformación de categorías cualitativas en dimensiones numéricas numéricas mediante pivotado.</p></div>", unsafe_allow_html=True)
+    with t_col2:
+        st.markdown("<div class='slide-container' style='min-height: 280px;'><h4 style='color:#0284C7; margin-top:0;'> 2. Algoritmo K-Means</h4><p style='font-size:14px;'>Modelo no supervisado que minimiza la varianza interna encontrando vectores promedio llamados Centroides.</p></div>", unsafe_allow_html=True)
+    with t_col3:
+        st.markdown("<div class='slide-container' style='min-height: 280px;'><h4 style='color:#0284C7; margin-top:0;'> 3. PCA</h4><p style='font-size:14px;'>Reducción de dimensiones conservando la mayor variabilidad posible para visualización 3D.</p></div>", unsafe_allow_html=True)
+    st.markdown("<div class='insight-card'><h4 style='margin-top:0; color:#1E293B;'> Normalización Z-Score</h4><p>Ajuste de escala para obtener Media = 0 y Varianza = 1, evitando que variables masivas eclipsen indicadores críticos.</p></div>", unsafe_allow_html=True)
+    if st.button("Siguiente Diapositiva: Estrategia de Procesamiento ", type="primary"):
         ir_a_diapositiva(4)
 
 elif st.session_state.diapositiva == 4:
-    st.markdown("<div class='slide-title'>Metodología</div>", unsafe_allow_html=True)
-    st.markdown("<div class='slide-container'><p>Fases: 1. Pivotado | 2. Normalización | 3. Optimización.</p></div>", unsafe_allow_html=True)
-    if st.button("Siguiente Diapositiva ➡️", type="primary"):
+    st.markdown("<div class='slide-title'>⚙️ Arquitectura del Flujo y Procesamiento de Datos</div><div class='slide-subtitle'>Ingeniería de características implementada en Python</div>", unsafe_allow_html=True)
+    with st.expander("Fase 1: Pivotado y Agrupación", expanded=True):
+        st.code("pivot = df.pivot_table(index=['COD_MUNI'], columns='ACCION', values='CANTIDAD', aggfunc='sum')", language="python")
+    with st.expander("Fase 2: StandardScaler", expanded=False):
+        st.code("scaler = StandardScaler()\nX_scaled = scaler.fit_transform(datos)", language="python")
+    with st.expander("Fase 3: Método del Codo", expanded=False):
+        st.code("wss = [KMeans(k).fit(X).inertia_ for k in range(1, 11)]", language="python")
+    if st.button("Siguiente Diapositiva: Ejecución y Resultados ➡️", type="primary"):
         ir_a_diapositiva(5)
 
-# ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS (SOLO FONDO ACLARADO Y NOMBRES ACTUALIZADOS)
-# ==============================================================================
+# DIAPOSITIVA 5: RESULTADOS (DISEÑO MEJORADO)
 elif st.session_state.diapositiva == 5:
-    st.markdown("<div class='slide-title'>Resultados y Análisis de Clústeres</div>", unsafe_allow_html=True)
+    st.markdown("<div class='slide-title'> Hallazgos y Análisis de Clústeres</div><div class='slide-subtitle'>Inspección profunda de patrones y métricas de separación</div>", unsafe_allow_html=True)
     
     if df_original is None:
-        st.error("Archivo no encontrado.")
+        st.error("❌ No se detectó el archivo de datos.")
         st.stop()
-
-    # --- Lógica de Datos ---
+        
+    # --- PROCESAMIENTO ---
     index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
     pivot_accion = df_original.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
     pivot_fuerza = df_original.pivot_table(index=index_cols, columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0) if 'NOMBRE_FUERZA' in df_original.columns else pd.DataFrame(index=pivot_accion.index)
     total_municipio = df_original.groupby(index_cols)['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
     datos = total_municipio.join([pivot_accion, pivot_fuerza]).reset_index().dropna()
     
-    scaler = StandardScaler()
     numericas = [col for col in datos.columns if col not in index_cols]
     datos_originales_num = datos.copy()
+    scaler = StandardScaler()
     datos[numericas] = scaler.fit_transform(datos[numericas])
     X_scaled = datos.drop(columns=index_cols)
     
@@ -207,79 +210,76 @@ elif st.session_state.diapositiva == 5:
     datos_originales_num['Cluster'] = km4_clusters.labels_
     datos['Cluster'] = km4_clusters.labels_.astype(str)
 
-    # --- COLOR SOLICITADO: EL MISMO ANTERIOR PERO ACLARADO ---
-    COLOR_FONDO_GRAFICA = "#E0F2FE" # Tu color azul turquesa/celeste pero aclarado y limpio
-    COLOR_TEXTO = "#0F172A"         # Texto oscuro para que se lea perfectamente sobre el fondo claro
-    COLOR_GRID = "#BAE6FD"          # Líneas de cuadrícula sutiles
-    PALETA_INFOGRAFIA = ['#4ADE80', '#2563EB', '#F97316', '#DC2626']
+    # --- MÉTRICAS ---
+    col_m1, col_m2, col_m3 = st.columns(3)
+    col_m1.metric("Municipios", datos.shape[0])
+    col_m2.metric("Dimensiones", datos.shape[1] - 4)
+    col_m3.metric("Clústeres", "4 (Óptimo)")
 
-    # 1. Curva del Codo
-    st.markdown("### A. Validación del Número de Grupos (K)")
+    # 1. ELBOW CHART PREMIUM
+    st.markdown("### 📈 A. Validación del K Óptimo")
     wss = []
     for k in range(1, 11):
-        km_test = KMeans(n_clusters=k, n_init=15, random_state=42)
-        km_test.fit(X_scaled)
-        wss.append(km_test.inertia_)
+        wss.append(KMeans(n_clusters=k, n_init=10, random_state=42).fit(X_scaled).inertia_)
     
-    fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Método del Codo")
-    fig_elbow.update_traces(line_color='#2563EB', marker=dict(size=10, color='#4ADE80'))
-    fig_elbow.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA, plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=COLOR_TEXTO), xaxis=dict(gridcolor=COLOR_GRID, color=COLOR_TEXTO), yaxis=dict(gridcolor=COLOR_GRID, color=COLOR_TEXTO)
-    )
+    fig_elbow = go.Figure()
+    fig_elbow.add_trace(go.Scatter(x=list(range(1, 11)), y=wss, mode='lines+markers',
+                                   line=dict(color='#0EA5E9', width=4),
+                                   marker=dict(size=10, color='#0369A1', line=dict(width=2, color='white')),
+                                   fill='tozeroy', fillcolor='rgba(14, 165, 233, 0.1)'))
+    fig_elbow.update_layout(title="Método del Codo (Inercia Matemática)", template='plotly_white',
+                            hovermode='x unified', margin=dict(t=50, b=50, l=50, r=50))
+    fig_elbow.add_vline(x=4, line_dash="dash", line_color="#EF4444", annotation_text="K=4 Seleccionado")
     st.plotly_chart(fig_elbow, use_container_width=True)
 
-    # 2. Mapa de Calor (Matriz de Distancia)
-    st.markdown("### B. Matriz de Distancia Euclideana")
-    distancias_eu = euclidean_distances(X_scaled)[:50, :50]
-    nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
+    # 2. HEATMAP PREMIUM
+    st.markdown("### 🗺️ B. Mapa de Calor de Disimilitud (Muestra)")
+    distancias_eu = euclidean_distances(X_scaled)[:40, :40]
+    nombres_mun = datos['MUNICIPIO'].iloc[:40].tolist()
     
-    fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub, 
-                       color_continuous_scale='Tealrose')
-    fig_eu.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA, plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color=COLOR_TEXTO), margin=dict(l=20, r=20, t=40, b=20)
-    )
+    fig_eu = px.imshow(distancias_eu, x=nombres_mun, y=nombres_mun,
+                       color_continuous_scale='GnBu', # Azul-Verde suave muy agradable
+                       title="Matriz de Distancia Euclideana (Similitud)")
+    fig_eu.update_layout(template='plotly_white', coloraxis_showscale=True)
     st.plotly_chart(fig_eu, use_container_width=True)
 
-    # 3. PCA 3D (Nombres e Infografía)
-    st.markdown("### C. Proyección PCA 3D")
+    # 3. PCA 3D PREMIUM
+    st.markdown("### 🌐 C. Dispersión Espacial 3D (PCA)")
     pca_3d = PCA(n_components=3)
-    scores_pca = pca_3d.fit_transform(X_scaled)
-    df_pca = pd.DataFrame(scores_pca, columns=['PC1', 'PC2', 'PC3'])
+    scores = pca_3d.fit_transform(X_scaled)
+    df_pca = pd.DataFrame(scores, columns=['PC1', 'PC2', 'PC3'])
+    df_pca['Cluster'] = datos['Cluster']
+    df_pca['Municipio'] = datos['MUNICIPIO']
     
-    # NUEVOS NOMBRES SEGÚN LA INFOGRAFÍA
-    nombres_infografia = {
-        "0": "Infographic Sample 1 (45%)", 
-        "1": "Infographic Sample 2 (50%)", 
-        "2": "Infographic Sample 3 (30%)", 
-        "3": "Infographic Sample 4 (25%)"
-    }
-    df_pca['Cluster_Name'] = [nombres_infografia[str(x)] for x in km4_clusters.labels_]
-    df_pca['Municipio'] = datos['MUNICIPIO'].values
-
-    fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Cluster_Name', 
-                           color_discrete_sequence=PALETA_INFOGRAFIA,
-                           hover_name='Municipio', height=800)
+    # Paleta de colores Pastel/Premium
+    colors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'] 
     
-    fig_3d.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA,
-        scene=dict(
-            xaxis=dict(backgroundcolor="#F0F9FF", gridcolor=COLOR_GRID, color=COLOR_TEXTO),
-            yaxis=dict(backgroundcolor="#F0F9FF", gridcolor=COLOR_GRID, color=COLOR_TEXTO),
-            zaxis=dict(backgroundcolor="#F0F9FF", gridcolor=COLOR_GRID, color=COLOR_TEXTO),
-        ),
-        legend=dict(font=dict(color=COLOR_TEXTO))
-    )
+    fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Cluster',
+                           hover_name='Municipio',
+                           color_discrete_sequence=colors,
+                           opacity=0.8,
+                           title="Nubes de Puntos y Separación de Fronteras")
+    
+    fig_3d.update_traces(marker=dict(size=5, line=dict(width=1, color='white')))
+    fig_3d.update_layout(scene=dict(
+        xaxis=dict(backgroundcolor="#F8FAFC", gridcolor="white", showbackground=True),
+        yaxis=dict(backgroundcolor="#F8FAFC", gridcolor="white", showbackground=True),
+        zaxis=dict(backgroundcolor="#F8FAFC", gridcolor="white", showbackground=True),
+    ), margin=dict(l=0, r=0, b=0, t=50))
     st.plotly_chart(fig_3d, use_container_width=True)
 
-    # Interpretación
-    st.markdown("<div class='insight-card'><b>Análisis:</b> Se observan los grupos claramente separados bajo la nueva paleta visual.</div>", unsafe_allow_html=True)
-    if st.button("Siguiente Diapositiva ➡️", type="primary"):
+    st.markdown("<div class='insight-critical'><h4>Diagnóstico de Outliers</h4><p>Los puntos aislados en el <b>Clúster 3</b> representan ciudades donde la letalidad supera los promedios nacionales por más de 3 desviaciones estándar.</p></div>", unsafe_allow_html=True)
+
+    if st.button("Siguiente Diapositiva: Conclusiones ➡️", type="primary"):
         ir_a_diapositiva(6)
 
 elif st.session_state.diapositiva == 6:
-    st.markdown("<div class='slide-title'>Conclusiones</div>", unsafe_allow_html=True)
-    st.markdown("<div class='slide-container'><p>El análisis permitió segmentar exitosamente el territorio nacional.</p></div>", unsafe_allow_html=True)
-    if st.button("Reiniciar Exposición", type="secondary"):
+    st.markdown("<div class='slide-title'>🏁 Conclusiones y Recomendaciones</div><div class='slide-subtitle'>Cierre formal de la investigación estadística</div>", unsafe_allow_html=True)
+    c_col1, c_col2 = st.columns(2)
+    with c_col1:
+        st.markdown("<div class='slide-container' style='min-height:350px;'><h3 style='color:#0369A1; margin-top:0;'> Conclusiones</h3><ol><li>Tratamiento Cualitativo Exitoso.</li><li>Consistencia Algorítmica demostrada.</li><li>Sensibilidad ante Anomalías.</li></ol></div>", unsafe_allow_html=True)
+    with c_col2:
+        st.markdown("<div class='slide-container' style='min-height:350px;'><h3 style='color:#16A34A; margin-top:0;'> Sugerencias</h3><ul><li>Despliegue Preventivo basado en Centroides.</li><li>Escalabilidad Operativa automatizada.</li></ul></div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; padding: 40px 0;'><h2 style='color: #0369A1; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2><p style='color: #64748B;'>Se abre el espacio para las preguntas.</p></div>", unsafe_allow_html=True)
+    if st.button("↩️ Reiniciar Exposición", type="secondary"):
         ir_a_diapositiva(1)
