@@ -396,7 +396,7 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-    # 1. ANÁLISIS DE LA CURVA DEL CODO (MODIFICADO: Azul más claro)
+    # 1. ANÁLISIS DE LA CURVA DEL CODO
     st.markdown(" A. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -407,10 +407,9 @@ elif st.session_state.diapositiva == 5:
     fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)",
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
     fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
-    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7')) # Azul intermedio/claro
+    fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7')) 
 
     fig_elbow = aplicar_estilo_premium(fig_elbow)
-
     fig_elbow.update_traces(
        line=dict(width=5),
        marker=dict(size=10)
@@ -423,7 +422,7 @@ elif st.session_state.diapositiva == 5:
     </div>
     """, unsafe_allow_html=True)
 
-    # 2. ANÁLISIS DE DISTANCIAS (MODIFICADO: Escala de color azul más claro y nítido)
+    # 2. ANÁLISIS DE DISTANCIAS
     st.markdown("### B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
@@ -433,24 +432,34 @@ elif st.session_state.diapositiva == 5:
         y=nombres_municipios_sub,
         title="Mapa de Distancias Euclidianas",
         color_continuous_scale=[
-            [0, "#E0F2FE"],
-            [0.25, "#7DD3FC"],
-            [0.50, "#38BDF8"],
-            [0.75, "#0284C7"],
-            [1, "#0369A1"]
+            [0.00, "#22C55E"],  # verde
+            [0.25, "#84CC16"],  # verde claro
+            [0.50, "#FACC15"],  # amarillo
+            [0.75, "#F97316"],  # naranja
+            [1.00, "#DC2626"]   # rojo
         ]
     )
 
     fig_eu = aplicar_estilo_premium(fig_eu)
+    fig_eu.update_xaxes(tickfont=dict(color="black", size=10))
+    fig_eu.update_yaxes(tickfont=dict(color="black", size=10))
+    fig_eu.update_traces(xgap=1, ygap=1)
+    fig_eu.update_layout(
+        coloraxis_colorbar=dict(
+            title="Distancia",
+            title_font=dict(size=16, color="black"),
+            tickfont=dict(size=12, color="black")
+        )
+    )
     st.plotly_chart(fig_eu, use_container_width=True)
-    
+
     st.markdown("""
     <div class='insight-card'>
-        <b>Análisis del Mapa de Calor:</b> Los bloques identifies municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
+        <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
     """, unsafe_allow_html=True)
 
-    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA (MODIFICADO: El azul oscuro se cambió por un azul claro y brillante)
+    # 3. ANÁLISIS TRIDIMENSIONAL DE PCA
     st.markdown("### 🌐 C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
@@ -473,33 +482,22 @@ elif st.session_state.diapositiva == 5:
         hover_data=['Depto'],
         title='Distribución Espacial de Municipios',
         color_discrete_map={
-            "Clúster 0: Riesgo Controlado":"#22C55E",
-            "Clúster 1: Impacto Moderado":"#0EA5E9",
-            "Clúster 2: Conflicto Institucional":"#F59E0B",
-            "Clúster 3: Emergencia Crítica":"#EF4444"
+            "Clúster 0: Riesgo Controlado": "#22C55E",
+            "Clúster 1: Impacto Moderado": "#0EA5E9",
+            "Clúster 2: Conflicto Institucional": "#F59E0B",
+            "Clúster 3: Emergencia Crítica": "#EF4444"
         }
     )
 
     fig_3d.update_layout(
         height=900,
         paper_bgcolor="#EAF4FF",
-        font=dict(
-            color="#0F172A"
-        ),
+        font=dict(color="#0F172A"),
         scene=dict(
             bgcolor="#F4F9FF",
-            xaxis=dict(
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            ),
-            yaxis=dict(
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            ),
-            zaxis=dict(
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            )
+            xaxis=dict(backgroundcolor="#F4F9FF", gridcolor="#CBD5E1"),
+            yaxis=dict(backgroundcolor="#F4F9FF", gridcolor="#CBD5E1"),
+            zaxis=dict(backgroundcolor="#F4F9FF", gridcolor="#CBD5E1")
         )
     )
     
@@ -509,9 +507,9 @@ elif st.session_state.diapositiva == 5:
     for i in range(4):
         fig_3d.add_trace(
             go.Scatter3d(
-                x=[centroids_3d[i,0]],
-                y=[centroids_3d[i,1]],
-                z=[centroids_3d[i,2]],
+                x=[centroids_3d[i, 0]],
+                y=[centroids_3d[i, 1]],
+                z=[centroids_3d[i, 2]],
                 mode='markers',
                 marker=dict(
                     size=18,
@@ -531,10 +529,10 @@ elif st.session_state.diapositiva == 5:
                 z=temp["PC3"],
                 opacity=0.10,
                 color={
-                    "0":"#22C55E",
-                    "1":"#0EA5E9",
-                    "2":"#F59E0B",
-                    "3":"#EF4444"
+                    "0": "#22C55E",
+                    "1": "#0EA5E9",
+                    "2": "#F59E0B",
+                    "3": "#EF4444"
                 }[cluster],
                 name=f"Área Cluster {cluster}"
             )
@@ -545,7 +543,7 @@ elif st.session_state.diapositiva == 5:
     st.markdown("""
     <div class='insight-critical'>
         <h4> Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
-        <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
+        <p>Al exploring la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
     </div>
