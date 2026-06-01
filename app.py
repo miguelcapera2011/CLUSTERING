@@ -180,16 +180,17 @@ elif st.session_state.diapositiva == 4:
         ir_a_diapositiva(5)
 
 # ==============================================================================
-# DIAPOSITIVA 5: RESULTADOS (AQUÍ ESTÁN LOS CAMBIOS SOLICITADOS)
+# DIAPOSITIVA 5: RESULTADOS (CORREGIDA CON ESTILO CLARO Y LEGINILIDAD MÁXIMA)
 # ==============================================================================
 elif st.session_state.diapositiva == 5:
-    st.markdown("<div class='slide-title'>Resultados y Análisis de Clústeres</div>", unsafe_allow_html=True)
+    st.markdown("<div class='slide-title'>Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>", unsafe_allow_html=True)
+    st.markdown("<div class='slide-subtitle'>Inspección profunda de patrones, métricas de separación y detección de datos atípicos</div>", unsafe_allow_html=True)
     
     if df_original is None:
         st.error("Archivo no encontrado.")
         st.stop()
 
-    # --- Lógica de Datos ---
+    # --- Lógica de Procesamiento ---
     index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
     pivot_accion = df_original.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
     pivot_fuerza = df_original.pivot_table(index=index_cols, columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0) if 'NOMBRE_FUERZA' in df_original.columns else pd.DataFrame(index=pivot_accion.index)
@@ -207,12 +208,22 @@ elif st.session_state.diapositiva == 5:
     datos_originales_num['Cluster'] = km4_clusters.labels_
     datos['Cluster'] = km4_clusters.labels_.astype(str)
 
-    # --- COLORES DE LA IMAGEN DE REFERENCIA ---
-    COLOR_FONDO_GRAFICA = "#114B5F" # Azul turquesa profundo
-    COLOR_GRID = "#1A6278"         # Líneas de cuadrícula
-    PALETA_INFOGRAFIA = ['#4ADE80', '#2563EB', '#F97316', '#DC2626'] # Verde, Azul, Naranja, Rojo
+    # --- CONFIGURACIÓN DE COLORES CLAROS PREMIUM ---
+    FONDO_GRAFICA_CLARO = "#F8FAFC"  # Gris sutil limpio
+    COLOR_TEXTO_OSCURO = "#1E293B"   # Azul pizarra de alta legibilidad
+    COLOR_GRID_SUTIL = "#E2E8F0"     # Líneas de cuadrícula muy tenues
+    
+    # Colores vivos pero claros para los Clústeres (Estilo Infografía de Consultoría)
+    PALETA_CLUSTERS_CLARA = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444'] # Verde, Azul, Naranja, Rojo
 
-    # 1. Curva del Codo
+    # Metricas
+    col_m1, col_m2 = st.columns(2)
+    with col_m1:
+        st.metric("Municipios Procesados", datos.shape[0])
+    with col_m2:
+        st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4)
+
+    # 1. Curva del Codo (Fondo Claro)
     st.markdown("### A. Validación del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
@@ -220,34 +231,42 @@ elif st.session_state.diapositiva == 5:
         km_test.fit(X_scaled)
         wss.append(km_test.inertia_)
     
-    fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Método del Codo")
-    fig_elbow.update_traces(line_color='#2563EB', marker=dict(size=10, color='#4ADE80'))
+    fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Evaluación de Estabilidad por Inercia Interna (WSS)")
+    fig_elbow.update_traces(line_color='#0284C7', marker=dict(size=9, color='#0369A1'))
     fig_elbow.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA, plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'), xaxis=dict(gridcolor=COLOR_GRID), yaxis=dict(gridcolor=COLOR_GRID)
+        paper_bgcolor=FONDO_GRAFICA_CLARO,
+        plot_bgcolor='white',
+        font=dict(color=COLOR_TEXTO_OSCURO, size=13),
+        title_font=dict(color=COLOR_TEXTO_OSCURO, size=16, family="Arial"),
+        xaxis=dict(gridcolor=COLOR_GRID_SUTIL, title="Número de Clústeres (k)", color=COLOR_TEXTO_OSCURO),
+        yaxis=dict(gridcolor=COLOR_GRID_SUTIL, title="Inercia Matemática", color=COLOR_TEXTO_OSCURO)
     )
     st.plotly_chart(fig_elbow, use_container_width=True)
 
-    # 2. Mapa de Calor (Matriz de Distancia)
-    st.markdown("### B. Matriz de Distancia Euclideana")
+    # 2. Mapa de Calor (Fondo Claro y Escala Nítida)
+    st.markdown("### B. Matriz Geométrica de Distancia Euclideana (Muestra de Control)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     
     fig_eu = px.imshow(distancias_eu, x=nombres_municipios_sub, y=nombres_municipios_sub, 
-                       color_continuous_scale='Tealrose')
+                       title="Mapa de Calor de Disimilitud Espacial",
+                       color_continuous_scale='Blues') # Tonos azules claros y degradados muy limpios
     fig_eu.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA, plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'), margin=dict(l=20, r=20, t=40, b=20)
+        paper_bgcolor=FONDO_GRAFICA_CLARO,
+        plot_bgcolor='white',
+        font=dict(color=COLOR_TEXTO_OSCURO, size=11),
+        title_font=dict(color=COLOR_TEXTO_OSCURO, size=16),
+        coloraxis_colorbar=dict(title="Distancia", tickfont=dict(color=COLOR_TEXTO_OSCURO))
     )
     st.plotly_chart(fig_eu, use_container_width=True)
 
-    # 3. PCA 3D (Cambio de nombres y colores)
-    st.markdown("### C. Proyección PCA 3D")
+    # 3. PCA 3D (Entorno Claro con Nombres Modificados)
+    st.markdown("### C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
     df_pca = pd.DataFrame(scores_pca, columns=['PC1', 'PC2', 'PC3'])
     
-    # NUEVOS NOMBRES SEGÚN LA INFOGRAFÍA
+    # Nombres de leyenda actualizados segun tu requerimiento
     nombres_infografia = {
         "0": "Infographic Sample 1 (45%)", 
         "1": "Infographic Sample 2 (50%)", 
@@ -256,25 +275,36 @@ elif st.session_state.diapositiva == 5:
     }
     df_pca['Cluster_Name'] = [nombres_infografia[str(x)] for x in km4_clusters.labels_]
     df_pca['Municipio'] = datos['MUNICIPIO'].values
+    df_pca['Depto'] = datos['DEPARTAMENTO'].values
 
     fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Cluster_Name', 
-                           color_discrete_sequence=PALETA_INFOGRAFIA,
-                           hover_name='Municipio', height=800)
+                           color_discrete_sequence=PALETA_CLUSTERS_CLARA,
+                           hover_name='Municipio', hover_data=['Depto'],
+                           title='Dispersión Espacial de Fronteras de Vulnerabilidad',
+                           height=750)
     
     fig_3d.update_layout(
-        paper_bgcolor=COLOR_FONDO_GRAFICA,
+        paper_bgcolor=FONDO_GRAFICA_CLARO,
+        font=dict(color=COLOR_TEXTO_OSCURO, size=12),
+        title_font=dict(color=COLOR_TEXTO_OSCURO, size=16),
         scene=dict(
-            xaxis=dict(backgroundcolor="#0A2530", gridcolor=COLOR_GRID, color="white"),
-            yaxis=dict(backgroundcolor="#0A2530", gridcolor=COLOR_GRID, color="white"),
-            zaxis=dict(backgroundcolor="#0A2530", gridcolor=COLOR_GRID, color="white"),
+            xaxis=dict(backgroundcolor="#F1F5F9", gridcolor=COLOR_GRID_SUTIL, color=COLOR_TEXTO_OSCURO, title="PC1"),
+            yaxis=dict(backgroundcolor="#F1F5F9", gridcolor=COLOR_GRID_SUTIL, color=COLOR_TEXTO_OSCURO, title="PC2"),
+            zaxis=dict(backgroundcolor="#F1F5F9", gridcolor=COLOR_GRID_SUTIL, color=COLOR_TEXTO_OSCURO, title="PC3")
         ),
-        legend=dict(font=dict(color="white"))
+        legend=dict(
+            font=dict(color=COLOR_TEXTO_OSCURO, size=12),
+            bgcolor="rgba(255,255,255,0.8)"
+        )
     )
     st.plotly_chart(fig_3d, use_container_width=True)
 
-    # Interpretación
-    st.markdown("<div class='insight-card'><b>Análisis:</b> Se observan los grupos claramente separados bajo la nueva paleta visual.</div>", unsafe_allow_html=True)
-    if st.button("Siguiente Diapositiva ➡️", type="primary"):
+    # Tabla e Interpretaciones
+    st.markdown("### D. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
+    tabla_perfil = datos_originales_num.groupby('Cluster').mean(numeric_only=True).round(2)
+    st.dataframe(tabla_perfil, use_container_width=True)
+
+    if st.button("Siguiente Diapositiva: Conclusiones y Recomendaciones ➡️", type="primary"):
         ir_a_diapositiva(6)
 
 elif st.session_state.diapositiva == 6:
