@@ -445,43 +445,41 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
-# RESULTADO DEL ESTADÍSTICO DE HOPKINS
+    # RESULTADO DEL ESTADÍSTICO DE HOPKINS
 
-st.markdown("### A. Validación de la tendencia natural de agrupamiento (Hopkins)")
+    st.markdown("### A. Validación de la tendencia natural de agrupamiento (Hopkins)")
 
-col_h1, col_h2 = st.columns(2)
+    col_h1, col_h2 = st.columns(2)
 
-with col_h1:
-    st.metric(
-        "Valor del estadístico Hopkins",
-        f"{valor_hopkins:.3f}"
-    )
+     with col_h1:
+        st.metric(
+          "Valor del estadístico Hopkins",
+          f"{valor_hopkins:.3f}"
+      )
 
-with col_h2:
+     with col_h2:
 
-    if valor_hopkins < 0.5:
-        st.error(
-            "Los datos presentan una distribución aleatoria y no muestran una estructura clara de clústeres."
-        )
+        if valor_hopkins < 0.5:
+            st.error(
+              "Los datos presentan una distribución aleatoria y no muestran una estructura clara de clústeres."
+         )
 
-    elif valor_hopkins < 0.75:
+      elif valor_hopkins < 0.75:
         st.warning(
             "Los datos muestran una tendencia moderada a formar grupos."
         )
 
-    else:
-        st.success(
-            "Los datos presentan una fuerte tendencia de agrupamiento, justificando la aplicación de K-Means."
-        )
+      else:
+          st.success(
+              "Los datos presentan una fuerte tendencia de agrupamiento, justificando la aplicación de K-Means."
+         )
 
-st.markdown("""
-<div class='insight-card'>
-<b>Interpretación:</b> El estadístico de Hopkins compara la distribución de los municipios reales con puntos generados aleatoriamente en el mismo espacio de variables. 
-Un valor cercano a 1 indica que los municipios poseen patrones similares que pueden organizarse en clústeres, mientras que un valor cercano a 0.5 sugiere ausencia de estructura de agrupamiento.
-</div>
-""", unsafe_allow_html=True)
-
-
+     st.markdown("""
+     <div class='insight-card'>
+     <b>Interpretación:</b> El estadístico de Hopkins compara la distribución de los municipios reales con puntos generados aleatoriamente en el mismo espacio de variables. 
+     Un valor cercano a 1 indica que los municipios poseen patrones similares que pueden organizarse en clústeres, mientras que un valor cercano a 0.5 sugiere ausencia de estructura de agrupamiento.
+     </div>
+     """, unsafe_allow_html=True)
 
     
     # 1. ANÁLISIS DE LA CURVA DEL CODO
