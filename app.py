@@ -9,6 +9,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.neighbors import NearestNeighbors
 
 # ESTILO PREMIUM PARA GRAFICAS
 
@@ -34,6 +35,54 @@ def aplicar_estilo_premium(fig):
         )
     )
     return fig
+
+# FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
+
+def calcular_hopkins(X):
+
+    X = np.array(X)
+
+    n, d = X.shape
+
+    # Se toma el 10% de las observaciones
+    m = int(0.1 * n)
+
+    np.random.seed(42)
+
+    # Modelo para calcular vecinos cercanos
+    vecinos = NearestNeighbors(n_neighbors=2)
+    vecinos.fit(X)
+
+    # Generar puntos aleatorios en el mismo espacio de los datos
+    puntos_aleatorios = np.random.uniform(
+        np.min(X, axis=0),
+        np.max(X, axis=0),
+        (m, d)
+    )
+
+    # Distancia de puntos aleatorios al dato real más cercano
+    dist_aleatoria, _ = vecinos.kneighbors(
+        puntos_aleatorios,
+        n_neighbors=1
+    )
+
+    # Seleccionar puntos reales aleatorios
+    indices = np.random.choice(n, m, replace=False)
+
+    puntos_reales = X[indices]
+
+    # Distancia entre puntos reales y su vecino más cercano
+    dist_real, _ = vecinos.kneighbors(
+        puntos_reales,
+        n_neighbors=2
+    )
+
+    U = np.sum(dist_aleatoria)
+    W = np.sum(dist_real[:, 1])
+
+    H = U / (U + W)
+
+    return H
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
 
@@ -380,6 +429,9 @@ elif st.session_state.diapositiva == 5:
     datos_originales_num = datos.copy()
     datos[numericas] = scaler.fit_transform(datos[numericas])
     X_scaled = datos.drop(columns=columnas_omitir)
+
+   # VALIDACIÓN DE TENDENCIA DE AGRUPAMIENTO CON HOPKINS
+    valor_hopkins = calcular_hopkins(X_scaled)
     
     kmeans = KMeans(n_clusters=4, n_init=30, random_state=42)
     km4_clusters = kmeans.fit(X_scaled)
@@ -393,6 +445,45 @@ elif st.session_state.diapositiva == 5:
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
 
+# RESULTADO DEL ESTADÍSTICO DE HOPKINS
+
+st.markdown("### A. Validación de la tendencia natural de agrupamiento (Hopkins)")
+
+col_h1, col_h2 = st.columns(2)
+
+with col_h1:
+    st.metric(
+        "Valor del estadístico Hopkins",
+        f"{valor_hopkins:.3f}"
+    )
+
+with col_h2:
+
+    if valor_hopkins < 0.5:
+        st.error(
+            "Los datos presentan una distribución aleatoria y no muestran una estructura clara de clústeres."
+        )
+
+    elif valor_hopkins < 0.75:
+        st.warning(
+            "Los datos muestran una tendencia moderada a formar grupos."
+        )
+
+    else:
+        st.success(
+            "Los datos presentan una fuerte tendencia de agrupamiento, justificando la aplicación de K-Means."
+        )
+
+st.markdown("""
+<div class='insight-card'>
+<b>Interpretación:</b> El estadístico de Hopkins compara la distribución de los municipios reales con puntos generados aleatoriamente en el mismo espacio de variables. 
+Un valor cercano a 1 indica que los municipios poseen patrones similares que pueden organizarse en clústeres, mientras que un valor cercano a 0.5 sugiere ausencia de estructura de agrupamiento.
+</div>
+""", unsafe_allow_html=True)
+
+
+
+    
     # 1. ANÁLISIS DE LA CURVA DEL CODO
     st.markdown(" A. Validación Científica del Número de Grupos (K)")
     wss = []
