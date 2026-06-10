@@ -451,13 +451,13 @@ elif st.session_state.diapositiva == 5:
 
     col_h1, col_h2 = st.columns(2)
 
-     with col_h1:
+    with col_h1:
         st.metric(
           "Valor del estadístico Hopkins",
           f"{valor_hopkins:.3f}"
       )
 
-     with col_h2:
+    with col_h2:
 
         if valor_hopkins < 0.5:
             st.error(
