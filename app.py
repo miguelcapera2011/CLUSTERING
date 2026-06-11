@@ -999,7 +999,7 @@ elif st.session_state.diapositiva == 5:
            }
         )
 
-        fig_3d.update_layout(
+    fig_3d.update_layout(
         height=900,
         paper_bgcolor="#EAF4FF",
         plot_bgcolor="#F4F9FF",
