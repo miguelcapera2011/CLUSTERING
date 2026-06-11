@@ -12,7 +12,6 @@ import plotly.graph_objects as go
 from sklearn.neighbors import NearestNeighbors
 
 # ESTILO PREMIUM PARA GRAFICAS
-
 def aplicar_estilo_premium(fig):
     fig.update_layout(
         paper_bgcolor="#EAF4FF",
@@ -37,11 +36,8 @@ def aplicar_estilo_premium(fig):
     return fig
 
 # FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
-
 def calcular_hopkins(X):
-
     X = np.array(X)
-
     n, d = X.shape
 
     # Se toma el 10% de las observaciones
@@ -68,7 +64,6 @@ def calcular_hopkins(X):
 
     # Seleccionar puntos reales aleatorios
     indices = np.random.choice(n, m, replace=False)
-
     puntos_reales = X[indices]
 
     # Distancia entre puntos reales y su vecino más cercano
@@ -85,8 +80,11 @@ def calcular_hopkins(X):
     return H
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
-
-st.set_page_config(page_title="Exposición Mineria De Datos - Orden Público en colombia", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="Exposición Mineria De Datos - Orden Público en colombia", 
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
 # Inyección de CSS Avanzado para simular Diapositivas de Consultoría (Fondo Claro y Elegante)
 st.markdown("""
@@ -202,7 +200,6 @@ def ir_a_diapositiva(num):
     st.rerun()
 
 # CARGA AUTOMÁTICA DE DATOS DESDE EL REGISTRO HISTÓRICO
-
 def cargar_datos_automatico():
     archivos_en_carpeta = os.listdir('.')
     archivo_encontrado = None
@@ -227,7 +224,6 @@ df_original, nombre_archivo_cargado = cargar_datos_automatico()
 
 
 # CONTROLES DE NAVEGACIÓN SUPERIOR (BOTONES ESTILO DIAPOSITIVA)
-
 cols_nav = st.columns(6)
 nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados", "6. Conclusiones"]
 
@@ -240,7 +236,6 @@ st.markdown("---")
 
 
 # DIAPOSITIVA 1: PORTADA OFICIAL
-
 if st.session_state.diapositiva == 1:
     st.markdown("""
     <div class='slide-container' style='text-align: center; padding: 60px 40px;'>
@@ -273,10 +268,9 @@ if st.session_state.diapositiva == 1:
 
 
 # DIAPOSITIVA 2: INTRODUCCIÓN Y PLANTEAMIENTO DEL PROBLEMA
-
 elif st.session_state.diapositiva == 2:
     st.markdown("""
-    <div class='slide-title'> Introducción y Definición del Desafío Técnico</div>
+    <div class='slide-title'>Introducción y Definición del Desafío Técnico</div>
     <div class='slide-subtitle'>Contexto del orden público e inconsistencia de los datos</div>
     """, unsafe_allow_html=True)
     
@@ -310,7 +304,6 @@ elif st.session_state.diapositiva == 2:
         ir_a_diapositiva(3)
 
 # DIAPOSITIVA 3: MARCO TEÓRICO / CONCEPTUAL
-
 elif st.session_state.diapositiva == 3:
     st.markdown("""
     <div class='slide-title'> Fundamentos Teóricos y Algorítmicos</div>
@@ -352,7 +345,6 @@ elif st.session_state.diapositiva == 3:
 
 
 # DIAPOSITIVA 4: METODOLOGÍA / DESARROLLO DEL FLUJO
-
 elif st.session_state.diapositiva == 4:
     st.markdown("""
     <div class='slide-title'>Arquitectura del Flujo y Procesamiento de Datos</div>
@@ -367,11 +359,11 @@ elif st.session_state.diapositiva == 4:
 pivot_accion = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
 pivot_fuerza = df_original.pivot_table(index=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'], columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0)
 total_municipio = df_original.groupby(['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'])['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
-
+ 
 # Cruce unificado de matrices categóricas a columnas numéricas reales
 datos = total_municipio.join([pivot_accion, pivot_fuerza]).reset_index().dropna()
         """, language="python")
-
+ 
     with st.expander("Fase 2: Normalización de Escala (StandardScaler)", expanded=False):
         st.code("""
 from sklearn.preprocessing import StandardScaler
@@ -380,7 +372,7 @@ scaler = StandardScaler()
 datos[numericas] = scaler.fit_transform(datos[numericas])
 X_scaled = datos.drop(columns=['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO'])
         """, language="python")
-
+ 
     with st.expander("Fase 3: Optimización Matemática (Método del Codo)", expanded=False):
         st.code("""
 from sklearn.cluster import KMeans
@@ -390,12 +382,12 @@ for k in range(1, 11):
     kmeans.fit(X_scaled)
     wss.append(kmeans.inertia_)
         """, language="python")
-
+ 
     if st.button("Siguiente Diapositiva: Ejecución y Resultados del Modelo ➡️", type="primary"):
         ir_a_diapositiva(5)
 
-# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO DE LOS CLÚSTERES (CORAZÓN DE LA EXP)
 
+# DIAPOSITIVA 5: RESULTADOS Y ANÁLISIS DE FONDO
 elif st.session_state.diapositiva == 5:
     st.markdown("""
     <div class='slide-title'> Hallazgos, Comportamiento Estructurado y Análisis de Clústeres</div>
@@ -429,63 +421,46 @@ elif st.session_state.diapositiva == 5:
     datos_originales_num = datos.copy()
     datos[numericas] = scaler.fit_transform(datos[numericas])
     X_scaled = datos.drop(columns=columnas_omitir)
-
-   # VALIDACIÓN DE TENDENCIA DE AGRUPAMIENTO CON HOPKINS
+ 
+    # VALIDACIÓN DE TENDENCIA DE AGRUPAMIENTO CON HOPKINS
     valor_hopkins = calcular_hopkins(X_scaled)
     
     kmeans = KMeans(n_clusters=4, n_init=30, random_state=42)
     km4_clusters = kmeans.fit(X_scaled)
     datos_originales_num['Cluster'] = km4_clusters.labels_
     datos['Cluster'] = km4_clusters.labels_.astype(str)
-
+ 
     # --- MÉTRICAS GENERALES DE LA MATRIZ ---
     col_m1, col_m2 = st.columns(2)
     with col_m1:
         st.metric("Municipios Procesados", datos.shape[0], help="Total de entidades territoriales únicas consolidadas")
     with col_m2:
         st.metric("Nuevas Columnas Numéricas", datos.shape[1] - 4, help="Variables sintéticas obtenidas por el pivotado")
-
-# RESULTADO DEL ESTADÍSTICO DE HOPKINS
-
+ 
+    # RESULTADO DEL ESTADÍSTICO DE HOPKINS
     st.markdown("### A. Validación de la tendencia natural de agrupamiento (Hopkins)")
-
-   col_h1, col_h2 = st.columns(2)
-
-   with col_h1:
-       st.metric(
-          "Valor del estadístico Hopkins",
-          f"{valor_hopkins:.3f}"
-       )
-
-   with col_h2:
-
-    if valor_hopkins < 0.5:
-        st.error(
-            "Los datos presentan una distribución aleatoria y no muestran una estructura clara de clústeres."
-        )
-
-    elif valor_hopkins < 0.75:
-        st.warning(
-            "Los datos muestran una tendencia moderada a formar grupos."
-        )
-
-    else:
-        st.success(
-            "Los datos presentan una fuerte tendencia de agrupamiento, justificando la aplicación de K-Means."
-        )
-
-   st.markdown("""
-   <div class='insight-card'>
-   <b>Interpretación:</b> El estadístico de Hopkins compara la distribución de los municipios reales con puntos generados aleatoriamente en el mismo espacio de variables. 
-   Un valor cercano a 1 indica que los municipios poseen patrones similares que pueden organizarse en clústeres, mientras que un valor cercano a 0.5 sugiere ausencia de estructura de agrupamiento.
-  </div>
- """, unsafe_allow_html=True)
-
-
-
+ 
+    col_h1, col_h2 = st.columns(2)
+    with col_h1:
+        st.metric("Valor del estadístico Hopkins", f"{valor_hopkins:.3f}")
+ 
+    with col_h2:
+        if valor_hopkins < 0.5:
+            st.error("Los datos presentan una distribución aleatoria y no muestran una estructura clara de clústeres.")
+        elif valor_hopkins < 0.75:
+            st.warning("Los datos muestran una tendencia moderada a formar grupos.")
+        else:
+            st.success("Los datos presentan una fuerte tendencia de agrupamiento, justificando la aplicación de K-Means.")
+ 
+    st.markdown("""
+    <div class='insight-card'>
+        <b>Interpretación:</b> El estadístico de Hopkins compara la distribución de los municipios reales con puntos generados aleatoriamente en el mismo espacio de variables. 
+        Un valor cercano a 1 indica que los municipios poseen patrones similares que pueden organizarse en clústeres, mientras que un valor cercano a 0.5 sugiere ausencia de estructura de agrupamiento.
+    </div>
+    """, unsafe_allow_html=True)
     
     # 1. ANÁLISIS DE LA CURVA DEL CODO
-    st.markdown(" A. Validación Científica del Número de Grupos (K)")
+    st.markdown("### B. Validación Científica del Número de Grupos (K)")
     wss = []
     for k in range(1, 11):
         km_test = KMeans(n_clusters=k, n_init=15, random_state=42)
@@ -496,12 +471,9 @@ elif st.session_state.diapositiva == 5:
                         labels={'x': 'Número de Clústeres (k)', 'y': 'Inercia Matemática'}, template='plotly_white')
     fig_elbow.add_vline(x=4, line_dash="dash", line_color="red", annotation_text="K Óptimo Seleccionado = 4")
     fig_elbow.update_traces(line_color='#38BDF8', marker=dict(size=8, color='#0284C7')) 
-
+ 
     fig_elbow = aplicar_estilo_premium(fig_elbow)
-    fig_elbow.update_traces(
-       line=dict(width=5),
-       marker=dict(size=10)
-    )
+    fig_elbow.update_traces(line=dict(width=5), marker=dict(size=10))
     st.plotly_chart(fig_elbow, use_container_width=True)
     
     st.markdown("""
@@ -509,9 +481,9 @@ elif st.session_state.diapositiva == 5:
         <b>Análisis de la grafica del Codo:</b> La gráfica evidencia que el punto de inflexión más claro ocurre en <b>K=4</b>. Antes de este punto, añadir un grupo extra reduce drásticamente el error del modelo; después de K=4, la ganancia de homogeneidad se estabiliza. Esto demuestra científicamente que clasificar el país en 4 dinámicas territoriales es estructuralmente óptimo.
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # 2. ANÁLISIS DE DISTANCIAS
-    st.markdown("### B. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
+    st.markdown("### C. Matriz Geométrica de Distancia Euclideana (Muestra de Control de 50 Municipios)")
     distancias_eu = euclidean_distances(X_scaled)[:50, :50]
     nombres_municipios_sub = datos['MUNICIPIO'].iloc[:50].tolist()
     fig_eu = px.imshow(
@@ -527,7 +499,7 @@ elif st.session_state.diapositiva == 5:
             [1.00, "#DC2626"]   # rojo
         ]
     )
-
+ 
     fig_eu = aplicar_estilo_premium(fig_eu)
     fig_eu.update_xaxes(tickfont=dict(color="black", size=10))
     fig_eu.update_yaxes(tickfont=dict(color="black", size=10))
@@ -540,15 +512,15 @@ elif st.session_state.diapositiva == 5:
         )
     )
     st.plotly_chart(fig_eu, use_container_width=True)
-
+ 
     st.markdown("""
     <div class='insight-card'>
-        <b>Análisis del Mapa de Calor:</b> Los bloques identifies municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
+        <b>Análisis del Mapa de Calor:</b> Los bloques identifican municipios con perfiles de conflicto idénticos (baja distancia entre sí), mientras que los cambios de color revelan contrastes operacionales radicales, aislando zonas tranquilas de aquellas con dinámicas complejas.
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # 3. ANÁLISIS TRIDIMENSIONAL DE PCA
-    st.markdown("C. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
+    st.markdown("### D. Proyección Espacial Avanzada e Identificación de Datos Atípicos (PCA 3D)")
     pca_3d = PCA(n_components=3)
     scores_pca = pca_3d.fit_transform(X_scaled)
     df_pca = pd.DataFrame(scores_pca, columns=['PC1', 'PC2', 'PC3'])
@@ -556,8 +528,12 @@ elif st.session_state.diapositiva == 5:
     df_pca['Municipio'] = datos['MUNICIPIO'].values
     df_pca['Depto'] = datos['DEPARTAMENTO'].values
     
-    nombres_clusters = {"0": "Clúster 0: Riesgo Controlado", "1": "Clúster 1: Impacto Moderado", 
-                        "2": "Clúster 2: Conflicto Institucional", "3": "Clúster 3: Emergencia Crítica"}
+    nombres_clusters = {
+        "0": "Clúster 0: Riesgo Controlado", 
+        "1": "Clúster 1: Impacto Moderado", 
+        "2": "Clúster 2: Conflicto Institucional", 
+        "3": "Clúster 3: Emergencia Crítica"
+    }
     df_pca['Nombre_Cluster'] = df_pca['Cluster'].map(nombres_clusters)
     
     fig_3d = px.scatter_3d(
@@ -576,57 +552,27 @@ elif st.session_state.diapositiva == 5:
             "Clúster 3: Emergencia Crítica": "#EF4444"
         }
     )
-
+ 
     fig_3d.update_layout(
         height=900,
         paper_bgcolor="#EAF4FF",
         plot_bgcolor="#F4F9FF",
-        font=dict(
-            color="black",
-            size=14
-        ),
+        font=dict(color="black", size=14),
         legend=dict(
-            font=dict(
-                color="black",
-                size=14
-            ),
-            title=dict(
-                text="Clusters",
-                font=dict(
-                    color="black",
-                    size=16
-                )
-            )
+            font=dict(color="black", size=14),
+            title=dict(text="Clusters", font=dict(color="black", size=16))
         ),
         scene=dict(
             bgcolor="#F4F9FF",
-            xaxis=dict(
-                title="PC1",
-                title_font=dict(color="black"),
-                tickfont=dict(color="black"),
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            ),
-            yaxis=dict(
-                title="PC2",
-                title_font=dict(color="black"),
-                tickfont=dict(color="black"),
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            ),
-            zaxis=dict(
-                title="PC3",
-                title_font=dict(color="black"),
-                tickfont=dict(color="black"),
-                backgroundcolor="#F4F9FF",
-                gridcolor="#CBD5E1"
-            )
+            xaxis=dict(title="PC1", title_font=dict(color="black"), tickfont=dict(color="black"), backgroundcolor="#F4F9FF", gridcolor="#CBD5E1"),
+            yaxis=dict(title="PC2", title_font=dict(color="black"), tickfont=dict(color="black"), backgroundcolor="#F4F9FF", gridcolor="#CBD5E1"),
+            zaxis=dict(title="PC3", title_font=dict(color="black"), tickfont=dict(color="black"), backgroundcolor="#F4F9FF", gridcolor="#CBD5E1")
         )
     )
     
     centroids_3d = pca_3d.transform(kmeans.cluster_centers_)
     colores = ["#22C55E", "#0EA5E9", "#F59E0B", "#EF4444"]
-
+ 
     for i in range(4):
         fig_3d.add_trace(
             go.Scatter3d(
@@ -634,15 +580,11 @@ elif st.session_state.diapositiva == 5:
                 y=[centroids_3d[i, 1]],
                 z=[centroids_3d[i, 2]],
                 mode='markers',
-                marker=dict(
-                    size=18,
-                    color=colores[i],
-                    symbol='diamond'
-                ),
+                marker=dict(size=18, color=colores[i], symbol='diamond'),
                 name=f'Centroide {i}'
             )
         )
-
+ 
     for cluster in sorted(df_pca["Cluster"].unique()):
         temp = df_pca[df_pca["Cluster"] == cluster]
         fig_3d.add_trace(
@@ -651,12 +593,7 @@ elif st.session_state.diapositiva == 5:
                 y=temp["PC2"],
                 z=temp["PC3"],
                 opacity=0.10,
-                color={
-                    "0": "#22C55E",
-                    "1": "#0EA5E9",
-                    "2": "#F59E0B",
-                    "3": "#EF4444"
-                }[cluster],
+                color={"0": "#22C55E", "1": "#0EA5E9", "2": "#F59E0B", "3": "#EF4444"}[cluster],
                 name=f"Área Cluster {cluster}"
             )
         )
@@ -666,14 +603,14 @@ elif st.session_state.diapositiva == 5:
     st.markdown("""
     <div class='insight-critical'>
         <h4> Diagnóstico de Datos Atípicos (Puntos Lejanos en el Espacio)</h4>
-        <p>Al explorarr la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
+        <p>Al explorar la visualización en 3D, se identifican puntos que rompen la densidad del grupo y se proyectan de forma aislada en las esquinas del plano geométrico. 
         Estos corresponden a <b>Datos Atípicos Operacionales (Outliers)</b> como grandes capitales o focos críticos históricos (ej. <i>Cali, Tumaco o Cúcuta</i>). 
         El modelo no los excluye, sino que los agrupa de forma aislada en el <b>Clúster 3 (Emergencia Crítica)</b> porque sus volúmenes y la letalidad de sus ataques superan los promedios nacionales por más de 3 desviaciones estándar.</p>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # 4. RADIOGRAFÍA PROFUNDA DE LOS RESULTADOS
-    st.markdown("### D. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
+    st.markdown("### E. Perfil de Comportamiento de los Clústeres (Valores Reales Promedio)")
     variables_interes = [v for v in [col_afectados, col_asesinado, col_herido] if v in datos_originales_num.columns]
     tabla_perfil = datos_originales_num.groupby('Cluster')[variables_interes].mean().round(2)
     tabla_perfil['Municipios Asignados'] = datos_originales_num.groupby('Cluster').size()
@@ -693,13 +630,12 @@ elif st.session_state.diapositiva == 5:
         </ul>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     if st.button("Siguiente Diapositiva: Conclusiones y Recomendaciones ➡️", type="primary"):
         ir_a_diapositiva(6)
 
 
 # DIAPOSITIVA 6: CONCLUSIONES Y CIERRE ACADÉMICO
-
 elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div class='slide-title'>🏁 Conclusiones Académicas y Recomendaciones Futuras</div>
@@ -730,11 +666,8 @@ elif st.session_state.diapositiva == 6:
         """, unsafe_allow_html=True)
         
     st.markdown("""
-    <div style='text-align: center; padding: 40px 0;'>
-        <h2 style='color: #0369A1; margin-bottom: 5px;'>¡Muchas gracias por su atención!</h2>
-        <p style='color: #64748B;'>Se abre el espacio para las preguntas y observaciones.</p>
+    <div style='text-align: center; padding: 20px;'>
+        <h3 style='color: #0F172A;'>¡Muchas Gracias por su atención!</h3>
+        <p style='color: #64748B;'>Fin de la sustentación.</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    if st.button("↩️ Reiniciar Exposición (Volver a la Portada)", type="secondary"):
-        ir_a_diapositiva(1)
