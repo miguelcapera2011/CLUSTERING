@@ -58,7 +58,7 @@ def calcular_hopkins(X):
 
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "POWERPOINT PREMIUM"
 st.set_page_config(
-    page_title="Exposición Mineria De Datos - Orden Público en colombia", 
+    page_title="MODELO HIBRIDO - Orden Público en colombia", 
     layout="wide",
     initial_sidebar_state="collapsed"
 )
