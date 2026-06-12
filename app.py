@@ -15,33 +15,27 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-# ESTILO PREMIUM PARA GRAFICAS (REDISEÑADO PARA CONTRASTE PERFECTO Y MÁXIMO ESPACIO)
+# ESTILO PREMIUM PARA GRAFICAS (CORREGIDO PARA MÁXIMA LEGIBILIDAD)
 def aplicar_estilo_premium(fig):
     fig.update_layout(
-        paper_bgcolor="#F8FAFC",  # Fondo claro para que resalten los ejes
-        plot_bgcolor="#FFFFFF",   # Fondo blanco para la zona de dibujo
+        paper_bgcolor="#EAF4FF",
+        plot_bgcolor="#F4F9FF",
         font=dict(
-            color="#0F172A",      # Texto general en azul oscuro/negro
-            size=13
+            color="#0F172A",
+            size=14
         ),
         title=dict(
-            font=dict(size=16, color="#0F172A", family="Arial")
+            font=dict(
+                size=20,
+                color="#0F172A",
+                family="Arial"
+            )
         ),
-        margin=dict(l=140, r=40, t=60, b=100) # Súper márgenes para que los títulos de los ejes nunca se corten
+        margin=dict(l=40, r=40, t=60, b=40)
     )
-    # Forzar visibilidad radical de los ejes
-    fig.update_xaxes(
-        title_font=dict(color="#0F172A", size=13, family="Arial"), 
-        tickfont=dict(color="#0F172A", size=12, family="Arial"),
-        gridcolor="#E2E8F0",
-        showgrid=True
-    )
-    fig.update_yaxes(
-        title_font=dict(color="#0F172A", size=13, family="Arial"), 
-        tickfont=dict(color="#0F172A", size=12, family="Arial"),
-        gridcolor="#E2E8F0",
-        showgrid=True
-    )
+    # Forzar que los textos de los ejes se vean claros y legibles
+    fig.update_xaxes(title_font=dict(color="#0F172A", size=14), tickfont=dict(color="#0F172A", size=12))
+    fig.update_yaxes(title_font=dict(color="#0F172A", size=14), tickfont=dict(color="#0F172A", size=12))
     return fig
 
 # FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
@@ -127,31 +121,6 @@ st.markdown("""
         background-color: #0369A1 !important;
         color: #FFFFFF !important;
     }
-    
-    /* Cajas fijas para las métricas: Letras blancas gigantes sobre fondo azul */
-    .metric-box {
-        background-color: #1E3A8A;
-        color: #FFFFFF !important;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(30, 58, 138, 0.15);
-        border: 1px solid #1E40AF;
-    }
-    .metric-title {
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-        color: #93C5FD !important;
-    }
-    .metric-value {
-        font-size: 32px;
-        font-weight: 800;
-        color: #FFFFFF !important;
-    }
-    
     .insight-card {
         background-color: #F1F5F9;
         border-left: 5px solid #38BDF8;
@@ -214,9 +183,9 @@ df_original, nombre_archivo_cargado = cargar_datos_automatico()
 cols_nav = st.columns(7)
 nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados K-Means", "6. Modelo Híbrido", "7. Conclusiones"]
 
-for i, name in enumerate(nombres_diapo):
+for i, nombre in enumerate(nombres_diapo):
     tipo_boton = "primary" if st.session_state.diapositiva == (i + 1) else "secondary"
-    if cols_nav[i].button(name, use_container_width=True, type=tipo_boton):
+    if cols_nav[i].button(nombre, use_container_width=True, type=tipo_boton):
         ir_a_diapositiva(i + 1)
 
 st.markdown("---")
@@ -487,7 +456,7 @@ elif st.session_state.diapositiva == 5:
     if st.button("Siguiente Diapositiva: Modelo Híbrido (Red Neuronal) ➡️", type="primary"):
         ir_a_diapositiva(6)
 
-# DIAPOSITIVA 6: MODELO HÍBRIDO (REDISEÑO DE ULTRA-ALTA VISIBILIDAD)
+# DIAPOSITIVA 6: MODELO HÍBRIDO (CORREGIDA Y SIMPLIFICADA PARA EL PÓSTER)
 elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div class='slide-title'>🤖 Red Neuronal Híbrida</div>
@@ -512,43 +481,34 @@ elif st.session_state.diapositiva == 6:
     scaler_hyb = StandardScaler()
     X_scaled_hyb = scaler_hyb.fit_transform(datos_hyb[numericas_hyb])
 
+    # K-Means generador de etiquetas reales
     kmeans_hyb = KMeans(n_clusters=4, n_init=30, random_state=42)
     y_labels = kmeans_hyb.fit_predict(X_scaled_hyb)
 
+    # División de datos (80% entrenamiento, 20% prueba)
     X_train, X_test, y_train, y_test = train_test_split(X_scaled_hyb, y_labels, test_size=0.2, random_state=42, stratify=y_labels)
 
+    # Ajuste del Perceptrón Multicapa (Red Neuronal)
     mlp = MLPClassifier(hidden_layer_sizes=(16, 8), activation='relu', solver='adam', max_iter=500, random_state=42)
     mlp.fit(X_train, y_train)
     
+    # IMPORTANTE: Para la matriz de la App, evaluamos sobre el set completo 
+    # para garantizar que aparezcan los 4 clústeres (0,1,2,3) y no falte ninguno en pantalla
     y_pred_completo = mlp.predict(X_scaled_hyb)
     matriz_completa = confusion_matrix(y_labels, y_pred_completo)
     
+    # Accuracy estricto sobre el set de pruebas para el dato del póster
     y_pred_test = mlp.predict(X_test)
     accuracy_test = accuracy_score(y_test, y_pred_test)
 
-    # TARJETAS DE MÉTRICAS COMPLEMENTARIAS TOTALMENTE VISIBLES
+    # RECUADROS DE MÉTRICAS SIMPLES
     col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
     with col_kpi1:
-        st.markdown(f"""
-        <div class='metric-box'>
-            <div class='metric-title'>🎯 Rendimiento de la Red</div>
-            <div class='metric-value'>{accuracy_test * 100:.1f}%</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(label="🎯 Rendimiento de la Red", value=f"{accuracy_test * 100:.1f}%")
     with col_kpi2:
-        st.markdown(f"""
-        <div class='metric-box'>
-            <div class='metric-title'>🏠 Municipios para Estudiar (80%)</div>
-            <div class='metric-value'>{X_train.shape[0]} Mpios</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(label="🏠 Municipios para Estudiar (80%)", value=f"{X_train.shape[0]} Mpios")
     with col_kpi3:
-        st.markdown(f"""
-        <div class='metric-box'>
-            <div class='metric-title'>🧪 Municipios para Evaluar (20%)</div>
-            <div class='metric-value'>{X_test.shape[0]} Mpios</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(label="🧪 Municipios para Evaluar (20%)", value=f"{X_test.shape[0]} Mpios")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -556,24 +516,23 @@ elif st.session_state.diapositiva == 6:
 
     with col_g1:
         st.markdown("### A. Matriz de Aciertos (Confusión)")
+        
+        # Nombres de las categorías claras
         nombres_ejes = ["Clúster 0", "Clúster 1", "Clúster 2", "Clúster 3"]
         
-        # ESCALA ONYX: Hace que los aciertos sean oscuros y los errores claros para contraste perfecto
         fig_cm = px.imshow(
             matriz_completa,
             x=nombres_ejes,
             y=nombres_ejes,
             text_auto=True,
             title="Comparación: Lo real vs lo que dice la Red Neuronal",
-            color_continuous_scale='Onyx' 
+            color_continuous_scale='Blues'
         )
         fig_cm = aplicar_estilo_premium(fig_cm)
-        
-        # Ajuste manual estricto de los títulos de los ejes para que nunca queden tapados
         fig_cm.update_layout(
-            xaxis=dict(title=dict(text="Predicción hecha por la Red", standoff=20)),
-            yaxis=dict(title=dict(text="Clúster Real (K-Means)", standoff=20)),
-            coloraxis_showscale=False
+            xaxis_title="Predicción hecha por la Red", 
+            yaxis_title="Clúster Real de K-Means",
+            coloraxis_showscale=False  # Quitar barra de color sobrante
         )
         st.plotly_chart(fig_cm, use_container_width=True)
         
@@ -587,32 +546,22 @@ elif st.session_state.diapositiva == 6:
     with col_g2:
         st.markdown("### B. ¿Qué es lo que más le importa a la Red?")
         
+        # Calcular los pesos de entrada simplificados
         pesos_absolutos = np.sum(np.abs(mlp.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
         df_importancia = pd.DataFrame({
-            'Dato': [col[:20] for col in numericas_hyb], 
+            'Dato': numericas_hyb,
             'Importancia (%)': importancia_normalizada
         }).sort_values(by='Importancia (%)', ascending=True)
 
         fig_imp = px.bar(
             df_importancia, x='Importancia (%)', y='Dato', orientation='h',
             title='Variables con mayor peso en el algoritmo',
-            color='Importancia (%)', color_continuous_scale='Bluered',
-            text_auto='.1f'
+            color='Importancia (%)', color_continuous_scale='Viridis'
         )
         fig_imp = aplicar_estilo_premium(fig_imp)
-        
-        # POSICIÓN INTERNA: Los números ahora se meten DENTRO de la barra en color blanco para legibilidad total
-        fig_imp.update_traces(
-            textposition='inside',
-            textfont=dict(color='#FFFFFF', size=12, family="Arial")
-        )
-        fig_imp.update_layout(
-            xaxis=dict(title=dict(text="Nivel de importancia (%)", standoff=20)),
-            yaxis=dict(title=dict(text="Datos del Municipio", standoff=20)),
-            coloraxis_showscale=False
-        )
+        fig_imp.update_layout(xaxis_title="Nivel de importancia (%)", yaxis_title="Datos del Municipio")
         st.plotly_chart(fig_imp, use_container_width=True)
 
         st.markdown("""
@@ -622,10 +571,12 @@ elif st.session_state.diapositiva == 6:
         </div>
         """, unsafe_allow_html=True)
 
+    # REPORTE EN TABLA TRADUCIDO
     st.markdown("### C. Resumen Técnico del Aprendizaje")
     reporte_dict = classification_report(y_test, y_pred_test, output_dict=True)
     df_reporte = pd.DataFrame(reporte_dict).transpose().round(2)
     
+    # Renombrar filas para que el jurado las entienda al instante
     nuevos_nombres = {"0": "Clúster 0", "1": "Clúster 1", "2": "Clúster 2", "3": "Clúster 3", 
                       "accuracy": "Precisión General", "macro avg": "Promedio General", "weighted avg": "Promedio Ponderado"}
     df_reporte.rename(index=nuevos_nombres, inplace=True)
