@@ -64,6 +64,7 @@ st.set_page_config(
 )
 
 # Inyección de CSS Avanzado para simular Diapositivas de Consultoría
+# CORRECCIÓN: Se añadieron selectores específicos para forzar la visibilidad de st.metric
 st.markdown("""
     <style>
     .stApp {
@@ -144,6 +145,17 @@ st.markdown("""
         border-radius: 4px 12px 12px 4px;
         margin-bottom: 15px;
         color: #0F172A;
+    }
+    
+    /* MODIFICACIÓN DE ALTA VISIBILIDAD PARA METRICAS TRADICIONALES */
+    [data-testid="stMetricLabel"] {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #0F172A !important;
+        font-weight: 800 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -456,7 +468,7 @@ elif st.session_state.diapositiva == 5:
     if st.button("Siguiente Diapositiva: Modelo Híbrido (Red Neuronal) ➡️", type="primary"):
         ir_a_diapositiva(6)
 
-# DIAPOSITIVA 6: MODELO HÍBRIDO (CORREGIDA Y SIMPLIFICADA PARA EL PÓSTER)
+# DIAPOSITIVA 6: MODELO HÍBRIDO (MÉTRICAS CORREGIDAS CON MÁXIMO CONTRASTE OSCURO)
 elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div class='slide-title'>🤖 Red Neuronal Híbrida</div>
@@ -492,12 +504,11 @@ elif st.session_state.diapositiva == 6:
     mlp = MLPClassifier(hidden_layer_sizes=(16, 8), activation='relu', solver='adam', max_iter=500, random_state=42)
     mlp.fit(X_train, y_train)
     
-    # IMPORTANTE: Para la matriz de la App, evaluamos sobre el set completo 
-    # para garantizar que aparezcan los 4 clústeres (0,1,2,3) y no falte ninguno en pantalla
+    # Evaluación sobre el set completo
     y_pred_completo = mlp.predict(X_scaled_hyb)
     matriz_completa = confusion_matrix(y_labels, y_pred_completo)
     
-    # Accuracy estricto sobre el set de pruebas para el dato del póster
+    # Accuracy estricto sobre el set de pruebas
     y_pred_test = mlp.predict(X_test)
     accuracy_test = accuracy_score(y_test, y_pred_test)
 
@@ -600,7 +611,7 @@ elif st.session_state.diapositiva == 7:
             <ol>
                 <li><b>Tratamiento Cualitativo Exitoso:</b> Se logró solucionar la limitación inicial de trabajar con columnas de texto mediante una estrategia de reestructuración matricial efectiva.</li>
                 <li><b>Consistencia Algorítmica:</b> El acoplamiento de <i>Z-Score, K-Means y PCA</i> demostró una separación clara de los municipios en el espacio geométrico, aislando de forma óptima las zonas críticas de las estables.</li>
-               <li><b>Identificación de Anomalías:</b> El modelo demostró alta sensibilidad al aislar de forma automática los datos atípicos de alto impacto operacional en el clúster de Emergencia Crítica.</li>
+                <li><b>Identificación de Anomalías:</b> El modelo demostró alta sensibilidad al aislar de forma automática los datos atípicos de alto impacto operacional en el clúster de Emergencia Crítica.</li>
             </ol>
         </div>
         """, unsafe_allow_html=True)
@@ -610,7 +621,7 @@ elif st.session_state.diapositiva == 7:
             <h3 style='color:#16A34A; margin-top:0;'> Sugerencias para el Futuro</h3>
             <ul>
                 <li><b>Logística de Despliegue Preventivo:</b> Los perfiles numéricos de los centroides de los clústeres 2 y 3 permiten a los tomadores de decisiones pre-posicionar apoyo logístico y asistencia médica en los municipios prioritarios.</li>
-               <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada; ante la adición de nuevos registros mensuales en la carpeta raíz, el modelo actualizará los grupos en tiempo real de forma inmediata.</li>
+                <li><b>Escalabilidad Operativa:</b> La solución diseñada quedó completamente automatizada; ante la adición de nuevos registros mensuales en la carpeta raíz, el modelo actualizará los grupos en tiempo real de forma inmediata.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
