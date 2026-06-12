@@ -515,18 +515,18 @@ elif st.session_state.diapositiva == 6:
     # RECUADROS DE MÉTRICAS SIMPLES
     col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
     with col_kpi1:
-        st.metric(label="🎯 Rendimiento de la Red", value=f"{accuracy_test * 100:.1f}%")
+        st.metric(label="Rendimiento de la Red", value=f"{accuracy_test * 100:.1f}%")
     with col_kpi2:
-        st.metric(label="🏠 Municipios para Estudiar (80%)", value=f"{X_train.shape[0]} Mpios")
+        st.metric(label="Municipios para Estudiar (80%)", value=f"{X_train.shape[0]} Mpios")
     with col_kpi3:
-        st.metric(label="🧪 Municipios para Evaluar (20%)", value=f"{X_test.shape[0]} Mpios")
+        st.metric(label="Municipios para Evaluar (20%)", value=f"{X_test.shape[0]} Mpios")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     col_g1, col_g2 = st.columns(2)
 
     with col_g1:
-        st.markdown("### A. Matriz de Aciertos (Confusión)")
+        st.markdown("### A. Matriz de Confusión")
         nombres_ejes = ["Clúster 0", "Clúster 1", "Clúster 2", "Clúster 3"]
         
         fig_cm = px.imshow(
@@ -548,12 +548,12 @@ elif st.session_state.diapositiva == 6:
         st.markdown("""
         <div class='insight-card'>
             <b>¿Cómo explicarlo fácil?</b><br>
-            Esta matriz es como un cuadro de notas. Si los números se quedan todos en la línea diagonal, significa que la Red Neuronal clasificó perfectamente los municipios. Como ve, casi no hay números fuera de la diagonal, lo que demuestra que la Red aprendió las reglas a la perfección.
+            En esta matriz, si los números se quedan todos en la línea diagonal, significa que la Red Neuronal clasificó perfectamente los municipios. Como ve, casi no hay números fuera de la diagonal, lo que demuestra que la Red aprendió las reglas a la perfección.
         </div>
         """, unsafe_allow_html=True)
 
     with col_g2:
-        st.markdown("### B. ¿Qué es lo que más le importa a la Red?")
+        st.markdown("### B. lo que más le importa a la Red")
         pesos_absolutos = np.sum(np.abs(mlp.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
@@ -595,7 +595,7 @@ elif st.session_state.diapositiva == 6:
     # 👇 INTERPRETACIÓN COMPLETA ANEXADA DEBAJO DE LA TABLA 👇
     st.markdown("""
     <div class='insight-card' style='border-left: 5px solid #0284C7;'>
-        <h4 style='margin-top:0; color:#0284C7;'>💡 ¿Cómo interpretar este Resumen de Aprendizaje?</h4>
+        <h4 style='margin-top:0; color:#0284C7;'> Resumen </h4>
         <p>Esta tabla evalúa de manera científica y rigurosa la capacidad de la Inteligencia Artificial (Red Neuronal) para clasificar nuevos territorios utilizando el estándar internacional de Machine Learning:</p>
         <ul>
             <li><b>Precisión (Precision):</b> Responde a: <i>"De todos los municipios que la Red asignó a este clúster, ¿cuántos eran realmente correctos?"</i>. Un valor cercano a 1.00 significa que el modelo casi no genera falsas alarmas (falsos positivos).</li>
