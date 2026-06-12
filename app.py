@@ -471,7 +471,7 @@ elif st.session_state.diapositiva == 5:
 # DIAPOSITIVA 6: MODELO HÍBRIDO (MÉTRICAS CORREGIDAS CON INTERPRETACIÓN FORMAL DE LA TABLA)
 elif st.session_state.diapositiva == 6:
     st.markdown("""
-    <div class='slide-title'>🤖 Red Neuronal Híbrida</div>
+    <div class='slide-title'>Red Neuronal Híbrida</div>
     <div class='slide-subtitle'>Evaluación de las categorías encontradas usando Inteligencia Artificial</div>
     """, unsafe_allow_html=True)
     
@@ -547,7 +547,7 @@ elif st.session_state.diapositiva == 6:
         
         st.markdown("""
         <div class='insight-card'>
-            <b>¿Cómo explicarlo fácil?</b><br>
+            <b></b><br>
             En esta matriz, si los números se quedan todos en la línea diagonal, significa que la Red Neuronal clasificó perfectamente los municipios. Como ve, casi no hay números fuera de la diagonal, lo que demuestra que la Red aprendió las reglas a la perfección.
         </div>
         """, unsafe_allow_html=True)
@@ -573,7 +573,7 @@ elif st.session_state.diapositiva == 6:
 
         st.markdown("""
         <div class='insight-success'>
-            <b>¿Cómo explicarlo fácil?</b><br>
+            <b></b><br>
             Este gráfico nos quita la duda de saber qué mira la Red Neuronal para tomar sus decisiones. Las barras más largas representan las variables que el modelo considera más críticas para definir el nivel de riesgo de orden público en un territorio.
         </div>
         """, unsafe_allow_html=True)
