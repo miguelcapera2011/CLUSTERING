@@ -15,27 +15,31 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-# ESTILO PREMIUM PARA GRAFICAS (CORREGIDO PARA MÁXIMA LEGIBILIDAD)
+# ESTILO PREMIUM PARA GRAFICAS (CORREGIDO PARA EVITAR TEXTOS INVISIBLES)
 def aplicar_estilo_premium(fig):
     fig.update_layout(
         paper_bgcolor="#EAF4FF",
         plot_bgcolor="#F4F9FF",
         font=dict(
             color="#0F172A",
-            size=14
+            size=13
         ),
         title=dict(
-            font=dict(
-                size=20,
-                color="#0F172A",
-                family="Arial"
-            )
+            font=dict(size=18, color="#0F172A", family="Arial Black")
         ),
-        margin=dict(l=40, r=40, t=60, b=40)
+        margin=dict(l=80, r=40, t=60, b=80) # Más margen abajo y a la izquierda para títulos de ejes
     )
-    # Forzar que los textos de los ejes se vean claros y legibles
-    fig.update_xaxes(title_font=dict(color="#0F172A", size=14), tickfont=dict(color="#0F172A", size=12))
-    fig.update_yaxes(title_font=dict(color="#0F172A", size=14), tickfont=dict(color="#0F172A", size=12))
+    # Asegurar visibilidad total de los títulos de los ejes y sus números
+    fig.update_xaxes(
+        title_font=dict(color="#0F172A", size=14, family="Arial Black"), 
+        tickfont=dict(color="#0F172A", size=12, family="Arial"),
+        gridcolor="#E2E8F0"
+    )
+    fig.update_yaxes(
+        title_font=dict(color="#0F172A", size=14, family="Arial Black"), 
+        tickfont=dict(color="#0F172A", size=12, family="Arial"),
+        gridcolor="#E2E8F0"
+    )
     return fig
 
 # FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
@@ -121,6 +125,28 @@ st.markdown("""
         background-color: #0369A1 !important;
         color: #FFFFFF !important;
     }
+    
+    /* Estilos fijos para las tarjetas de métricas que no fallan */
+    .metric-box {
+        background-color: #0284C7;
+        color: white !important;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
+    }
+    .metric-title {
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        opacity: 0.9;
+    }
+    .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+    }
+    
     .insight-card {
         background-color: #F1F5F9;
         border-left: 5px solid #38BDF8;
@@ -183,9 +209,9 @@ df_original, nombre_archivo_cargado = cargar_datos_automatico()
 cols_nav = st.columns(7)
 nombres_diapo = ["1. Portada", "2. Introducción", "3. Marco Teórico", "4. Metodología", "5. Resultados K-Means", "6. Modelo Híbrido", "7. Conclusiones"]
 
-for i, nombre in enumerate(nombres_diapo):
+for i, name in enumerate(nombres_diapo):
     tipo_boton = "primary" if st.session_state.diapositiva == (i + 1) else "secondary"
-    if cols_nav[i].button(nombre, use_container_width=True, type=tipo_boton):
+    if cols_nav[i].button(name, use_container_width=True, type=tipo_boton):
         ir_a_diapositiva(i + 1)
 
 st.markdown("---")
@@ -456,7 +482,7 @@ elif st.session_state.diapositiva == 5:
     if st.button("Siguiente Diapositiva: Modelo Híbrido (Red Neuronal) ➡️", type="primary"):
         ir_a_diapositiva(6)
 
-# DIAPOSITIVA 6: MODELO HÍBRIDO (CORREGIDA Y SIMPLIFICADA PARA EL PÓSTER)
+# DIAPOSITIVA 6: MODELO HÍBRIDO (REDISEÑADA PARA CORREGIR TEXTOS INVISIBLES Y GRÁFICAS CORTADAS)
 elif st.session_state.diapositiva == 6:
     st.markdown("""
     <div class='slide-title'>🤖 Red Neuronal Híbrida</div>
@@ -481,34 +507,43 @@ elif st.session_state.diapositiva == 6:
     scaler_hyb = StandardScaler()
     X_scaled_hyb = scaler_hyb.fit_transform(datos_hyb[numericas_hyb])
 
-    # K-Means generador de etiquetas reales
     kmeans_hyb = KMeans(n_clusters=4, n_init=30, random_state=42)
     y_labels = kmeans_hyb.fit_predict(X_scaled_hyb)
 
-    # División de datos (80% entrenamiento, 20% prueba)
     X_train, X_test, y_train, y_test = train_test_split(X_scaled_hyb, y_labels, test_size=0.2, random_state=42, stratify=y_labels)
 
-    # Ajuste del Perceptrón Multicapa (Red Neuronal)
     mlp = MLPClassifier(hidden_layer_sizes=(16, 8), activation='relu', solver='adam', max_iter=500, random_state=42)
     mlp.fit(X_train, y_train)
     
-    # IMPORTANTE: Para la matriz de la App, evaluamos sobre el set completo 
-    # para garantizar que aparezcan los 4 clústeres (0,1,2,3) y no falte ninguno en pantalla
     y_pred_completo = mlp.predict(X_scaled_hyb)
     matriz_completa = confusion_matrix(y_labels, y_pred_completo)
     
-    # Accuracy estricto sobre el set de pruebas para el dato del póster
     y_pred_test = mlp.predict(X_test)
     accuracy_test = accuracy_score(y_test, y_pred_test)
 
-    # RECUADROS DE MÉTRICAS SIMPLES
+    # REEMPLAZO RADICAL: Tarjetas HTML puras de alto impacto que NUNCA desaparecen
     col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
     with col_kpi1:
-        st.metric(label="🎯 Rendimiento de la Red", value=f"{accuracy_test * 100:.1f}%")
+        st.markdown(f"""
+        <div class='metric-box'>
+            <div class='metric-title'>🎯 Rendimiento de la Red</div>
+            <div class='metric-value'>{accuracy_test * 100:.1f}%</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col_kpi2:
-        st.metric(label="🏠 Municipios para Estudiar (80%)", value=f"{X_train.shape[0]} Mpios")
+        st.markdown(f"""
+        <div class='metric-box'>
+            <div class='metric-title'>🏠 Municipios para Estudiar (80%)</div>
+            <div class='metric-value'>{X_train.shape[0]} Mpios</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col_kpi3:
-        st.metric(label="🧪 Municipios para Evaluar (20%)", value=f"{X_test.shape[0]} Mpios")
+        st.markdown(f"""
+        <div class='metric-box'>
+            <div class='metric-title'>🧪 Municipios para Evaluar (20%)</div>
+            <div class='metric-value'>{X_test.shape[0]} Mpios</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -516,8 +551,6 @@ elif st.session_state.diapositiva == 6:
 
     with col_g1:
         st.markdown("### A. Matriz de Aciertos (Confusión)")
-        
-        # Nombres de las categorías claras
         nombres_ejes = ["Clúster 0", "Clúster 1", "Clúster 2", "Clúster 3"]
         
         fig_cm = px.imshow(
@@ -529,10 +562,15 @@ elif st.session_state.diapositiva == 6:
             color_continuous_scale='Blues'
         )
         fig_cm = aplicar_estilo_premium(fig_cm)
+        
+        # SOLUCIÓN DE VISIBILIDAD: Forzar que las etiquetas dentro de los cuadros sean blancas/negras según contraste
+        fig_cm.update_traces(
+            textfont=dict(size=14, color="#FFFFFF", family="Arial Black")
+        )
         fig_cm.update_layout(
             xaxis_title="Predicción hecha por la Red", 
-            yaxis_title="Clúster Real de K-Means",
-            coloraxis_showscale=False  # Quitar barra de color sobrante
+            yaxis_title="Clúster Real (K-Means)",
+            coloraxis_showscale=False
         )
         st.plotly_chart(fig_cm, use_container_width=True)
         
@@ -546,22 +584,32 @@ elif st.session_state.diapositiva == 6:
     with col_g2:
         st.markdown("### B. ¿Qué es lo que más le importa a la Red?")
         
-        # Calcular los pesos de entrada simplificados
         pesos_absolutos = np.sum(np.abs(mlp.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
         df_importancia = pd.DataFrame({
-            'Dato': numericas_hyb,
+            'Dato': [col[:25] for col in numericas_hyb], # Acortar texto largo si existe para que no se corte
             'Importancia (%)': importancia_normalizada
         }).sort_values(by='Importancia (%)', ascending=True)
 
         fig_imp = px.bar(
             df_importancia, x='Importancia (%)', y='Dato', orientation='h',
             title='Variables con mayor peso en el algoritmo',
-            color='Importancia (%)', color_continuous_scale='Viridis'
+            color='Importancia (%)', color_continuous_scale='Viridis',
+            text_auto='.1f' # Forzar a pintar los números de cada barra automáticamente
         )
         fig_imp = aplicar_estilo_premium(fig_imp)
-        fig_imp.update_layout(xaxis_title="Nivel de importancia (%)", yaxis_title="Datos del Municipio")
+        
+        # SOLUCIÓN DE VISIBILIDAD DE BARRAS: Forzar color e importancia legible dentro/fuera de la barra
+        fig_imp.update_traces(
+            textposition='outside', 
+            textfont=dict(color='#0F172A', size=11, family="Arial Black")
+        )
+        fig_imp.update_layout(
+            xaxis_title="Nivel de importancia (%)", 
+            yaxis_title="Datos del Municipio",
+            coloraxis_showscale=False
+        )
         st.plotly_chart(fig_imp, use_container_width=True)
 
         st.markdown("""
@@ -571,12 +619,10 @@ elif st.session_state.diapositiva == 6:
         </div>
         """, unsafe_allow_html=True)
 
-    # REPORTE EN TABLA TRADUCIDO
     st.markdown("### C. Resumen Técnico del Aprendizaje")
     reporte_dict = classification_report(y_test, y_pred_test, output_dict=True)
     df_reporte = pd.DataFrame(reporte_dict).transpose().round(2)
     
-    # Renombrar filas para que el jurado las entienda al instante
     nuevos_nombres = {"0": "Clúster 0", "1": "Clúster 1", "2": "Clúster 2", "3": "Clúster 3", 
                       "accuracy": "Precisión General", "macro avg": "Promedio General", "weighted avg": "Promedio Ponderado"}
     df_reporte.rename(index=nuevos_nombres, inplace=True)
