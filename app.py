@@ -201,7 +201,6 @@ def cargar_datos_fuente(archivo_subido=None):
 st.sidebar.title("🛡️ Gestión de Datos")
 st.sidebar.markdown("### 📅 Actualizar Repositorio")
 
-# Zona de carga estilizada con el CSS inyectado (Fondo azul clarito y letras legibles)
 archivo_nuevo = st.sidebar.file_uploader("Arrastra el nuevo histórico institucional (CSV o Excel)", type=["csv", "xlsx"])
 
 if archivo_nuevo is not None:
@@ -254,22 +253,21 @@ st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
 # =====================================================================
-# INTERFAZ PRINCIPAL - RECTÁNGULO DE TÍTULO MEJORADO (DEGRADADO LUMINOSO)
+# INTERFAZ PRINCIPAL - RECTÁNGULO DE TÍTULO OPTIMIZADO (VERDE CLARITO PREMIUM)
 # =====================================================================
 st.markdown(f"""
     <div style='
-        background: linear-gradient(135deg, #0B2545 0%, #134074 100%); 
-        color: #FFFFFF; 
-        padding: 30px; 
-        border-radius: 14px; 
-        box-shadow: 0 6px 20px rgba(11, 37, 69, 0.15); 
+        background-color: #F0FDF4 !important; 
+        padding: 25px; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 14px rgba(22, 163, 74, 0.05); 
         margin-bottom: 25px; 
-        border-left: 6px solid #38BDF8;
+        border: 2px dashed #4ADE80 !important;
     '>
-        <h1 style='color: #FFFFFF !important; margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px;'>
+        <h1 style='color: #14532D !important; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
             Sistema Híbrido Multimodelo para la Seguridad Territorial
         </h1>
-        <p style='color: #93C5FD !important; margin: 6px 0 0 0; font-size: 15px; font-weight: 400;'>
+        <p style='color: #166534 !important; margin: 6px 0 0 0; font-size: 14px; font-weight: 500;'>
             Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
         </p>
     </div>
@@ -470,7 +468,7 @@ with tab4:
                 if var not in valores_ingresados:
                     valores_ingresados[var] = 0
                     
-            boton_predecir_tab = st.form_submit_button("Ejecutar Classification Estratégica con IA")
+            boton_predecir_tab = st.form_submit_button("Ejecutar Clasificación Estratégica con IA")
 
         if boton_predecir_tab:
             df_registro_futuro = pd.DataFrame([valores_ingresados])[numericas]
