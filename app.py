@@ -15,138 +15,184 @@ import plotly.express as px
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "DASHBOARD PREMIUM"
 # =====================================================================
 st.set_page_config(
-    page_title="SISTEMA HÍBRIDO - Orden Público Colombia", 
+    page_title="Dashboard Analítico - Seguridad Territorial", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Inyección de CSS Avanzado - Alta Visibilidad, Contraste y Eliminación Completa de Bloques de Tabs
+# Inyección de CSS Avanzado - Arquitectura de Diseño Humano, FontAwesome y Estilo Minimalista
 st.markdown("""
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>
+    
     <style>
+    /* Importación de tipografía premium moderna */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
     /* Estilos base del ecosistema analítico */
     .stApp {
         background-color: #F8FAFC;
         color: #0F172A !important;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     }
     
     /* Forzar visibilidad y legibilidad de textos en toda la app */
     p, span, label, th, td, .stMarkdown, [data-testid="stMetricLabel"] {
-        color: #1E293B !important;
-    }
-    
-    h1, h2, h3, h4, h5, h6 {
-        color: #0F172A !important;
-        font-weight: 700 !important;
+        color: #334155 !important;
+        font-family: 'Inter', sans-serif;
     }
 
-    /* BARRA LATERAL: Fondo blanco puro con textos oscuros definidos */
+    /* ESTILIZACIÓN DE TÍTULOS CON ENFOQUE FRONT-END PROFESIONAL */
+    h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.05em !important;
+        color: #1E293B !important;
+    }
+
+    h2, h3, h4, h5, h6 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        color: #0F172A !important;
+    }
+
+    /* BARRA LATERAL: Personalizada con iconos y bordes limpios */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0;
     }
     [data-testid="stSidebar"] p, 
     [data-testid="stSidebar"] span, 
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] h3 {
-        color: #0F172A !important;
+    [data-testid="stSidebar"] label {
+        color: #1E293B !important;
         font-weight: 600 !important;
     }
 
+    /* Títulos dentro de la barra lateral */
+    .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
     /* ====== ELIMINACIÓN Y LIMPIEZA ABSOLUTA DEL RECTÁNGULO DE TABS ====== */
-    /* Remueve la barra inferior gruesa nativa de Streamlit */
     [data-testid="stTabBar"] {
         border-bottom: none !important; 
         padding-bottom: 0px !important;
         margin-bottom: 5px !important;
     }
-    /* Estiliza las pestañas para que fluyan de manera fina */
     [data-testid="stTab"] {
-        padding: 4px 16px !important;
+        padding: 6px 20px !important;
         font-size: 14px !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
+        font-family: 'Inter', sans-serif !important;
         border: none !important;
         background: transparent !important;
+        transition: all 0.2s ease-in-out !important;
     }
-    /* Línea indicadora de pestaña activa extremadamente delgada */
+    [data-testid="stTab"]:hover {
+        color: #16A34A !important; /* Cambio de color sutil al pasar el mouse */
+    }
     [data-testid="stTabBar"] button[aria-selected="true"] div {
         height: 2px !important;
         background-color: #16A34A !important;
     }
-    /* Elimina bloques contenedores intermedios vacíos que causan el efecto de rectángulo feo */
     [data-testid="stTabPanel"] {
         padding-top: 0px !important;
         margin-top: 0px !important;
         border: none !important;
     }
 
-    /* ====== REDISEÑO EXCLUSIVO DEL CARGADOR DE ARCHIVOS (FILE UPLOADER) ====== */
+    /* ====== REDISEÑO DEL CARGADOR DE ARCHIVOS (FILE UPLOADER) ====== */
     [data-testid="stFileUploader"] {
-        background-color: #F0F6FF !important; 
-        border: 2px dashed #38BDF8 !important; 
-        border-radius: 10px !important;
-        padding: 15px !important;
+        background-color: #F8FAFC !important; 
+        border: 2px dashed #CBD5E1 !important; 
+        border-radius: 12px !important;
+        padding: 20px !important;
+        transition: border-color 0.2s ease;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: #38BDF8 !important;
     }
     [data-testid="stFileUploader"] section,
     [data-testid="stFileUploader"] p,
     [data-testid="stFileUploader"] span,
     [data-testid="stFileUploader"] button {
-        color: #034EA2 !important;
-        font-weight: 600 !important;
+        color: #475569 !important;
+        font-weight: 500 !important;
     }
     [data-testid="stFileUploader"] button {
         background-color: #FFFFFF !important;
-        border: 1px solid #38BDF8 !important;
-        border-radius: 6px !important;
-        color: #034EA2 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        padding: 5px 15px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
     }
     [data-testid="stFileUploader"] button:hover {
-        background-color: #38BDF8 !important;
-        color: #FFFFFF !important;
+        background-color: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
     }
 
-    /* Contenedores generales de los páneles de pestañas */
+    /* Contenedores generales de los páneles de pestañas estilo Dashboard Ejecutivo */
     .panel-container {
         background-color: #FFFFFF;
         padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-        margin-bottom: 20px;
-        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+        margin-bottom: 25px;
+        border: 1px solid #F1F5F9;
     }
     
     /* Tarjetas de insights informativas */
     .insight-card {
-        background-color: #F1F5F9;
-        border-left: 5px solid #38BDF8;
-        padding: 15px;
-        border-radius: 4px 10px 10px 4px;
-        margin-bottom: 15px;
+        background-color: #F8FAFC;
+        border-left: 4px solid #3b82f6;
+        padding: 20px;
+        border-radius: 0px 12px 12px 0px;
+        margin-bottom: 20px;
     }
     .insight-card p, .insight-card h4 {
-        color: #0F172A !important;
+        color: #1e293b !important;
     }
 
     /* Tarjetas de alertas de éxito */
     .insight-success {
         background-color: #F0FDF4;
-        border-left: 5px solid #16A34A;
-        padding: 15px;
-        border-radius: 4px 10px 10px 4px;
-        margin-bottom: 15px;
+        border-left: 4px solid #16A34A;
+        padding: 20px;
+        border-radius: 0px 12px 12px 0px;
+        margin-bottom: 20px;
     }
     
     /* Configuración de componentes de KPIs métricos */
     [data-testid="stMetricLabel"] {
-        color: #475569 !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
+        color: #64748B !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
     [data-testid="stMetricValue"] {
         color: #0F172A !important;
-        font-weight: 800 !important;
-        font-size: 28px !important;
+        font-weight: 700 !important;
+        font-size: 32px !important;
+        letter-spacing: -0.03em;
+    }
+
+    /* Clases personalizadas para iconos en títulos inline */
+    .title-icon {
+        margin-right: 10px;
+        color: #64748B;
+    }
+    .title-icon-active {
+        margin-right: 10px;
+        color: #16A34A;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -154,14 +200,14 @@ st.markdown("""
 # ESTILO PREMIUM PARA GRÁFICAS
 def aplicar_estilo_premium(fig):
     fig.update_layout(
-        paper_bgcolor="#EAF4FF",
-        plot_bgcolor="#F4F9FF",
-        font=dict(color="#0F172A", size=13),
-        title=dict(font=dict(size=18, color="#0F172A", family="Arial")),
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#F8FAFC",
+        font=dict(color="#334155", size=13, family="Inter"),
+        title=dict(font=dict(size=16, color="#0F172A", family="Inter", weight="bold")),
         margin=dict(l=40, r=40, t=50, b=40)
     )
-    fig.update_xaxes(title_font=dict(color="#0F172A", size=13), tickfont=dict(color="#0F172A", size=11))
-    fig.update_yaxes(title_font=dict(color="#0F172A", size=13), tickfont=dict(color="#0F172A", size=11))
+    fig.update_xaxes(title_font=dict(color="#0F172A", size=13), tickfont=dict(color="#475569", size=11), gridcolor="#E2E8F0")
+    fig.update_yaxes(title_font=dict(color="#0F172A", size=13), tickfont=dict(color="#475569", size=11), gridcolor="#E2E8F0")
     return fig
 
 # FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
@@ -220,25 +266,31 @@ def cargar_datos_fuente(archivo_subido=None):
     return None
 
 # =====================================================================
-# INTERFAZ DE LA BARRA LATERAL (EXCLUSIVA PARA ACTUALIZAR LA BASE)
+# INTERFAZ DE LA BARRA LATERAL (CON ICONOS WEB FONTAWESOME)
 # =====================================================================
-st.sidebar.title("🛡️ Gestión de Datos")
-st.sidebar.markdown("### 📅 Actualizar Repositorio")
+st.sidebar.markdown("""
+    <div class='sidebar-title'>
+        <i class='fas fa-shield-halved' style='color: #1e3a8a;'></i> Gestión de Datos
+    </div>
+    <div style='font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 8px;'>
+        <i class='far fa-calendar' style='margin-right: 5px;'></i> Actualizar Repositorio
+    </div>
+""", unsafe_allow_html=True)
 
-archivo_nuevo = st.sidebar.file_uploader("Arrastra el nuevo histórico institucional (CSV o Excel)", type=["csv", "xlsx"])
+archivo_nuevo = st.sidebar.file_uploader("Cargar histórico institucional (CSV o Excel)", type=["csv", "xlsx"], label_visibility="collapsed")
 
 if archivo_nuevo is not None:
     df_cargado = cargar_datos_fuente(archivo_nuevo)
     if df_cargado is not None:
         st.session_state.df_interno = df_cargado
-        st.sidebar.success("Base de datos actualizada con éxito.")
+        st.sidebar.success("Base de datos sincronizada.")
 elif st.session_state.df_interno is None:
     st.session_state.df_interno = cargar_datos_fuente()
 
 df_original = st.session_state.df_interno
 
 if df_original is None:
-    st.error("❌ No se encontró ningún registro de datos histórico. Por favor carga un archivo válido en el panel lateral.")
+    st.error("No se encontró ningún registro de datos histórico. Por favor carga un archivo válido en el panel lateral.")
     st.stop()
 
 # =====================================================================
@@ -277,22 +329,22 @@ st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
 # =====================================================================
-# INTERFAZ PRINCIPAL - RECTÁNGULO DE TÍTULO OPTIMIZADO (VERDE CLARITO PREMIUM)
+# INTERFAZ PRINCIPAL - CABECERA CON DEGRADADO SUTIL (FRONT-END ESTILIZADO)
 # =====================================================================
 st.markdown(f"""
     <div style='
-        background-color: #F0FDF4 !important; 
-        padding: 25px; 
-        border-radius: 12px; 
-        box-shadow: 0 4px 14px rgba(22, 163, 74, 0.05); 
-        margin-bottom: 25px; 
-        border: 2px dashed #4ADE80 !important;
+        background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%) !important; 
+        padding: 30px; 
+        border-radius: 16px; 
+        box-shadow: 0 4px 20px rgba(22, 163, 74, 0.03); 
+        margin-bottom: 30px; 
+        border: 1px dashed #BBF7D0 !important;
     '>
-        <h1 style='color: #14532D !important; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
+        <h1 style='color: #14532D !important; margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.04em;'>
             Sistema Híbrido Multimodelo para la Seguridad Territorial
         </h1>
-        <p style='color: #166534 !important; margin: 6px 0 0 0; font-size: 14px; font-weight: 500;'>
-            Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
+        <p style='color: #15803D !important; margin: 8px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: -0.01em;'>
+            <i class='fas fa-network-wired' style='margin-right: 6px;'></i> Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
         </p>
     </div>
 """, unsafe_allow_html=True)
@@ -310,18 +362,18 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Sin bloques gruesos ni bordes toscos intermedios)
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Con la línea indicadora reducida y limpia)
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📂 Ingeniería e Ingesta de Datos", 
-    "🎯 Segmentación (K-Means)", 
-    "🧠 Modelo Predictivo (Red Neuronal)", 
-    "🔮 Despliegue y Predicción a Futuro"
+    "Ingeniería e Ingesta", 
+    "Segmentación K-Means", 
+    "Modelo Red Neuronal", 
+    "Despliegue e Inferencia"
 ])
 
 # PESTAÑA 1: INGENIERÍA E INGESTA DE DATOS
 with tab1:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.subheader("1. Reestructuración de Matrices Complejas (Pivotado)")
+    st.markdown("<h3><i class='fas fa-database title-icon'></i> 1. Reestructuración de Matrices Complejas (Pivotado)</h3>", unsafe_allow_html=True)
     
     col_t1_1, col_t1_2 = st.columns([1, 1])
     with col_t1_1:
@@ -336,13 +388,13 @@ with tab1:
     with col_t1_2:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#0284C7;'>Estandarización Estadística Obligatoria (Z-Score)</h4>
+            <h4 style='margin-top:0; color:#1e3a8a;'><i class='fas fa-calculator' style='margin-right: 8px;'></i>Estandarización Estadística Obligatoria (Z-Score)</h4>
             <p>Para mitigar sesgos por dispersión de volumen, se aplicó un escalado estándar (StandardScaler). 
             Esto asegura que variables masivas no distorsionen los cálculos espaciales de distancia, protegiendo variables de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad.</p>
         </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("### Vista Preliminar de la Matriz Numérica de Control")
+    st.markdown("<h4 style='margin-top:20px;'><i class='fas fa-table title-icon'></i> Vista Preliminar de la Matriz Numérica de Control</h4>", unsafe_allow_html=True)
     st.dataframe(datos.head(10), use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -351,7 +403,7 @@ with tab2:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
     
     v_hopkins = calcular_hopkins(X_scaled[numericas])
-    st.subheader("2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados")
+    st.markdown("<h3><i class='fas fa-chart-pie title-icon'></i> 2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados</h3>", unsafe_allow_html=True)
     
     col_hop1, col_hop2 = st.columns([1, 2])
     with col_hop1:
@@ -398,17 +450,17 @@ with tab2:
             color_discrete_map={"Clúster 0": "#22C55E", "Clúster 1": "#0EA5E9", "Clúster 2": "#F59E0B", "Clúster 3": "#EF4444"}
         )
         fig_3d.update_layout(
-            height=500, paper_bgcolor="#EAF4FF", plot_bgcolor="#F4F9FF", font=dict(color="black", size=12),
+            height=500, paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF", font=dict(color="black", size=12),
             scene=dict(
-                bgcolor="#F4F9FF",
-                xaxis=dict(title="PC1", gridcolor="#CBD5E1"),
-                yaxis=dict(title="PC2", gridcolor="#CBD5E1"),
-                zaxis=dict(title="PC3", gridcolor="#CBD5E1")
+                bgcolor="#F8FAFC",
+                xaxis=dict(title="PC1", gridcolor="#E2E8F0"),
+                yaxis=dict(title="PC2", gridcolor="#E2E8F0"),
+                zaxis=dict(title="PC3", gridcolor="#E2E8F0")
             )
         )
         st.plotly_chart(fig_3d, use_container_width=True)
 
-    st.markdown("### Perfil Estadístico Real por Clúster Territorial")
+    st.markdown("<h4><i class='fas fa-chart-bar title-icon'></i> Perfil Estadístico Real por Clúster Territorial</h4>", unsafe_allow_html=True)
     variables_interes = [v for v in ['TOTAL_AFECTADOS', 'ASESINADO', 'HERIDO'] if v in datos_originales_num.columns]
     tabla_perfil = datos_originales_num.groupby('Cluster')[variables_interes].mean().round(2)
     tabla_perfil['Municipios Asignados'] = datos_originales_num.groupby('Cluster').size()
@@ -418,12 +470,12 @@ with tab2:
 # PESTAÑA 3: MODELO PREDICTIVO (RED NEURONAL)
 with tab3:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.subheader("3. Optimización y Generalización Mediante Red Neuronal Híbrida")
+    st.markdown("<h3><i class='fas fa-brain title-icon'></i> 3. Optimización y Generalización Mediante Red Neuronal Híbrida</h3>", unsafe_allow_html=True)
     
     col_t3_1, col_t3_2 = st.columns(2)
     
     with col_t3_1:
-        st.markdown("### Importancia de las Variables en la Inferencia Predictiva")
+        st.markdown("<h4 style='margin-bottom:15px;'><i class='fas fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
         pesos_absolutos = np.sum(np.abs(mlp_modelo.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
@@ -441,7 +493,7 @@ with tab3:
         st.plotly_chart(aplicar_estilo_premium(fig_imp), use_container_width=True)
         
     with col_t3_2:
-        st.markdown("### Evaluación Científica del Aprendizaje")
+        st.markdown("<h4 style='margin-bottom:15px;'><i class='fas fa-square-poll-vertical title-icon'></i> Evaluación Científica del Aprendizaje</h4>", unsafe_allow_html=True)
         y_pred_test = mlp_modelo.predict(X_test)
         reporte_dict = classification_report(y_test, y_pred_test, output_dict=True)
         df_reporte = pd.DataFrame(reporte_dict).transpose().round(2)
@@ -455,7 +507,7 @@ with tab3:
         
         st.markdown("""
         <div class='insight-card' style='margin-top:20px;'>
-            <h4>Interpretación Operativa de Métricas:</h4>
+            <h4><i class='fas fa-square-check' style='color:#3b82f6; margin-right:8px;'></i>Interpretación Operativa de Métricas:</h4>
             <p>La obtención de un coeficiente de <b>Accuracy aproximándose al 100%</b> demuestra que las fronteras complejas de riesgo estructuradas por K-Means poseen una firma lógica tan definida que la arquitectura neuronal de múltiples capas pudo asimilar el criterio generalizable sin incurrir en falsas alarmas ni omisiones operativas.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -464,13 +516,13 @@ with tab3:
 # PESTAÑA 4: DESPLIEGUE OPERATIVO Y FORMULARIO PREDICTIVO
 with tab4:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.subheader("🔮 4. Módulo de Inferencia Táctica Individual (Entorno Operativo)")
+    st.markdown("<h3><i class='fas fa-terminal title-icon'></i> Módulo de Inferencia Táctica Individual (Entorno Operativo)</h3>", unsafe_allow_html=True)
     
     col_f1, col_f2 = st.columns([1, 1])
     
     with col_f1:
         st.markdown("""
-        ### Simulación de Escenarios Operativos a Futuro
+        #### Simulación de Escenarios Operativos a Futuro
         Este formulario utiliza de forma exclusiva la **memoria sináptica de la Red Neuronal (MLP)** guardada en el estado del servidor. 
         
         * **Ventaja Tecnológica:** A diferencia del módulo exploratorio (K-Means), ingresar un municipio aquí **no recalcula los centroides del país**, permitiendo conocer instantáneamente el clúster de seguridad sin alterar la base de datos histórica establecida.
@@ -500,10 +552,10 @@ with tab4:
             prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
             
             with col_f2:
-                st.markdown("### 📢 Dictamen Generado por la Red")
+                st.markdown("#### <i class='fas fa-receipt title-icon'></i> Dictamen Generado por la Red")
                 st.markdown(f"""
                     <div class='insight-success' style='padding: 25px; font-size:16px; border-radius:10px;'>
-                        <h3 style='color: #14532D !important; margin-top:0;'>¡Análisis Exitoso!</h3>
+                        <h3 style='color: #14532D !important; margin-top:0;'><i class='fas fa-circle-check-solid' style='margin-right:8px;'></i>¡Análisis Exitoso!</h3>
                         El territorio simulado <b>{nombre_muni_futuro}</b> ha sido asignado al: <br>
                         <span style='font-size: 24px; font-weight:800; color: #16A34A;'>CLÚSTER {prediccion_ia}</span><br><br>
                         El sistema determinó su nivel de vulnerabilidad cruzando el peso de los coeficientes neuronales fijos obtenidos durante la fase de entrenamiento no supervisado.
@@ -512,10 +564,10 @@ with tab4:
                 
     with col_f2:
         if not boton_predecir_tab:
-            st.markdown("### Conclusiones de Arquitectura de Producción")
+            st.markdown("#### <i class='fas fa-gears title-icon'></i> Conclusiones de Arquitectura de Producción")
             st.markdown("""
             <div class='insight-card' style='background-color: #F8FAFC; border-left-color: #6366F1;'>
-                <h5 style='margin-top:0;'>Estado del Modelo: <span style='color:#6366F1;'>LISTO EN MEMORIA</span></h5>
+                <h5 style='margin-top:0; color:#4f46e5;'><i class='fas fa-bolt' style='margin-right:8px;'></i>Estado del Modelo: LISTO EN MEMORIA</h5>
                 <p>Las conexiones neuronales se cargaron de manera correcta en el State Manager de Streamlit. Al usar el formulario de la izquierda, se realiza una transformación matricial veloz con el escalador base y la predicción tarda menos de 3 milisegundos.</p>
             </div>
             """, unsafe_allow_html=True)
