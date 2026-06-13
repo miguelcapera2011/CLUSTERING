@@ -26,7 +26,7 @@ st.markdown("""
     
     <style>
     /* Importación de tipografía premium moderna */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap');
 
     /* Estilos base del ecosistema analítico */
     .stApp {
@@ -79,28 +79,41 @@ st.markdown("""
         gap: 10px;
     }
 
-    /* ====== ELIMINACIÓN Y LIMPIEZA ABSOLUTA DEL RECTÁNGULO DE TABS ====== */
+    /* ====== REDISEÑO DE PESTAÑAS (TABS) CON SUBRAYADO RESALTADOR SUTIL ====== */
     [data-testid="stTabBar"] {
         border-bottom: none !important; 
         padding-bottom: 0px !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 15px !important;
     }
     [data-testid="stTab"] {
-        padding: 6px 20px !important;
-        font-size: 14px !important;
+        padding: 8px 24px !important;
+        font-size: 15px !important;
         font-weight: 600 !important;
         font-family: 'Inter', sans-serif !important;
         border: none !important;
         background: transparent !important;
         transition: all 0.2s ease-in-out !important;
     }
-    [data-testid="stTab"]:hover {
+    
+    /* El truco del "subrayado sutil" (soft highlight) para resaltar los títulos de las pestañas */
+    [data-testid="stTab"] p {
+        background: linear-gradient(180deg, transparent 65%, rgba(34, 197, 94, 0.15) 65%) !important;
+        display: inline !important;
+        padding-bottom: 2px !important;
+    }
+
+    /* Al pasar el mouse por encima intensifica un poco el color */
+    [data-testid="stTab"]:hover p {
+        background: linear-gradient(180deg, transparent 60%, rgba(22, 163, 74, 0.25) 60%) !important;
         color: #16A34A !important;
     }
+
+    /* Línea indicadora activa nativa simplificada */
     [data-testid="stTabBar"] button[aria-selected="true"] div {
         height: 2px !important;
         background-color: #16A34A !important;
     }
+    
     [data-testid="stTabPanel"] {
         padding-top: 0px !important;
         margin-top: 0px !important;
@@ -360,7 +373,7 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Con estilos custom por CSS)
 tab1, tab2, tab3, tab4 = st.tabs([
     "Ingeniería e Ingesta", 
     "Segmentación K-Means", 
@@ -475,11 +488,11 @@ with tab3:
     with col_t3_1:
         st.markdown("<h4><i class='fa-solid fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
         pesos_absolutos = np.sum(np.abs(mlp_modelo.coefs_[0]), axis=1)
-        importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
+        importancia_normal_scale = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
         df_importancia = pd.DataFrame({
             'Variable Analítica': numericas,
-            'Peso en el Algoritmo (%)': importancia_normalizada
+            'Peso en el Algoritmo (%)': importancia_normal_scale
         }).sort_values(by='Peso en el Algoritmo (%)', ascending=True)
 
         fig_imp = px.bar(
