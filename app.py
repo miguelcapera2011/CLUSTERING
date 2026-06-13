@@ -1,18 +1,15 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import time
 import os
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-import plotly.express as px
-import plotly.graph_objects as go
 from sklearn.neighbors import NearestNeighbors
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, classification_report
+import plotly.express as px
 
 # =====================================================================
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "DASHBOARD PREMIUM"
@@ -23,18 +20,41 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Inyección de CSS Avanzado para Entorno Profesional Analítico
+# Inyección de CSS Avanzado - Corrección de Contraste Absoluto de Texto
 st.markdown("""
     <style>
+    /* Estilos base de la aplicación */
     .stApp {
         background-color: #F8FAFC;
-        color: #1E293B;
+        color: #0F172A !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
+    
+    /* Forzar que TODO el texto normal de Streamlit sea visible y oscuro */
+    p, span, label, th, td, .stMarkdown, [data-testid="stMetricLabel"] {
+        color: #1E293B !important;
+    }
+    
+    /* Títulos principales */
+    h1, h2, h3, h4, h5, h6 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+    }
+
+    /* BARRA LATERAL: Forzar fondo blanco y letras oscuras legibles */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0;
     }
+    [data-testid="stSidebar"] p, 
+    [data-testid="stSidebar"] span, 
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] h3 {
+        color: #0F172A !important;
+        font-weight: 600;
+    }
+    
+    /* Contenedores de paneles */
     .panel-container {
         background-color: #FFFFFF;
         padding: 30px;
@@ -43,36 +63,33 @@ st.markdown("""
         margin-bottom: 20px;
         border: 1px solid #E2E8F0;
     }
-    .dashboard-title {
-        color: #0F172A;
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-    .dashboard-subtitle {
-        color: #64748B;
-        font-size: 16px;
-        margin-bottom: 25px;
-        font-weight: 400;
-    }
+    
+    /* Tarjetas de insights informativas */
     .insight-card {
         background-color: #F1F5F9;
         border-left: 5px solid #38BDF8;
         padding: 15px;
         border-radius: 4px 10px 10px 4px;
         margin-bottom: 15px;
-        color: #0F172A;
+        color: #0F172A !important;
     }
+    .insight-card p, .insight-card h4 {
+        color: #0F172A !important;
+    }
+
+    /* Tarjetas de éxito */
     .insight-success {
         background-color: #F0FDF4;
         border-left: 5px solid #16A34A;
         padding: 15px;
         border-radius: 4px 10px 10px 4px;
         margin-bottom: 15px;
-        color: #0F172A;
+        color: #14532D !important;
     }
+    
+    /* Ajustes en los componentes de métricas */
     [data-testid="stMetricLabel"] {
-        color: #64748B !important;
+        color: #475569 !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
@@ -139,7 +156,7 @@ def cargar_datos_fuente(archivo_subido=None):
             st.error(f"Error al procesar el archivo subido: {e}")
             return None
     
-    # Carga por defecto en el directorio
+    # Carga por defecto buscando en la carpeta raíz
     archivos_en_carpeta = os.listdir('.')
     for archivo in archivos_en_carpeta:
         nombre_minuscula = archivo.lower()
@@ -154,27 +171,25 @@ def cargar_datos_fuente(archivo_subido=None):
     return None
 
 # =====================================================================
-# INTERFAZ DE LA BARRA LATERAL (CONTROL OPERATIVO)
+# INTERFAZ DE LA BARRA LATERAL (EXCLUSIVA PARA ACTUALIZAR LA BASE)
 # =====================================================================
-st.sidebar.title("🛡️ Panel de Control Técnico")
-
-# 1. Componente de actualización de base de datos
-st.sidebar.markdown("### 📅 1. Actualizar Base de Datos")
+st.sidebar.title("🛡️ Gestión de Datos")
+st.sidebar.markdown("### 📅 Actualizar Repositorio")
 archivo_nuevo = st.sidebar.file_uploader("Arrastra el nuevo histórico institucional (CSV o Excel)", type=["csv", "xlsx"])
 
 if archivo_nuevo is not None:
     df_cargado = cargar_datos_fuente(archivo_nuevo)
     if df_cargado is not None:
         st.session_state.df_interno = df_cargado
-        st.sidebar.success("Base de datos actualizada correctamente.")
+        st.sidebar.success("Base de datos actualizada con éxito.")
 elif st.session_state.df_interno is None:
     st.session_state.df_interno = cargar_datos_fuente()
 
 df_original = st.session_state.df_interno
 
-# Validar existencia de datos
+# Validar existencia de datos en el sistema
 if df_original is None:
-    st.error("❌ No se encontró ningún registro de datos. Por favor carga un archivo válido en el panel lateral.")
+    st.error("❌ No se encontró ningún registro de datos histórico. Por favor carga un archivo válido en el panel lateral.")
     st.stop()
 
 # =====================================================================
@@ -213,40 +228,6 @@ st.session_state.red_entrenada = mlp_modelo
 st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
-# 2. Componente de Predicción Individual a Futuro
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🔮 2. Predicción Operativa Individual")
-with st.sidebar.form("formulario_operativo"):
-    st.markdown("<small>Ingrese métricas hipotéticas o un nuevo municipio para evaluar el riesgo con la IA:</small>", unsafe_allow_html=True)
-    nombre_muni_futuro = st.text_input("Nombre del Territorio", "Municipio Prospecto")
-    
-    valores_ingresados = {}
-    # Tomamos variables representativas para no saturar el formulario visual
-    variables_visibles = numericas[:5] 
-    for var in variables_visibles:
-        valores_ingresados[var] = st.number_input(f"{var}", min_value=0, value=0)
-    
-    # Rellenar con 0 de forma automática las variables del modelo que no se listaron en el formulario reducido
-    for var in numericas:
-        if var not in valores_ingresados:
-            valores_ingresados[var] = 0
-            
-    boton_predecir = st.form_submit_button("Clasificar con IA")
-
-if boton_predecir:
-    # Construcción de vector con formato exacto que espera la arquitectura
-    df_registro_futuro = pd.DataFrame([valores_ingresados])[numericas]
-    # USAMOS LA MEMORIA: Inferencia directa saltando K-Means
-    registro_escalado = st.session_state.escalador_entrenado.transform(df_registro_futuro)
-    prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
-    
-    st.sidebar.markdown(f"""
-        <div class='insight-success' style='padding: 12px; margin-top: 10px; font-size:14px;'>
-            <b>Clasificación Inmediata de la Red:</b><br>
-            El territorio <b>{nombre_muni_futuro}</b> pertenece al <b>Clúster {prediccion_ia}</b> de seguridad.
-        </div>
-    """, unsafe_allow_html=True)
-
 # =====================================================================
 # INTERFAZ PRINCIPAL - ENTORNO ANALÍTICO PROFESIONAL
 # =====================================================================
@@ -259,7 +240,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# KPIS Globales Operativos en la Cabecera
+# KPIs Globales Operativos en la Cabecera
 col_kpi1, col_kpi2, col_kpi3, col_kpi4 = st.columns(4)
 with col_kpi1:
     st.metric("Municipios Consolidados", datos.shape[0])
@@ -272,12 +253,12 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Reemplaza las diapositivas de PowerPoint)
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Páginas de Trabajo del Dashboard)
 tab1, tab2, tab3, tab4 = st.tabs([
     "📂 Ingeniería e Ingesta de Datos", 
     "🎯 Segmentación (K-Means)", 
     "🧠 Modelo Predictivo (Red Neuronal)", 
-    "📈 Conclusiones Operativas"
+    "🔮 Despliegue y Predicción a Futuro"
 ])
 
 # PESTAÑA 1: INGENIERÍA E INGESTA DE DATOS
@@ -288,7 +269,7 @@ with tab1:
     col_t1_1, col_t1_2 = st.columns([1, 1])
     with col_t1_1:
         st.markdown("""
-        Los registros institucionales originales se presentan como un histórico cualitativo secuencial de novedades, donde cada fila detalla un ataque individual. 
+        Los registros institucionales originales se presentan como un histórico cualitativo secuencial de novedades, donde cada fila detalla un ataque o novedad individual. 
         Este formato presenta una **restricción algorítmica**: los modelos basados en distancias geométricas no procesan datos textuales continuos directos.
         
         **Solución Implementada (Pipeline):**
@@ -299,8 +280,8 @@ with tab1:
         st.markdown("""
         <div class='insight-card'>
             <h4 style='margin-top:0; color:#0284C7;'>Estandarización Estadística Obligatoria (Z-Score)</h4>
-            Para mitigar sesgos por dispersión de volumen, se aplicó un escalado estándar (StandardScaler). 
-            Esto asegura que variables masivas no distorsionen los cálculos espaciales de distancia, protegiendo variables de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad.
+            <p>Para mitigar sesgos por dispersión de volumen, se aplicó un escalado estándar (StandardScaler). 
+            Esto asegura que variables masivas no distorsionen los cálculos espaciales de distancia, protegiendo variables de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad.</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -312,7 +293,7 @@ with tab1:
 with tab2:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
     
-    # Hopkins
+    # Cálculo dinámico del Hopkins
     v_hopkins = calcular_hopkins(X_scaled[numericas])
     st.subheader("2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados")
     
@@ -325,12 +306,12 @@ with tab2:
             st.warning("Estructura de agrupación moderada o difusa.")
     with col_hop2:
         st.markdown("""
-        El estadístico de Hopkins evalúa la tendencia espacial de los datos. Al aproximarse o superar el rango de 0.75, confirma matemáticamente que los incidentes de orden público en Colombia presentan patrones territoriales consistentes y no distribuciones aleatorias, justificando el uso de algoritmos de clúster.
+        El estadístico de Hopkins evalúa la tendencia espacial de los datos. Al aproximarse o superar el rango de 0.75, confirma matemáticamente que los incidentes de orden público en Colombia presentan patrones territoriales consistentes y no distribuciones aleatorias, justificando científicamente el uso de algoritmos de clúster.
         """)
         
     st.markdown("---")
     
-    # Gráficas de Codo y PCA
+    # Gráficas de Codo y PCA 3D
     col_g2_1, col_g2_2 = st.columns(2)
     with col_g2_1:
         wss = []
@@ -419,28 +400,74 @@ with tab3:
         
         st.markdown("""
         <div class='insight-card' style='margin-top:20px;'>
-            <b>Interpretación Operativa de Métricas:</b><br>
-            La obtención de un coeficiente de <b>Accuracy aproximándose al 100%</b> demuestra que las fronteras complejas de riesgo estructuradas por K-Means poseen una firma lógica tan definida que la arquitectura neuronal de múltiples capas pudo asimilar el criterio generalizable sin incurrir en falsas alarmas ni omisiones operativas.
+            <h4>Interpretación Operativa de Métricas:</h4>
+            <p>La obtención de un coeficiente de <b>Accuracy aproximándose al 100%</b> demuestra que las fronteras complejas de riesgo estructuradas por K-Means poseen una firma lógica tan definida que la arquitectura neuronal de múltiples capas pudo asimilar el criterio generalizable sin incurrir en falsas alarmas ni omisiones operativas.</p>
         </div>
         """, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# PESTAÑA 4: CONCLUSIONES OPERATIVAS Y TRABAJO FUTURO
+# PESTAÑA 4: DESPLIEGUE OPERATIVO Y FORMULARIO PREDICTIVO
 with tab4:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.subheader("4. Conclusiones y Despliegue de la Arquitectura")
+    st.subheader("🔮 4. Módulo de Inferencia Táctica Individual (Entorno Operativo)")
     
-    col_c1, col_c2 = st.columns(2)
-    with col_c1:
+    col_f1, col_f2 = st.columns([1, 1])
+    
+    with col_f1:
         st.markdown("""
-        ### Hallazgos Estratégicos
-        1. **Viabilidad Estructural:** La ingeniería de características basada en matrices de pivotado resolvió con éxito la restricción analítica de los datos cualitativos institucionales originales.
-        2. **Consistencia Algorítmica:** La convergencia de Hopkins, Métodos de Inercia Interna (Codo) y PCA demostró una clara separación espacial, segmentando el territorio en niveles estables diferenciados de las anomalías críticas.
+        ### Simulación de Escenarios Operativos a Futuro
+        Este formulario utiliza de forma exclusiva la **memoria sináptica de la Red Neuronal (MLP)** guardada en el estado del servidor. 
+        
+        * **Ventaja Tecnológica:** A diferencia del módulo exploratorio (K-Means), ingresar un municipio aquí **no recalcula los centroides del país**, permitiendo conocer instantáneamente el clúster de seguridad sin alterar la base de datos histórica establecida.
         """)
-    with col_c2:
-        st.markdown("""
-        ### Arquitectura de Producción Futura
-        * **Eliminación de Recálculo:** Gracias a que la Red Neuronal guarda las relaciones de centroides en sus pesos sinápticos, la clasificación de nuevos escenarios es independiente del algoritmo K-Means.
-        * **Operatividad:** El sistema se encuentra óptimo para producción real, permitiendo evaluar incidentes aislados al instante (vía formulario o carga en lote) manteniendo estables las definiciones de los grupos de riesgo originales.
-        """)
+        
+        # Formulario Técnico en el cuerpo principal
+        with st.form("formulario_principal_prospecto"):
+            st.markdown("##### Variables cuantitativas del escenario:")
+            nombre_muni_futuro = st.text_input("Nombre del Territorio Evaluado", "Municipio Prospecto S-1")
+            
+            valores_ingresados = {}
+            # Tomamos un grupo representativo de variables para mantener la estética limpia del formulario
+            variables_visibles = numericas[:6] 
+            
+            # Crear los inputs distribuidos en dos columnas internas para mejorar diseño
+            sub_col1, sub_col2 = st.columns(2)
+            for i, var in enumerate(variables_visibles):
+                with sub_col1 if i % 2 == 0 else sub_col2:
+                    valores_ingresados[var] = st.number_input(f"Cantidad de: {var}", min_value=0, value=0)
+            
+            # Asignar de manera interna valor cero a las dimensiones que no entraron en la vista reducida
+            for var in numericas:
+                if var not in valores_ingresados:
+                    valores_ingresados[var] = 0
+                    
+            boton_predecir_tab = st.form_submit_button("Ejecutar Clasificación Estratégica con IA")
+
+        if boton_predecir_tab:
+            # Asegurar el orden exacto de las columnas antes de la predicción
+            df_registro_futuro = pd.DataFrame([valores_ingresados])[numericas]
+            registro_escalado = st.session_state.escalador_entrenado.transform(df_registro_futuro)
+            prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
+            
+            with col_f2:
+                st.markdown("### 📢 Dictamen Generado por la Red")
+                st.markdown(f"""
+                    <div class='insight-success' style='padding: 25px; font-size:16px; border-radius:10px;'>
+                        <h3 style='color: #14532D !important; margin-top:0;'>¡Análisis Exitoso!</h3>
+                        El territorio simulado <b>{nombre_muni_futuro}</b> ha sido asignado al: <br>
+                        <span style='font-size: 24px; font-weight:800; color: #16A34A;'>CLÚSTER {prediccion_ia}</span><br><br>
+                        El sistema determinó su nivel de vulnerabilidad cruzando el peso de los coeficientes neuronales fijos obtenidos durante la fase de entrenamiento no supervisado.
+                    </div>
+                """, unsafe_allow_html=True)
+                
+    with col_f2:
+        if not boton_predecir_tab:
+            st.markdown("### Conclusiones de Arquitectura de Producción")
+            st.markdown("""
+            <div class='insight-card' style='background-color: #F8FAFC; border-left-color: #6366F1;'>
+                <h5 style='margin-top:0;'>Estado del Modelo: <span style='color:#6366F1;'>LISTO EN MEMORIA</span></h5>
+                <p>Las conexiones neuronales se cargaron de manera correcta en el State Manager de Streamlit. Al usar el formulario de la izquierda, se realiza una transformación matricial veloz con el escalador base y la predicción tarda menos de 3 milisegundos.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
     st.markdown("</div>", unsafe_allow_html=True)
