@@ -45,7 +45,7 @@ st.markdown("""
     h1 {
         font-family: 'Inter', sans-serif !important;
         font-weight: 800 !important;
-        letter-spacing: -0.05em !important;
+        letter-spacing: -0.04em !important;
         color: #1E293B !important;
     }
 
@@ -95,7 +95,7 @@ st.markdown("""
         transition: all 0.2s ease-in-out !important;
     }
     [data-testid="stTab"]:hover {
-        color: #16A34A !important; /* Cambio de color sutil al pasar el mouse */
+        color: #16A34A !important;
     }
     [data-testid="stTabBar"] button[aria-selected="true"] div {
         height: 2px !important;
@@ -185,14 +185,12 @@ st.markdown("""
         letter-spacing: -0.03em;
     }
 
-    /* Clases personalizadas para iconos en títulos inline */
+    /* Clases de utilidad para iconos consistentes */
     .title-icon {
-        margin-right: 10px;
+        margin-right: 12px;
         color: #64748B;
-    }
-    .title-icon-active {
-        margin-right: 10px;
-        color: #16A34A;
+        width: 20px;
+        text-align: center;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -266,14 +264,14 @@ def cargar_datos_fuente(archivo_subido=None):
     return None
 
 # =====================================================================
-# INTERFAZ DE LA BARRA LATERAL (CON ICONOS WEB FONTAWESOME)
+# INTERFAZ DE LA BARRA LATERAL
 # =====================================================================
 st.sidebar.markdown("""
     <div class='sidebar-title'>
-        <i class='fas fa-shield-halved' style='color: #1e3a8a;'></i> Gestión de Datos
+        <i class='fa-solid fa-shield-halved' style='color: #1e3a8a;'></i> Gestión de Datos
     </div>
     <div style='font-size: 13px; font-weight: 500; color: #64748B; margin-bottom: 8px;'>
-        <i class='far fa-calendar' style='margin-right: 5px;'></i> Actualizar Repositorio
+        <i class='fa-regular fa-calendar' style='margin-right: 5px;'></i> Actualizar Repositorio
     </div>
 """, unsafe_allow_html=True)
 
@@ -329,7 +327,7 @@ st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
 # =====================================================================
-# INTERFAZ PRINCIPAL - CABECERA CON DEGRADADO SUTIL (FRONT-END ESTILIZADO)
+# INTERFAZ PRINCIPAL - CABECERA CON DEGRADADO SUTIL
 # =====================================================================
 st.markdown(f"""
     <div style='
@@ -344,7 +342,7 @@ st.markdown(f"""
             Sistema Híbrido Multimodelo para la Seguridad Territorial
         </h1>
         <p style='color: #15803D !important; margin: 8px 0 0 0; font-size: 14px; font-weight: 500; letter-spacing: -0.01em;'>
-            <i class='fas fa-network-wired' style='margin-right: 6px;'></i> Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
+            <i class='fa-solid fa-network-wired' style='margin-right: 6px;'></i> Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
         </p>
     </div>
 """, unsafe_allow_html=True)
@@ -362,7 +360,7 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Con la línea indicadora reducida y limpia)
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS
 tab1, tab2, tab3, tab4 = st.tabs([
     "Ingeniería e Ingesta", 
     "Segmentación K-Means", 
@@ -373,7 +371,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # PESTAÑA 1: INGENIERÍA E INGESTA DE DATOS
 with tab1:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.markdown("<h3><i class='fas fa-database title-icon'></i> 1. Reestructuración de Matrices Complejas (Pivotado)</h3>", unsafe_allow_html=True)
+    st.markdown("<h3><i class='fa-solid fa-database title-icon'></i> 1. Reestructuración de Matrices Complejas (Pivotado)</h3>", unsafe_allow_html=True)
     
     col_t1_1, col_t1_2 = st.columns([1, 1])
     with col_t1_1:
@@ -388,13 +386,13 @@ with tab1:
     with col_t1_2:
         st.markdown("""
         <div class='insight-card'>
-            <h4 style='margin-top:0; color:#1e3a8a;'><i class='fas fa-calculator' style='margin-right: 8px;'></i>Estandarización Estadística Obligatoria (Z-Score)</h4>
+            <h4 style='margin-top:0; color:#1e3a8a;'><i class='fa-solid fa-calculator' style='margin-right: 8px;'></i>Estandarización Estadística Obligatoria (Z-Score)</h4>
             <p>Para mitigar sesgos por dispersión de volumen, se aplicó un escalado estándar (StandardScaler). 
             Esto asegura que variables masivas no distorsionen los cálculos espaciales de distancia, protegiendo variables de menor escala pero con un impacto estratégico crítico, tales como las tasas de letalidad.</p>
         </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("<h4 style='margin-top:20px;'><i class='fas fa-table title-icon'></i> Vista Preliminar de la Matriz Numérica de Control</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='margin-top:20px;'><i class='fa-solid fa-table title-icon'></i> Vista Preliminar de la Matriz Numérica de Control</h4>", unsafe_allow_html=True)
     st.dataframe(datos.head(10), use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -403,7 +401,7 @@ with tab2:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
     
     v_hopkins = calcular_hopkins(X_scaled[numericas])
-    st.markdown("<h3><i class='fas fa-chart-pie title-icon'></i> 2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados</h3>", unsafe_allow_html=True)
+    st.markdown("<h3><i class='fa-solid fa-chart-pie title-icon'></i> 2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados</h3>", unsafe_allow_html=True)
     
     col_hop1, col_hop2 = st.columns([1, 2])
     with col_hop1:
@@ -460,7 +458,7 @@ with tab2:
         )
         st.plotly_chart(fig_3d, use_container_width=True)
 
-    st.markdown("<h4><i class='fas fa-chart-bar title-icon'></i> Perfil Estadístico Real por Clúster Territorial</h4>", unsafe_allow_html=True)
+    st.markdown("<h4><i class='fa-solid fa-chart-bar title-icon'></i> Perfil Estadístico Real por Clúster Territorial</h4>", unsafe_allow_html=True)
     variables_interes = [v for v in ['TOTAL_AFECTADOS', 'ASESINADO', 'HERIDO'] if v in datos_originales_num.columns]
     tabla_perfil = datos_originales_num.groupby('Cluster')[variables_interes].mean().round(2)
     tabla_perfil['Municipios Asignados'] = datos_originales_num.groupby('Cluster').size()
@@ -470,12 +468,12 @@ with tab2:
 # PESTAÑA 3: MODELO PREDICTIVO (RED NEURONAL)
 with tab3:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.markdown("<h3><i class='fas fa-brain title-icon'></i> 3. Optimización y Generalización Mediante Red Neuronal Híbrida</h3>", unsafe_allow_html=True)
+    st.markdown("<h3><i class='fa-solid fa-brain title-icon'></i> 3. Optimización y Generalización Mediante Red Neuronal Híbrida</h3>", unsafe_allow_html=True)
     
     col_t3_1, col_t3_2 = st.columns(2)
     
     with col_t3_1:
-        st.markdown("<h4 style='margin-bottom:15px;'><i class='fas fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='margin-bottom:15px;'><i class='fa-solid fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
         pesos_absolutos = np.sum(np.abs(mlp_modelo.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
@@ -493,7 +491,7 @@ with tab3:
         st.plotly_chart(aplicar_estilo_premium(fig_imp), use_container_width=True)
         
     with col_t3_2:
-        st.markdown("<h4 style='margin-bottom:15px;'><i class='fas fa-square-poll-vertical title-icon'></i> Evaluación Científica del Aprendizaje</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='margin-bottom:15px;'><i class='fa-solid fa-square-poll-vertical title-icon'></i> Evaluación Científica del Aprendizaje</h4>", unsafe_allow_html=True)
         y_pred_test = mlp_modelo.predict(X_test)
         reporte_dict = classification_report(y_test, y_pred_test, output_dict=True)
         df_reporte = pd.DataFrame(reporte_dict).transpose().round(2)
@@ -507,7 +505,7 @@ with tab3:
         
         st.markdown("""
         <div class='insight-card' style='margin-top:20px;'>
-            <h4><i class='fas fa-square-check' style='color:#3b82f6; margin-right:8px;'></i>Interpretación Operativa de Métricas:</h4>
+            <h4><i class='fa-solid fa-square-check' style='color:#3b82f6; margin-right:8px;'></i>Interpretación Operativa de Métricas:</h4>
             <p>La obtención de un coeficiente de <b>Accuracy aproximándose al 100%</b> demuestra que las fronteras complejas de riesgo estructuradas por K-Means poseen una firma lógica tan definida que la arquitectura neuronal de múltiples capas pudo asimilar el criterio generalizable sin incurrir en falsas alarmas ni omisiones operativas.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -516,7 +514,7 @@ with tab3:
 # PESTAÑA 4: DESPLIEGUE OPERATIVO Y FORMULARIO PREDICTIVO
 with tab4:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.markdown("<h3><i class='fas fa-terminal title-icon'></i> Módulo de Inferencia Táctica Individual (Entorno Operativo)</h3>", unsafe_allow_html=True)
+    st.markdown("<h3><i class='fa-solid fa-terminal title-icon'></i> Módulo de Inferencia Táctica Individual (Entorno Operativo)</h3>", unsafe_allow_html=True)
     
     col_f1, col_f2 = st.columns([1, 1])
     
@@ -552,10 +550,10 @@ with tab4:
             prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
             
             with col_f2:
-                st.markdown("#### <i class='fas fa-receipt title-icon'></i> Dictamen Generado por la Red")
+                st.markdown("#### <i class='fa-solid fa-receipt title-icon'></i> Dictamen Generado por la Red")
                 st.markdown(f"""
                     <div class='insight-success' style='padding: 25px; font-size:16px; border-radius:10px;'>
-                        <h3 style='color: #14532D !important; margin-top:0;'><i class='fas fa-circle-check-solid' style='margin-right:8px;'></i>¡Análisis Exitoso!</h3>
+                        <h3 style='color: #14532D !important; margin-top:0;'><i class='fa-solid fa-circle-check' style='margin-right:8px;'></i>¡Análisis Exitoso!</h3>
                         El territorio simulado <b>{nombre_muni_futuro}</b> ha sido asignado al: <br>
                         <span style='font-size: 24px; font-weight:800; color: #16A34A;'>CLÚSTER {prediccion_ia}</span><br><br>
                         El sistema determinó su nivel de vulnerabilidad cruzando el peso de los coeficientes neuronales fijos obtenidos durante la fase de entrenamiento no supervisado.
@@ -564,10 +562,10 @@ with tab4:
                 
     with col_f2:
         if not boton_predecir_tab:
-            st.markdown("#### <i class='fas fa-gears title-icon'></i> Conclusiones de Arquitectura de Producción")
+            st.markdown("#### <i class='fa-solid fa-gear title-icon'></i> Conclusiones de Arquitectura de Producción")
             st.markdown("""
             <div class='insight-card' style='background-color: #F8FAFC; border-left-color: #6366F1;'>
-                <h5 style='margin-top:0; color:#4f46e5;'><i class='fas fa-bolt' style='margin-right:8px;'></i>Estado del Modelo: LISTO EN MEMORIA</h5>
+                <h5 style='margin-top:0; color:#4f46e5;'><i class='fa-solid fa-bolt' style='margin-right:8px;'></i>Estado del Modelo: LISTO EN MEMORIA</h5>
                 <p>Las conexiones neuronales se cargaron de manera correcta en el State Manager de Streamlit. Al usar el formulario de la izquierda, se realiza una transformación matricial veloz con el escalador base y la predicción tarda menos de 3 milisegundos.</p>
             </div>
             """, unsafe_allow_html=True)
