@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Inyección de CSS Avanzado - Alta Visibilidad, Contraste Corporativo y Ajuste del Cargador
+# Inyección de CSS Avanzado - Alta Visibilidad, Contraste y Ajuste Ultra-Fino de Tabs
 st.markdown("""
     <style>
     /* Estilos base del ecosistema analítico */
@@ -53,15 +53,33 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
+    /* ====== CORRECCIÓN ULTRA-DELGADA PARA LA BARRA DE PESTAÑAS (TABS) ====== */
+    /* Reduce el contenedor de la barra de pestañas y le quita el borde grueso por defecto */
+    [data-testid="stTabBar"] {
+        border-bottom: 1px solid #E2E8F0 !important; /* Línea base gris casi invisible */
+        padding-bottom: 0px !important;
+        margin-bottom: 15px !important;
+    }
+    /* Estiliza cada pestaña individual para que no se vea tosca */
+    [data-testid="stTab"] {
+        padding: 6px 16px !important; /* Más compacto y elegante */
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        border: none !important;
+    }
+    /* Línea indicadora de la pestaña activa: Súper delgada y fina */
+    [data-testid="stTabBar"] button[aria-selected="true"] div {
+        height: 2px !important; /* Reduce el grosor de la barra indicadora a una línea fina */
+        background-color: #16A34A !important; /* Combina con el verde institucional */
+    }
+
     /* ====== REDISEÑO EXCLUSIVO DEL CARGADOR DE ARCHIVOS (FILE UPLOADER) ====== */
-    /* Contenedor principal del cargador: Fondo Azul Clarito Premium */
     [data-testid="stFileUploader"] {
         background-color: #F0F6FF !important; 
-        border: 2px dashed #38BDF8 !important; /* Borde punteado azul claro */
+        border: 2px dashed #38BDF8 !important; 
         border-radius: 10px !important;
         padding: 15px !important;
     }
-    /* Forzar que todos los textos dentro del cargador sean Azul Marino e intensamente legibles */
     [data-testid="stFileUploader"] section,
     [data-testid="stFileUploader"] p,
     [data-testid="stFileUploader"] span,
@@ -69,7 +87,6 @@ st.markdown("""
         color: #034EA2 !important;
         font-weight: 600 !important;
     }
-    /* Estilo del botón interno de examinar archivos */
     [data-testid="stFileUploader"] button {
         background-color: #FFFFFF !important;
         border: 1px solid #38BDF8 !important;
@@ -286,7 +303,7 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Con la línea indicadora reducida y limpia)
 tab1, tab2, tab3, tab4 = st.tabs([
     "📂 Ingeniería e Ingesta de Datos", 
     "🎯 Segmentación (K-Means)", 
