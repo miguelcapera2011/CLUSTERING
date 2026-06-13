@@ -392,7 +392,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("<h4 style='margin-top:20px;'><i class='fa-solid fa-table title-icon'></i> Vista Preliminar de la Matriz Numérica de Control</h4>", unsafe_allow_html=True)
+    st.markdown("<h4><i class='fa-solid fa-table title-icon'></i> Vista Preliminar de la Matriz Numérica de Control</h4>", unsafe_allow_html=True)
     st.dataframe(datos.head(10), use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -473,7 +473,7 @@ with tab3:
     col_t3_1, col_t3_2 = st.columns(2)
     
     with col_t3_1:
-        st.markdown("<h4 style='margin-bottom:15px;'><i class='fa-solid fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
+        st.markdown("<h4><i class='fa-solid fa-sliders title-icon'></i> Importancia de las Variables en la Inferencia</h4>", unsafe_allow_html=True)
         pesos_absolutos = np.sum(np.abs(mlp_modelo.coefs_[0]), axis=1)
         importancia_normalizada = (pesos_absolutos / np.max(pesos_absolutos)) * 100
         
@@ -491,7 +491,7 @@ with tab3:
         st.plotly_chart(aplicar_estilo_premium(fig_imp), use_container_width=True)
         
     with col_t3_2:
-        st.markdown("<h4 style='margin-bottom:15px;'><i class='fa-solid fa-square-poll-vertical title-icon'></i> Evaluación Científica del Aprendizaje</h4>", unsafe_allow_html=True)
+        st.markdown("<h4><i class='fa-solid fa-square-poll-vertical title-icon'></i> Evaluación Científica del Aprendizaje</h4>", unsafe_allow_html=True)
         y_pred_test = mlp_modelo.predict(X_test)
         reporte_dict = classification_report(y_test, y_pred_test, output_dict=True)
         df_reporte = pd.DataFrame(reporte_dict).transpose().round(2)
@@ -550,7 +550,7 @@ with tab4:
             prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
             
             with col_f2:
-                st.markdown("#### <i class='fa-solid fa-receipt title-icon'></i> Dictamen Generado por la Red")
+                st.markdown("<h4><i class='fa-solid fa-receipt title-icon'></i> Dictamen Generado por la Red</h4>", unsafe_allow_html=True)
                 st.markdown(f"""
                     <div class='insight-success' style='padding: 25px; font-size:16px; border-radius:10px;'>
                         <h3 style='color: #14532D !important; margin-top:0;'><i class='fa-solid fa-circle-check' style='margin-right:8px;'></i>¡Análisis Exitoso!</h3>
@@ -562,7 +562,7 @@ with tab4:
                 
     with col_f2:
         if not boton_predecir_tab:
-            st.markdown("#### <i class='fa-solid fa-gear title-icon'></i> Conclusiones de Arquitectura de Producción")
+            st.markdown("<h4><i class='fa-solid fa-gear title-icon'></i> Conclusiones de Arquitectura de Producción</h4>", unsafe_allow_html=True)
             st.markdown("""
             <div class='insight-card' style='background-color: #F8FAFC; border-left-color: #6366F1;'>
                 <h5 style='margin-top:0; color:#4f46e5;'><i class='fa-solid fa-bolt' style='margin-right:8px;'></i>Estado del Modelo: LISTO EN MEMORIA</h5>
