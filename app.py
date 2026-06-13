@@ -20,28 +20,27 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Inyección de CSS Avanzado - Corrección de Contraste Absoluto de Texto
+# Inyección de CSS Avanzado - Alta Visibilidad, Contraste Corporativo y Ajuste del Cargador
 st.markdown("""
     <style>
-    /* Estilos base de la aplicación */
+    /* Estilos base del ecosistema analítico */
     .stApp {
         background-color: #F8FAFC;
         color: #0F172A !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
     
-    /* Forzar que TODO el texto normal de Streamlit sea visible y oscuro */
+    /* Forzar visibilidad y legibilidad de textos en toda la app */
     p, span, label, th, td, .stMarkdown, [data-testid="stMetricLabel"] {
         color: #1E293B !important;
     }
     
-    /* Títulos principales */
     h1, h2, h3, h4, h5, h6 {
         color: #0F172A !important;
         font-weight: 700 !important;
     }
 
-    /* BARRA LATERAL: Forzar fondo blanco y letras oscuras legibles */
+    /* BARRA LATERAL: Fondo blanco puro con textos oscuros definidos */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0;
@@ -51,10 +50,39 @@ st.markdown("""
     [data-testid="stSidebar"] label,
     [data-testid="stSidebar"] h3 {
         color: #0F172A !important;
-        font-weight: 600;
+        font-weight: 600 !important;
     }
-    
-    /* Contenedores de paneles */
+
+    /* ====== REDISEÑO EXCLUSIVO DEL CARGADOR DE ARCHIVOS (FILE UPLOADER) ====== */
+    /* Contenedor principal del cargador: Fondo Azul Clarito Premium */
+    [data-testid="stFileUploader"] {
+        background-color: #F0F6FF !important; 
+        border: 2px dashed #38BDF8 !important; /* Borde punteado azul claro */
+        border-radius: 10px !important;
+        padding: 15px !important;
+    }
+    /* Forzar que todos los textos dentro del cargador sean Azul Marino e intensamente legibles */
+    [data-testid="stFileUploader"] section,
+    [data-testid="stFileUploader"] p,
+    [data-testid="stFileUploader"] span,
+    [data-testid="stFileUploader"] button {
+        color: #034EA2 !important;
+        font-weight: 600 !important;
+    }
+    /* Estilo del botón interno de examinar archivos */
+    [data-testid="stFileUploader"] button {
+        background-color: #FFFFFF !important;
+        border: 1px solid #38BDF8 !important;
+        border-radius: 6px !important;
+        color: #034EA2 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+    }
+    [data-testid="stFileUploader"] button:hover {
+        background-color: #38BDF8 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Contenedores generales de los páneles de pestañas */
     .panel-container {
         background-color: #FFFFFF;
         padding: 30px;
@@ -71,23 +99,21 @@ st.markdown("""
         padding: 15px;
         border-radius: 4px 10px 10px 4px;
         margin-bottom: 15px;
-        color: #0F172A !important;
     }
     .insight-card p, .insight-card h4 {
         color: #0F172A !important;
     }
 
-    /* Tarjetas de éxito */
+    /* Tarjetas de alertas de éxito */
     .insight-success {
         background-color: #F0FDF4;
         border-left: 5px solid #16A34A;
         padding: 15px;
         border-radius: 4px 10px 10px 4px;
         margin-bottom: 15px;
-        color: #14532D !important;
     }
     
-    /* Ajustes en los componentes de métricas */
+    /* Configuración de componentes de KPIs métricos */
     [data-testid="stMetricLabel"] {
         color: #475569 !important;
         font-weight: 600 !important;
@@ -156,7 +182,6 @@ def cargar_datos_fuente(archivo_subido=None):
             st.error(f"Error al procesar el archivo subido: {e}")
             return None
     
-    # Carga por defecto buscando en la carpeta raíz
     archivos_en_carpeta = os.listdir('.')
     for archivo in archivos_en_carpeta:
         nombre_minuscula = archivo.lower()
@@ -175,6 +200,8 @@ def cargar_datos_fuente(archivo_subido=None):
 # =====================================================================
 st.sidebar.title("🛡️ Gestión de Datos")
 st.sidebar.markdown("### 📅 Actualizar Repositorio")
+
+# Zona de carga estilizada con el CSS inyectado (Fondo azul clarito y letras legibles)
 archivo_nuevo = st.sidebar.file_uploader("Arrastra el nuevo histórico institucional (CSV o Excel)", type=["csv", "xlsx"])
 
 if archivo_nuevo is not None:
@@ -187,7 +214,6 @@ elif st.session_state.df_interno is None:
 
 df_original = st.session_state.df_interno
 
-# Validar existencia de datos en el sistema
 if df_original is None:
     st.error("❌ No se encontró ningún registro de datos histórico. Por favor carga un archivo válido en el panel lateral.")
     st.stop()
@@ -223,18 +249,27 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled[numericas], y_label
 mlp_modelo = MLPClassifier(hidden_layer_sizes=(16, 8), activation='relu', solver='adam', max_iter=500, random_state=42)
 mlp_modelo.fit(X_train, y_train)
 
-# Guardar modelos entrenados en el st.session_state para uso del formulario libre
 st.session_state.red_entrenada = mlp_modelo
 st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
 # =====================================================================
-# INTERFAZ PRINCIPAL - ENTORNO ANALÍTICO PROFESIONAL
+# INTERFAZ PRINCIPAL - RECTÁNGULO DE TÍTULO MEJORADO (DEGRADADO LUMINOSO)
 # =====================================================================
 st.markdown(f"""
-    <div class='panel-container' style='background-color: #1E3A8A; color: #FFFFFF; border: none; padding: 25px;'>
-        <h1 style='color: #FFFFFF; margin: 0; font-size: 28px;'>Sistema Híbrido Multimodelo para la Seguridad Territorial</h1>
-        <p style='color: #93C5FD; margin: 5px 0 0 0; font-size: 15px;'>
+    <div style='
+        background: linear-gradient(135deg, #0B2545 0%, #134074 100%); 
+        color: #FFFFFF; 
+        padding: 30px; 
+        border-radius: 14px; 
+        box-shadow: 0 6px 20px rgba(11, 37, 69, 0.15); 
+        margin-bottom: 25px; 
+        border-left: 6px solid #38BDF8;
+    '>
+        <h1 style='color: #FFFFFF !important; margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px;'>
+            Sistema Híbrido Multimodelo para la Seguridad Territorial
+        </h1>
+        <p style='color: #93C5FD !important; margin: 6px 0 0 0; font-size: 15px; font-weight: 400;'>
             Pipeline Analítico de Procesamiento de Orden Público en Colombia basado en Aprendizaje Combinado (K-Means + Neural Networks MLP)
         </p>
     </div>
@@ -253,7 +288,7 @@ with col_kpi3:
 with col_kpi4:
     st.metric("Grupos de Riesgo (K)", "4 Clústeres")
 
-# ESTRUCTURA DE PESTAÑAS ANALÍTICAS (Páginas de Trabajo del Dashboard)
+# ESTRUCTURA DE PESTAÑAS ANALÍTICAS
 tab1, tab2, tab3, tab4 = st.tabs([
     "📂 Ingeniería e Ingesta de Datos", 
     "🎯 Segmentación (K-Means)", 
@@ -293,7 +328,6 @@ with tab1:
 with tab2:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
     
-    # Cálculo dinámico del Hopkins
     v_hopkins = calcular_hopkins(X_scaled[numericas])
     st.subheader("2. Análisis de Idoneidad y Descubrimiento de Patrones No Supervisados")
     
@@ -311,7 +345,6 @@ with tab2:
         
     st.markdown("---")
     
-    # Gráficas de Codo y PCA 3D
     col_g2_1, col_g2_2 = st.columns(2)
     with col_g2_1:
         wss = []
@@ -421,30 +454,25 @@ with tab4:
         * **Ventaja Tecnológica:** A diferencia del módulo exploratorio (K-Means), ingresar un municipio aquí **no recalcula los centroides del país**, permitiendo conocer instantáneamente el clúster de seguridad sin alterar la base de datos histórica establecida.
         """)
         
-        # Formulario Técnico en el cuerpo principal
         with st.form("formulario_principal_prospecto"):
             st.markdown("##### Variables cuantitativas del escenario:")
             nombre_muni_futuro = st.text_input("Nombre del Territorio Evaluado", "Municipio Prospecto S-1")
             
             valores_ingresados = {}
-            # Tomamos un grupo representativo de variables para mantener la estética limpia del formulario
             variables_visibles = numericas[:6] 
             
-            # Crear los inputs distribuidos en dos columnas internas para mejorar diseño
             sub_col1, sub_col2 = st.columns(2)
             for i, var in enumerate(variables_visibles):
                 with sub_col1 if i % 2 == 0 else sub_col2:
                     valores_ingresados[var] = st.number_input(f"Cantidad de: {var}", min_value=0, value=0)
             
-            # Asignar de manera interna valor cero a las dimensiones que no entraron en la vista reducida
             for var in numericas:
                 if var not in valores_ingresados:
                     valores_ingresados[var] = 0
                     
-            boton_predecir_tab = st.form_submit_button("Ejecutar Clasificación Estratégica con IA")
+            boton_predecir_tab = st.form_submit_button("Ejecutar Classification Estratégica con IA")
 
         if boton_predecir_tab:
-            # Asegurar el orden exacto de las columnas antes de la predicción
             df_registro_futuro = pd.DataFrame([valores_ingresados])[numericas]
             registro_escalado = st.session_state.escalador_entrenado.transform(df_registro_futuro)
             prediccion_ia = st.session_state.red_entrenada.predict(registro_escalado)[0]
