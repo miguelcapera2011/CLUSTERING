@@ -120,36 +120,45 @@ st.markdown("""
         border: none !important;
     }
 
-    /* ====== REDISEÑO DEL CARGADOR DE ARCHIVOS (FILE UPLOADER) ====== */
+    /* ====== NUEVO REDISEÑO DEL CARGADOR DE ARCHIVOS (PREMIUM DARK DRAGZONE) ====== */
     [data-testid="stFileUploader"] {
-        background-color: #F8FAFC !important; 
-        border: 2px dashed #CBD5E1 !important; 
-        border-radius: 12px !important;
-        padding: 20px !important;
-        transition: border-color 0.2s ease;
+        background: linear-gradient(145deg, #0F172A 0%, #1E293B 100%) !important; 
+        border: 2px dashed #38BDF8 !important; 
+        border-radius: 14px !important;
+        padding: 24px !important;
+        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3) !important;
+        transition: all 0.3s ease-in-out;
     }
+    
+    /* Efecto Glow cuando el usuario pasa el mouse sobre la zona de carga */
     [data-testid="stFileUploader"]:hover {
-        border-color: #38BDF8 !important;
+        border-color: #0EA5E9 !important;
+        box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2) !important;
     }
+
+    /* Forzar que TODOS los textos informativos e internos cambien a Blanco Absoluto */
     [data-testid="stFileUploader"] section,
     [data-testid="stFileUploader"] p,
     [data-testid="stFileUploader"] span,
-    [data-testid="stFileUploader"] button {
-        color: #475569 !important;
+    [data-testid="stFileUploader"] small,
+    [data-testid="stFileUploader"] div {
+        color: #FFFFFF !important;
         font-weight: 500 !important;
     }
+
+    /* Rediseño del botón interno de carga para que contraste elegantemente */
     [data-testid="stFileUploader"] button {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E2E8F0 !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
-        color: #0F172A !important;
+        color: #FFFFFF !important;
         font-weight: 600 !important;
-        padding: 5px 15px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        padding: 6px 18px !important;
+        transition: all 0.2s ease;
     }
     [data-testid="stFileUploader"] button:hover {
-        background-color: #F1F5F9 !important;
-        border-color: #CBD5E1 !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        border-color: #38BDF8 !important;
     }
 
     /* Contenedores generales de los páneles de pestañas estilo Dashboard Ejecutivo */
@@ -569,7 +578,7 @@ with tab4:
                         <h3 style='color: #14532D !important; margin-top:0;'><i class='fa-solid fa-circle-check' style='margin-right:8px;'></i>¡Análisis Exitoso!</h3>
                         El territorio simulado <b>{nombre_muni_futuro}</b> ha sido asignado al: <br>
                         <span style='font-size: 24px; font-weight:800; color: #16A34A;'>CLÚSTER {prediccion_ia}</span><br><br>
-                        El sistema determinó su nivel de vulnerabilidad cruzando el peso de los coeficientes neuronales fijos obtenidos durante la fase de entrenamiento no supervisado.
+                        El sistema determinó su nivel de vulnerabilidad cruzando el peso de los coeficientes neuronales fijos obtenidos durante la phase de entrenamiento no supervisado.
                     </div>
                 """, unsafe_allow_html=True)
                 
