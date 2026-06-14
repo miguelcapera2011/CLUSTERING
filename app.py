@@ -11,11 +11,11 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, classification_report
 import plotly.express as px
 
-# =====================================================================
+
 # CONFIGURACIÓN GENERAL Y ESTILO VISUAL "DASHBOARD PREMIUM"
-# =====================================================================
+
 st.set_page_config(
-    page_title="Dashboard Analítico - Seguridad Territorial", 
+    page_title="MODELO HIBRIDO - Seguridad Territorial", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -248,9 +248,9 @@ def calcular_hopkins(X):
     H = U / (U + W) if (U + W) > 0 else 0
     return H
 
-# =====================================================================
+
 # GESTIÓN DE MEMORIA INTERNA (SESSION STATE)
-# =====================================================================
+
 if 'df_interno' not in st.session_state:
     st.session_state.df_interno = None
 if 'red_entrenada' not in st.session_state:
@@ -285,9 +285,8 @@ def cargar_datos_fuente(archivo_subido=None):
                 pass
     return None
 
-# =====================================================================
 # INTERFAZ DE LA BARRA LATERAL
-# =====================================================================
+
 st.sidebar.markdown("""
     <div class='sidebar-title'>
         <i class='fa-solid fa-shield-halved' style='color: #1e3a8a;'></i> Gestión de Datos
@@ -313,9 +312,9 @@ if df_original is None:
     st.error("No se encontró ningún registro de datos histórico. Por favor carga un archivo válido en el panel lateral.")
     st.stop()
 
-# =====================================================================
+
 # PIPELINE DE INGENIERÍA DE CARACTERÍSTICAS
-# =====================================================================
+
 index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
 pivot_accion = df_original.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
 columnas_fuerza = [c for c in df_original['NOMBRE_FUERZA'].unique() if pd.notna(c)] if 'NOMBRE_FUERZA' in df_original.columns else []
@@ -348,9 +347,8 @@ st.session_state.red_entrenada = mlp_modelo
 st.session_state.escalador_entrenado = scaler
 st.session_state.columnas_modelo = numericas
 
-# =====================================================================
 # INTERFAZ PRINCIPAL - CABECERA CON DEGRADADO SUTIL
-# =====================================================================
+
 st.markdown(f"""
     <div style='
         background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%) !important; 
