@@ -313,7 +313,7 @@ with tabs[2]:
     st.dataframe(df_reporte, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# PESTAÑA 4: FORMULARIO DE INFERENCIA EN PRODUCCIÓN (MEJORADO Y INDEXADO)
+# PESTAÑA 4: FORMULARIO DE INFERENCIA EN PRODUCCIÓN (UNIFICADO)
 with tabs[3]:
     st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
     st.markdown("<h3><i class='fa-solid fa-terminal title-icon'></i> Entorno Operativo de Predicción Dirigida</h3>", unsafe_allow_html=True)
@@ -343,21 +343,19 @@ with tabs[3]:
             df_registro_futuro = pd.DataFrame([valores_ingresados]).reindex(columns=numericas, fill_value=0)
             registro_escalado = st.session_state.escalador_entrenado.transform(df_registro_futuro)
             
-            prediccion_kmeans = st.session_state.kmeans_entrenado.predict(registro_escalado)[0]
-            prediccion_mlp = st.session_state.red_entrenada.predict(registro_escalado)[0]
+            # Cálculo del Clúster Consolidado
+            prediccion_final = st.session_state.kmeans_entrenado.predict(registro_escalado)[0]
             
             colores_cluster = {0: "#22C55E", 1: "#0EA5E9", 2: "#F59E0B", 3: "#EF4444"}
-            color_resaltado = colores_cluster.get(prediccion_kmeans, "#3b82f6")
+            color_resaltado = colores_cluster.get(prediccion_final, "#3b82f6")
             
             with col_f2:
                 st.markdown(f"""
                     <div class='insight-success' style='padding: 25px; border-radius:10px; border-left: 6px solid {color_resaltado} !important;'>
                         <h3 style='color: #1E293B !important; margin-top:0;'><i class='fa-solid fa-circle-check' style='color: {color_resaltado};'></i> Clasificación Completada</h3>
                         El territorio simulado <b>{nombre_muni_futuro}</b> ha sido evaluado.<br><br>
-                        Asignación Geométrica (K-Means++): <br>
-                        <span style='font-size: 30px; font-weight:800; color: {color_resaltado};'>CLÚSTER {prediccion_kmeans}</span><br><br>
-                        Clasificación de la Red (MLP): <br>
-                        <span style='font-size: 20px; font-weight:700; color: #475569;'>CLÚSTER {prediccion_mlp}</span>
+                        Asignación Territorial: <br>
+                        <span style='font-size: 34px; font-weight:800; color: {color_resaltado};'>CLÚSTER {prediccion_final}</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
