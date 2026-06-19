@@ -399,7 +399,7 @@ with tab1:
         Los registros institucionales originales se presentan como un histórico cualitativo secuencial de novedades, donde cada fila detalla un ataque o novedad individual. 
         Este formato presenta una **restricción algorítmica**: los modelos basados en distancias geométricas no procesan datos textuales continuos directos.
         
-        **Solución Implementada (Pipeline):**
+        **Solución Implementada :**
         * Agrupación territorial unificada indexada por el código único de municipio (`COD_MUNI`).
         * Pivotado matricial extendido que convierte categorías cualitativas en frecuencias continuas reales (`ACCION`, `NOMBRE_FUERZA`, `CATEGORIA`).
         """)
