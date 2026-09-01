@@ -7,9 +7,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-# ============================================================
 # CONFIGURACIÓN
-# ============================================================
+
 
 st.set_page_config(
     page_title="Modelos lineales generalizados | Universidad del Tolima",
@@ -29,9 +28,9 @@ LIGHT = "#F8FAFC"
 BORDER = "#E2E8F0"
 
 
-# ============================================================
+
 # ESTILOS
-# ============================================================
+
 
 st.markdown(
     """
@@ -271,9 +270,9 @@ st.markdown(
 )
 
 
-# ============================================================
+
 # DATOS TRANSCRITOS DEL ARTÍCULO
-# ============================================================
+
 
 age_groups = [
     "5 a 9", "10 a 14", "15 a 19", "20 a 24", "25 a 29",
@@ -376,9 +375,9 @@ table2_df = pd.DataFrame(
 )
 
 
-# ============================================================
+
 # FUNCIONES AUXILIARES
-# ============================================================
+
 
 def source_box(text):
     st.markdown(
@@ -424,9 +423,8 @@ def fmt_num(x):
     return f"{x:.2f}".replace(".", ",")
 
 
-# ============================================================
 # BARRA LATERAL
-# ============================================================
+
 
 sections = [
     "01 · Introducción",
@@ -458,7 +456,7 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
     st.markdown("---")
-    st.markdown("### Navegación")
+    st.markdown("### Contenido")
 
     section = st.radio(
         "Etapa de la exposición",
@@ -479,9 +477,9 @@ with st.sidebar:
     st.caption("Fuente de los resultados: Vásquez-Escobar & Benítez-Camargo (2021).")
 
 
-# ============================================================
+
 # MAPA DE PÁGINAS
-# ============================================================
+
 
 page_map = {
     "01 · Introducción": 1,
@@ -500,9 +498,8 @@ page_map = {
 current_page = page_map[section]
 
 
-# ============================================================
 # ENCABEZADO PRINCIPAL
-# ============================================================
+
 
 # Logo institucional en el encabezado principal
 logo_path = Path(__file__).resolve().parent / "logo.png"
@@ -514,27 +511,22 @@ if logo_path.exists():
 st.markdown(
     """
     <div class="main-university-header">
-        <div class="title">Modelos lineales generalizados</div>
-        <div class="university">UNIVERSIDAD DEL TOLIMA</div>
+        <div class="title">INTENTO SUICIDA: </div>
+        <div class="university"> un análisis municipal 
+de factores asociados 2012-2017*</div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# ============================================================
-# CONTENIDO DE LA EXPOSICIÓN
-# ============================================================
 
-
-
-# ========================================================
 # 01 INTRODUCCIÓN
-# ========================================================
+
 
 if section == "01 · Introducción":
     section_header(
         "1",
-        "Entrar al estudio",
+        "Adentremonos en el estudio",
         "Antes de hablar de modelos, conozcamos qué estudiaron los autores y dónde ocurrió.",
     )
 
@@ -570,7 +562,7 @@ if section == "01 · Introducción":
     st.markdown("<br>", unsafe_allow_html=True)
 
     st.markdown(
-        '<div class="interpretation"><b>Pregunta para abrir la exposición:</b><br>¿Qué diferencias existen entre hombres y mujeres entre los casos de intento de suicidio registrados en Sogamoso y qué variables aparecen asociadas estadísticamente con el género?</div>',
+        '<div class="interpretation"><b>Pregunta General:</b><br>¿Qué diferencias existen entre hombres y mujeres entre los casos de intento de suicidio registrados en Sogamoso y qué variables aparecen asociadas estadísticamente con el género?</div>',
         unsafe_allow_html=True,
     )
 
@@ -626,9 +618,8 @@ elif section == "02 · Contexto y pregunta":
         "El artículo define género como la variable de interés y describe las variables sociodemográficas, específicas y psicosociales."
     )
 
-# ========================================================
 # 03 DATOS Y DISEÑO
-# ========================================================
+
 
 elif section == "03 · Datos y diseño":
     section_header(
