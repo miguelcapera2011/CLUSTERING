@@ -1,371 +1,1044 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import os
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-from sklearn.neighbors import NearestNeighbors
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, classification_report
-import plotly.express as px
+import base64
+from pathlib import Path
 
-# CONFIGURACIÓN GENERAL Y ESTILO VISUAL "DASHBOARD PREMIUM"
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+import streamlit.components.v1 as components
+
+
+# ============================================================
+# CONFIGURACIÓN
+# ============================================================
 st.set_page_config(
-    page_title="MODELO HIBRIDO - Seguridad Territorial", 
+    page_title="Del artículo a la evidencia | Intento suicida",
+    page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# Inyección de CSS Avanzado - Arquitectura de Diseño Humano, FontAwesome y Estilo Minimalista
-st.markdown("""
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>
-    
+# Paleta sobria para una exposición académica
+RED = "#D7263D"
+NAVY = "#0F172A"
+BLUE = "#2563EB"
+GREEN = "#059669"
+ORANGE = "#D97706"
+PURPLE = "#7C3AED"
+GRAY = "#64748B"
+LIGHT = "#F8FAFC"
+BORDER = "#E2E8F0"
+
+# ============================================================
+# ESTILOS
+# ============================================================
+st.markdown(
+    f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&display=swap');
+        .stApp {{
+            background: {LIGHT};
+        }}
 
-    .stApp {
-        background-color: #F8FAFC;
-        color: #0F172A !important;
-        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    }
-    
-    p, span, label, th, td, .stMarkdown, [data-testid="stMetricLabel"] {
-        color: #334155 !important;
-        font-family: 'Inter', sans-serif;
-    }
+        [data-testid="stSidebar"] {{
+            background: linear-gradient(180deg, #0F172A 0%, #172554 100%);
+        }}
 
-    h1 {
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 800 !important;
-        letter-spacing: -0.04em !important;
-        color: #1E293B !important;
-    }
+        /* Ajuste de color para títulos y textos planos del sidebar sin afectar selectbox/inputs */
+        [data-testid="stSidebar"] h1, 
+        [data-testid="stSidebar"] h2, 
+        [data-testid="stSidebar"] h3, 
+        [data-testid="stSidebar"] p, 
+        [data-testid="stSidebar"] span:not([data-baseweb]) {{
+            color: #F8FAFC;
+        }}
 
-    h2, h3, h4, h5, h6 {
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 700 !important;
-        letter-spacing: -0.02em !important;
-        color: #0F172A !important;
-    }
+        /* Garantizar texto en negro visible para cuadros, selectores y métricas */
+        [data-baseweb="select"] *, 
+        div[role="listbox"] *,
+        .stSelectbox label,
+        .stRadio label {{
+            color: #000000 !important;
+        }}
 
-    [data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E2E8F0;
-    }
+        .main-title {{
+            font-size: 2.0rem;
+            font-weight: 800;
+            color: {NAVY};
+            margin-bottom: 0.1rem;
+        }}
 
-    .sidebar-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #0F172A;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .subtitle {{
+            color: {GRAY};
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }}
 
-    [data-testid="stTabBar"] {
-        border-bottom: none !important; 
-        padding-bottom: 0px !important;
-        margin-bottom: 15px !important;
-    }
-    [data-testid="stTab"] {
-        padding: 8px 24px !important;
-        font-size: 15px !important;
-        font-weight: 600 !important;
-        font-family: 'Inter', sans-serif !important;
-        border: none !important;
-        background: transparent !important;
-        transition: all 0.2s ease-in-out !important;
-    }
-    
-    [data-testid="stTab"] p {
-        background: linear-gradient(180deg, transparent 65%, rgba(34, 197, 94, 0.15) 65%) !important;
-        display: inline !important;
-        padding-bottom: 2px !important;
-    }
+        .section-title {{
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: {NAVY};
+            margin-top: 0.2rem;
+        }}
 
-    [data-testid="stTab"]:hover p {
-        background: linear-gradient(180deg, transparent 60%, rgba(22, 163, 74, 0.25) 60%) !important;
-        color: #16A34A !important;
-    }
+        .section-subtitle {{
+            color: {GRAY};
+            margin-bottom: 0.8rem;
+        }}
 
-    [data-testid="stTabBar"] button[aria-selected="true"] div {
-        height: 2px !important;
-        background-color: #16A34A !important;
-    }
+        .card {{
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 14px;
+            padding: 1rem 1.15rem;
+            box-shadow: 0 2px 10px rgba(15,23,42,.05);
+            height: 100%;
+            color: #000000 !important;
+        }}
 
-    [data-testid="stFileUploader"] {
-        background: linear-gradient(145deg, #0F172A 0%, #1E293B 100%) !important; 
-        border: 2px dashed #38BDF8 !important; 
-        border-radius: 14px !important;
-        padding: 24px !important;
-        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3) !important;
-    }
+        .card h4 {{
+            margin: 0 0 .45rem 0;
+            color: {NAVY} !important;
+        }}
 
-    [data-testid="stFileUploader"] section,
-    [data-testid="stFileUploader"] p,
-    [data-testid="stFileUploader"] span,
-    [data-testid="stFileUploader"] small,
-    [data-testid="stFileUploader"] div {
-        color: #FFFFFF !important;
-    }
+        .card p, .card div {{
+            color: #000000 !important;
+        }}
 
-    [data-testid="stFileUploader"] button {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        color: #FFFFFF !important;
-    }
+        .metric {{
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: {NAVY};
+        }}
 
-    .panel-container {
-        background-color: #FFFFFF;
-        padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
-        margin-bottom: 25px;
-        border: 1px solid #F1F5F9;
-    }
-    
-    .insight-card {
-        background-color: #F8FAFC;
-        border-left: 4px solid #3b82f6;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+        .metric-label {{
+            font-size: .85rem;
+            color: {GRAY};
+        }}
 
-    .insight-success {
-        background-color: #F0FDF4;
-        border-left: 4px solid #16A34A;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
+        .interpretation {{
+            background: #FFF7ED;
+            border-left: 5px solid {ORANGE};
+            padding: .9rem 1rem;
+            border-radius: 8px;
+            margin: .7rem 0;
+            color: #000000 !important;
+        }}
 
-    .title-icon {
-        margin-right: 12px;
-        color: #64748B;
-        width: 20px;
-        text-align: center;
-    }
+        .math-box {{
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #000000 !important;
+        }}
+
+        .source-box {{
+            background: #F1F5F9;
+            border: 1px solid {BORDER};
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            font-size: .82rem;
+            color: #000000 !important;
+        }}
+
+        .step {{
+            background: white;
+            border: 1px solid {BORDER};
+            border-radius: 12px;
+            padding: .9rem;
+            text-align: center;
+            min-height: 120px;
+            color: #000000 !important;
+        }}
+
+        .step p {{
+            color: #000000 !important;
+        }}
+
+        .step-number {{
+            font-size: .8rem;
+            font-weight: 700;
+            color: {RED};
+        }}
+
+        .step-title {{
+            font-weight: 800;
+            color: {NAVY};
+        }}
+
+        .small-note {{
+            color: #000000;
+            font-size: .82rem;
+        }}
+
+        .big-question {{
+            font-size: 1.25rem;
+            font-weight: 750;
+            color: {NAVY};
+            background: white;
+            border-radius: 14px;
+            border: 1px solid {BORDER};
+            padding: 1rem 1.2rem;
+        }}
+
+        div[data-testid="stMetric"] {{
+            background: white;
+            border: 1px solid {BORDER};
+            padding: .7rem;
+            border-radius: 12px;
+        }}
+
+        div[data-testid="stMetric"] * {{
+            color: #000000 !important;
+        }}
+
+        .footer {{
+            color: {GRAY};
+            text-align: center;
+            font-size: .78rem;
+            margin-top: 1.5rem;
+        }}
     </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
-# ESTILO PREMIUM PARA GRÁFICAS
-def aplicar_estilo_premium(fig):
-    fig.update_layout(
-        paper_bgcolor="#FFFFFF",
-        plot_bgcolor="#F8FAFC",
-        font=dict(color="#334155", size=13, family="Inter"),
-        title=dict(font=dict(size=16, color="#0F172A", family="Inter", weight="bold")),
-        margin=dict(l=40, r=40, t=50, b=40)
-    )
-    fig.update_xaxes(gridcolor="#E2E8F0")
-    fig.update_yaxes(gridcolor="#E2E8F0")
-    return fig
+# ============================================================
+# DATOS TRANSCRITOS DEL ARTÍCULO
+# ============================================================
+# Figura 1: prevalencia ajustada por grupo de edad y año de ocurrencia.
+age_groups = [
+    "5 a 9", "10 a 14", "15 a 19", "20 a 24", "25 a 29",
+    "30 a 34", "35 a 39", "40 a 44", "45 a 49", "50 a 54",
+    "55 a 59", "60 a 64", "65 a 69", "70 a 74", "75 a 79", "80 y más"
+]
 
-# FUNCIÓN PARA CALCULAR EL ESTADÍSTICO DE HOPKINS
-def calcular_hopkins(X):
-    X = np.array(X)
-    n, d = X.shape
-    m = int(0.1 * n) if int(0.1 * n) > 0 else 1
-    np.random.seed(42)
-    vecinos = NearestNeighbors(n_neighbors=2)
-    vecinos.fit(X)
-    puntos_aleatorios = np.random.uniform(np.min(X, axis=0), np.max(X, axis=0), (m, d))
-    dist_aleatoria, _ = vecinos.kneighbors(puntos_aleatorios, n_neighbors=1)
-    indices = np.random.choice(n, m, replace=False)
-    puntos_reales = X[indices]
-    dist_real, _ = vecinos.kneighbors(puntos_reales, n_neighbors=2)
-    U = np.sum(dist_aleatoria)
-    W = np.sum(dist_real[:, 1])
-    return U / (U + W) if (U + W) > 0 else 0
+prevalence = {
+    2012: [0.0, 5.8, 16.9, 16.9, 8.8, 6.0, 4.1, 3.4, 1.1, 0.5, 1.1, 0.6, 0.0, 0.0, 0.0, 0.0],
+    2013: [0.0, 9.6, 23.5, 21.4, 16.3, 6.8, 5.9, 5.1, 3.1, 2.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    2014: [0.0, 0.4, 16.9, 15.9, 11.7, 10.8, 5.0, 0.9, 0.0, 0.7, 2.2, 0.0, 0.0, 0.0, 0.0, 0.0],
+    2015: [0.0, 4.2, 16.2, 17.0, 8.9, 5.9, 3.0, 0.9, 1.5, 0.7, 0.0, 0.0, 0.8, 0.0, 0.0, 0.0],
+    2016: [0.0, 9.4, 26.8, 15.2, 5.0, 2.0, 4.0, 0.0, 0.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7],
+    2017: [0.0, 4.3, 21.0, 19.1, 9.0, 8.1, 5.0, 3.8, 3.1, 0.7, 2.0, 0.0, 0.0, 0.0, 0.0, 0.7],
+}
 
-# CARGA AUTOMÁTICA O POR REEMPLAZO DE DATOS
-def cargar_datos_fuente(archivo_subido=None):
-    if archivo_subido is not None:
-        try:
-            return pd.read_csv(archivo_subido, header=0) if archivo_subido.name.endswith('.csv') else pd.read_excel(archivo_subido, header=0)
-        except Exception as e:
-            st.error(f"Error al procesar el archivo: {e}")
-            return None
-    
-    for archivo in os.listdir('.'):
-        nombre_minuscula = archivo.lower()
-        if ("afectacion" in nombre_minuscula or "fuerza" in nombre_minuscula or "publica" in nombre_minuscula) and (archivo.endswith('.csv') or archivo.endswith('.xlsx')):
-            try:
-                return pd.read_csv(archivo, header=0) if archivo.endswith('.csv') else pd.read_excel(archivo, header=0)
-            except:
-                pass
+prev_rows = []
+for year, values in prevalence.items():
+    for age, value in zip(age_groups, values):
+        prev_rows.append({"Año": year, "Grupo de edad": age, "Prevalencia": value})
+prev_df = pd.DataFrame(prev_rows)
+
+# Tabla 1: variables sociodemográficas y específicas.
+table1 = [
+    ["Área de ocurrencia", "Urbano", 94.0, 315, 89.8, 169, 92.0, 484, 0.02],
+    ["Área de ocurrencia", "Rural disperso", 6.2, 21, 10.1, 19, 8.0, 40, 0.02],
+
+    ["Edad agrupada", "3 a 11 años (niñez)", 0.9, 3, 1.6, 3, 1.1, 6, 0.000],
+    ["Edad agrupada", "11 a 20 años (adolescencia)", 50.3, 169, 35.1, 66, 44.8, 235, 0.000],
+    ["Edad agrupada", "20 a 40 (adultez temprana)", 42.0, 141, 45.7, 86, 43.3, 227, 0.000],
+    ["Edad agrupada", "40 a 65 (adultez mediana y tardía)", 6.8, 23, 17.6, 33, 10.7, 56, 0.000],
+
+    ["Estado civil", "Soltero", 64.8, 210, 54.4, 99, 61.7, 309, 0.115],
+    ["Estado civil", "Casado", 31.2, 101, 3.9, 71, 34.0, 172, 0.115],
+    ["Estado civil", "Separado", 3.1, 10, 5.5, 10, 4.0, 20, 0.115],
+    ["Estado civil", "Viudo", 0.9, 3, 1.1, 2, 1.0, 5, 0.115],
+
+    ["Ocupación", "Ama de casa", 30.2, 101, 1.1, 2, 20.2, 103, 0.000],
+    ["Ocupación", "Estudiante", 47.6, 159, 35.4, 62, 43.4, 221, 0.000],
+    ["Ocupación", "Empleado auxiliar", 3.89, 13, 2.6, 47, 11.9, 60, 0.000],
+    ["Ocupación", "Empleado profesional", 2.9, 10, 5.7, 10, 3.9, 20, 0.000],
+    ["Ocupación", "Independiente", 8.9, 30, 14.2, 25, 10.8, 55, 0.000],
+    ["Ocupación", "Población carcelaria", 0.2, 1, 0.0, 0, 0.2, 1, 0.000],
+    ["Ocupación", "Desempleado", 3.3, 11, 12.6, 22, 6.5, 33, 0.000],
+    ["Ocupación", "Pensionado", 0.2, 1, 1.14, 2, 0.6, 3, 0.000],
+
+    ["Forma de realización", "Impulsiva", 84.8, 279, 82.8, 149, 84.1, 428, 0.551],
+    ["Forma de realización", "Planeada", 15.2, 50, 17.2, 31, 15.9, 81, 0.551],
+
+    ["Antecedentes de intento", "No", 68.5, 24, 67.4, 120, 68.1, 44, 0.80],
+    ["Antecedentes de intento", "Sí", 31.5, 103, 32.6, 58, 31.9, 161, 0.80],
+
+    ["Método del intento", "Medicamentos", 54.4, 182, 40.0, 70, 49.2, 252, 0.000],
+    ["Método del intento", "Plaguicidas", 21.8, 73, 29.1, 51, 24.2, 124, 0.000],
+    ["Método del intento", "Sustancias psicoactivas (SPA)", 0.2, 1, 2.28, 4, 1.0, 5, 0.000],
+    ["Método del intento", "Heridas", 18.5, 61, 17.9, 33, 18.3, 94, 0.000],
+    ["Método del intento", "Otros métodos", 3.59, 12, 13.7, 24, 7.1, 36, 0.000],
+    ["Método del intento", "Arma de fuego", 0.0, 0, 1.1, 2, 0.4, 2, 0.000],
+
+    ["Posible desencadenante", "Conflicto con la pareja", 36.9, 118, 29.8, 54, 34.3, 172, 0.005],
+    ["Posible desencadenante", "Conflicto familiar", 27.2, 87, 18.2, 33, 24.0, 120, 0.005],
+    ["Posible desencadenante", "Indeterminado", 20.9, 67, 30.4, 55, 24.4, 122, 0.005],
+    ["Posible desencadenante", "Consumo de alcohol", 9.1, 29, 12.7, 23, 10.4, 52, 0.005],
+    ["Posible desencadenante", "Conflicto laboral o escolar", 3.4, 11, 2.2, 4, 3.0, 15, 0.005],
+    ["Posible desencadenante", "Problemas económicos", 2.5, 8, 12.7, 12, 4.0, 20, 0.005],
+
+    ["Enfermedad mental", "No", 65.8, 210, 67.6, 115, 66.5, 325, 0.68],
+    ["Enfermedad mental", "Sí", 34.2, 109, 32.4, 55, 33.5, 164, 0.68],
+
+    ["Violencia", "No", 46.0, 137, 62.5, 95, 51.6, 232, 0.001],
+    ["Violencia", "Sí", 54.0, 161, 37.5, 57, 48.4, 218, 0.001],
+
+    ["Consumo de alcohol", "No", 59.7, 181, 38.5, 65, 52.1, 246, 0.000],
+    ["Consumo de alcohol", "Sí", 40.3, 122, 59.7, 104, 47.9, 226, 0.000],
+
+    ["Relaciones familiares", "Disfuncionales", 79.7, 248, 78.2, 129, 79.2, 377, 0.69],
+    ["Relaciones familiares", "Funcionales", 20.3, 63, 21.8, 36, 20.8, 99, 0.69],
+
+    ["Redes de apoyo", "No", 9.2, 28, 12.7, 22, 10.4, 49, 0.23],
+    ["Redes de apoyo", "Sí", 90.8, 278, 87.3, 145, 89.6, 423, 0.23],
+]
+
+table1_df = pd.DataFrame(
+    table1,
+    columns=[
+        "Variable", "Categoría",
+        "Mujer %", "Mujer N",
+        "Hombre %", "Hombre N",
+        "Total %", "Total N",
+        "p"
+    ]
+)
+
+# Tabla 2: modelo final reportado por los autores.
+table2 = [
+    ["Edad", "Niñez", 0.32, 0.05, 0.83, 1.38, 0.08, 24.34],
+    ["Edad", "Adolescencia", -1.04, 7.52, 0.01, 0.35, 0.17, 0.74],
+    ["Edad", "Adultez temprana", -0.81, 4.81, 0.03, 0.45, 0.22, 0.92],
+
+    ["Posible desencadenante", "Conflicto con la pareja", -0.84, 7.67, 0.01, 0.43, 0.24, 0.78],
+    ["Posible desencadenante", "Conflicto familiar", -0.66, 3.81, 0.05, 0.52, 0.26, 1.00],
+    ["Posible desencadenante", "Conflicto laboral o escolar", -0.70, 1.09, 0.30, 0.50, 0.13, 1.85],
+    ["Posible desencadenante", "Problemas económicos", 0.74, 1.43, 0.23, 2.09, 0.62, 7.02],
+    ["Posible desencadenante", "Consumo de alcohol", -0.81, 3.89, 0.05, 0.44, 0.20, 1.00],
+    ["Posible desencadenante", "Violencia", -0.89, 13.80, 0.00, 0.41, 0.26, 0.66],
+
+    ["Consumo de alcohol", "Sí", 1.28, 25.09, 0.00, 3.58, 2.17, 5.90],
+    ["Constante", "Intercepto", 0.44, 1.33, 0.25, 1.55, None, None],
+]
+
+table2_df = pd.DataFrame(
+    table2,
+    columns=["Variable", "Categoría", "B", "Wald", "p", "OR", "IC95% inf.", "IC95% sup."]
+)
+
+# ============================================================
+# FUNCIONES Y CARGA AUTOMÁTICA DEL PDF
+# ============================================================
+def article_path():
+    candidates = [
+        Path("intento suicidad.pdf"),
+        Path("intento suicida.pdf"),
+        Path("intento_suicidad.pdf"),
+        Path("intento_suicida.pdf"),
+        Path("articulo.pdf"),
+        Path("paper.pdf"),
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
     return None
 
-# GESTIÓN DE DATOS EN LA BARRA LATERAL
-st.sidebar.markdown("<div class='sidebar-title'><i class='fa-solid fa-shield-halved' style='color: #1e3a8a;'></i> Gestión de Datos</div>", unsafe_allow_html=True)
-archivo_nuevo = st.sidebar.file_uploader("Cargar histórico institucional (CSV o Excel)", type=["csv", "xlsx"], label_visibility="collapsed")
 
-if 'df_interno' not in st.session_state:
-    st.session_state.df_interno = None
+local_pdf = article_path()
+pdf_bytes = local_pdf.read_bytes() if local_pdf is not None else None
 
-if archivo_nuevo is not None:
-    df_cargado = cargar_datos_fuente(archivo_nuevo)
-    if df_cargado is not None:
-        st.session_state.df_interno = df_cargado
-        st.sidebar.success("Base de datos sincronizada.")
-elif st.session_state.df_interno is None:
-    st.session_state.df_interno = cargar_datos_fuente()
 
-df_original = st.session_state.df_interno
-if df_original is None:
-    st.error("No se encontró ningún registro de datos histórico.")
-    st.stop()
+def pdf_viewer(bytes_data, page=1, height=850):
+    encoded = base64.b64encode(bytes_data).decode("utf-8")
+    html = f"""
+    <iframe
+        src="data:application/pdf;base64,{encoded}#page={page}&zoom=page-width"
+        width="100%"
+        height="{height}px"
+        style="border:1px solid #E2E8F0;border-radius:12px;background:white;"
+        type="application/pdf">
+    </iframe>
+    """
+    components.html(html, height=height + 15, scrolling=False)
 
-# PIPELINE OPTIMIZADO
-@st.cache_data
-def ejecutar_pipeline_analitico(df):
-    index_cols = ['COD_MUNI', 'MUNICIPIO', 'DEPARTAMENTO']
-    pivot_accion = df.pivot_table(index=index_cols, columns='ACCION', values='CANTIDAD', aggfunc='sum', fill_value=0)
-    
-    columnas_fuerza = [c for c in df['NOMBRE_FUERZA'].unique() if pd.notna(c)] if 'NOMBRE_FUERZA' in df.columns else []
-    pivot_fuerza = df.pivot_table(index=index_cols, columns='NOMBRE_FUERZA', values='CANTIDAD', aggfunc='sum', fill_value=0) if columnas_fuerza else pd.DataFrame(index=pivot_accion.index)
-    
-    columnas_cat = [c for c in df['CATEGORIA'].unique() if pd.notna(c)] if 'CATEGORIA' in df.columns else []
-    pivot_cat = df.pivot_table(index=index_cols, columns='CATEGORIA', values='CANTIDAD', aggfunc='sum', fill_value=0) if columnas_cat else pd.DataFrame(index=pivot_accion.index)
 
-    total_municipio = df.groupby(index_cols)['CANTIDAD'].sum().to_frame(name='TOTAL_AFECTADOS')
-    datos_completos = total_municipio.join([pivot_accion, pivot_fuerza, pivot_cat]).reset_index().dropna()
+def source_box(text):
+    st.markdown(f'<div class="source-box">📌 {text}</div>', unsafe_allow_html=True)
 
-    cols_numericas = [col for col in datos_completos.columns if col not in index_cols]
-    
-    scaler_obj = StandardScaler()
-    X_scaled_arr = scaler_obj.fit_transform(datos_completos[cols_numericas])
-    X_scaled_df = pd.DataFrame(X_scaled_arr, columns=cols_numericas)
 
-    kmeans_mdl = KMeans(n_clusters=4, init='k-means++', n_init=30, random_state=42)
-    lbls = kmeans_mdl.fit_predict(X_scaled_df)
-    
-    datos_originales_num_df = datos_completos.copy()
-    datos_originales_num_df['Cluster'] = lbls
-    X_scaled_df['Cluster'] = lbls
+def card(title, body, icon=""):
+    st.markdown(
+        f"""
+        <div class="card">
+            <h4>{icon} {title}</h4>
+            <div>{body}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled_df[cols_numericas], lbls, test_size=0.2, random_state=42, stratify=lbls)
-    mlp_mdl = MLPClassifier(hidden_layer_sizes=(32, 16), activation='relu', solver='adam', max_iter=700, random_state=42)
-    mlp_mdl.fit(X_train, y_train)
-    
-    return datos_completos, cols_numericas, datos_originales_num_df, X_scaled_df, mlp_mdl, kmeans_mdl, scaler_obj, lbls, X_test, y_test
 
-# Ejecutar pipeline seguro
-datos, numericas, datos_originales_num, X_scaled, mlp_modelo, kmeans_modelo, scaler, y_labels, X_test, y_test = ejecutar_pipeline_analitico(df_original)
+def section_header(number, title, subtitle):
+    st.markdown(f'<div class="section-title">{number}. {title}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-subtitle">{subtitle}</div>', unsafe_allow_html=True)
 
-# Persistencia en session_state
-st.session_state.red_entrenada = mlp_modelo
-st.session_state.kmeans_entrenado = kmeans_modelo
-st.session_state.escalador_entrenado = scaler
-st.session_state.columnas_modelo = numericas
 
-# INTERFAZ PRINCIPAL
-st.markdown("""
-    <div style='background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%) !important; padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px dashed #BBF7D0 !important;'>
-        <h1 style='color: #14532D !important; margin: 0; font-size: 30px;'>Sistema Híbrido para la Seguridad Territorial</h1>
-        <p style='color: #15803D !important; margin: 5px 0 0 0;'>Pipeline Analítico Basado en Aprendizaje Combinado Estable (K-Means++ + MLP Neural Network)</p>
-    </div>
-""", unsafe_allow_html=True)
+def fmt_p(x):
+    if pd.isna(x):
+        return "—"
+    if x < 0.001:
+        return "<0,001"
+    return f"{x:.3f}".replace(".", ",")
 
-# KPIs
-col_kpi1, col_kpi2, col_kpi3, col_kpi4 = st.columns(4)
-with col_kpi1: st.metric("Municipios", datos.shape[0])
-with col_kpi2: st.metric("Dimensiones", len(numericas))
-with col_kpi3:
-    acc_global = accuracy_score(y_labels, mlp_modelo.predict(X_scaled[numericas]))
-    st.metric("Precisión Red (Accuracy)", f"{acc_global * 100:.2f}%")
-with col_kpi4: st.metric("Grupos (K)", "4 Clústeres")
 
-# DEFINICIÓN DE LAS PESTAÑAS
-tabs = st.tabs(["Ingeniería e Ingesta", "Segmentación K-Means", "Modelo Red Neuronal", "Despliegue e Inferencia"])
+def fmt_num(x):
+    if pd.isna(x):
+        return "—"
+    return f"{x:.2f}".replace(".", ",")
 
-# PESTAÑA 1: INGENIERÍA E INGESTA
-with tabs[0]:
-    st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.markdown("<h3><i class='fa-solid fa-database title-icon'></i> 1. Matriz Consolidada Post-Pivotado</h3>", unsafe_allow_html=True)
-    st.dataframe(datos.head(10), use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
-# PESTAÑA 2: SEGMENTACIÓN
-with tabs[1]:
-    st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        wss = [KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=42).fit(X_scaled[numericas]).inertia_ for k in range(1, 11)]
-        fig_elbow = px.line(x=list(range(1, 11)), y=wss, markers=True, title="Método del Codo", labels={'x': 'K', 'y': 'Inercia'})
-        st.plotly_chart(aplicar_estilo_premium(fig_elbow), use_container_width=True)
-    with col2:
-        pca_3d = PCA(n_components=3)
-        scores_pca = pca_3d.fit_transform(X_scaled[numericas])
-        df_pca = pd.DataFrame(scores_pca, columns=['PC1', 'PC2', 'PC3'])
-        df_pca['Cluster'] = y_labels.astype(str)
-        df_pca['Municipio'] = datos['MUNICIPIO'].values
-        fig_3d = px.scatter_3d(df_pca, x='PC1', y='PC2', z='PC3', color='Cluster', hover_name='Municipio', title='Proyección Territorial PCA 3D')
-        st.plotly_chart(fig_3d, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+# ============================================================
+# BARRA LATERAL (NAVEGACIÓN)
+# ============================================================
+with st.sidebar:
+    st.markdown("## 📊 MODELOS LINEALES GENERALIZADOS")
+    st.caption("UNIVERSIDAD DEL TOLIMA")
 
-# PESTAÑA 3: RED NEURONAL
-with tabs[2]:
-    st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    df_reporte = pd.DataFrame(classification_report(y_test, mlp_modelo.predict(X_test), output_dict=True)).transpose().round(2)
-    st.dataframe(df_reporte, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown("### Navegación")
+    section = st.radio(
+        "Etapa de la exposición",
+        [
+            "01 · Introducción",
+            "02 · Contexto y pregunta",
+            "03 · Datos y diseño",
+            "04 · Prevalencia",
+            "05 · Tabla 1 · Descriptivos",
+            "06 · Modelo logístico",
+            "07 · Tabla 2 · Modelo final",
+            "08 · Interpretación del OR",
+            "09 · Evaluación del modelo",
+            "10 · Discusión",
+            "11 · Conclusiones",
+        ],
+        label_visibility="collapsed",
+    )
 
-# PESTAÑA 4: FORMULARIO DE INFERENCIA EN PRODUCCIÓN (UNIFICADO)
-with tabs[3]:
-    st.markdown("<div class='panel-container'>", unsafe_allow_html=True)
-    st.markdown("<h3><i class='fa-solid fa-terminal title-icon'></i> Entorno Operativo de Predicción Dirigida</h3>", unsafe_allow_html=True)
-    
-    col_f1, col_f2 = st.columns([1.2, 0.8])
-    
-    with col_f1:
-        with st.form("formulario_principal_prospecto"):
-            nombre_muni_futuro = st.text_input("Nombre del Territorio", "Territorio de Prueba")
-            valores_ingresados = {}
-            
-            variables_para_input = [v for v in numericas if v != 'TOTAL_AFECTADOS']
-            
-            st.markdown("##### Ingrese los valores numéricos para forzar el cambio de Clúster:")
-            sub_col1, sub_col2 = st.columns(2)
-            for i, var in enumerate(variables_para_input):
-                with sub_col1 if i % 2 == 0 else sub_col2:
-                    valores_ingresados[var] = st.number_input(f"Cantidad de: {var}", min_value=0, value=0, step=5)
-                    
-            boton_predecir_tab = st.form_submit_button("Calcular Clúster con Consistencia Híbrida")
+    st.markdown("---")
+    st.markdown("### 📚 Ficha del estudio")
+    st.write("**Lugar:** Sogamoso, Boyacá")
+    st.write("**Periodo:** 2012–2017")
+    st.write("**Casos:** 524")
+    st.write("**Mujeres:** 336 (64,2%)")
+    st.write("**Hombres:** 188 (35,8%)")
+    st.write("**Fuente:** SIVIGILA")
+    st.write("**Diseño:** analítico transversal")
 
-        if boton_predecir_tab:
-            if 'TOTAL_AFECTADOS' in numericas:
-                valores_ingresados['TOTAL_AFECTADOS'] = sum(valores_ingresados.values())
-            
-            # Reindexación estricta para respetar el orden numérico del scaler
-            df_registro_futuro = pd.DataFrame([valores_ingresados]).reindex(columns=numericas, fill_value=0)
-            registro_escalado = st.session_state.escalador_entrenado.transform(df_registro_futuro)
-            
-            # Cálculo del Clúster Consolidado
-            prediccion_final = st.session_state.kmeans_entrenado.predict(registro_escalado)[0]
-            
-            colores_cluster = {0: "#22C55E", 1: "#0EA5E9", 2: "#F59E0B", 3: "#EF4444"}
-            color_resaltado = colores_cluster.get(prediccion_final, "#3b82f6")
-            
-            with col_f2:
-                st.markdown(f"""
-                    <div class='insight-success' style='padding: 25px; border-radius:10px; border-left: 6px solid {color_resaltado} !important;'>
-                        <h3 style='color: #1E293B !important; margin-top:0;'><i class='fa-solid fa-circle-check' style='color: {color_resaltado};'></i> Clasificación Completada</h3>
-                        El territorio simulado <b>{nombre_muni_futuro}</b> ha sido evaluado.<br><br>
-                        Asignación Territorial: <br>
-                        <span style='font-size: 34px; font-weight:800; color: {color_resaltado};'>CLÚSTER {prediccion_final}</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-    with col_f2:
-        if not boton_predecir_tab:
-            st.markdown("""
-            <div class='insight-card'>
-                <h5><i class='fa-solid fa-bolt' style='margin-right:8px;'></i>Validación Espacial Activa</h5>
-                <p>Al optimizar el algoritmo con <code>k-means++</code> y forzar la auto-suma de la variable <code>TOTAL_AFECTADOS</code>, el espacio métrico cambia de forma dinámica según tus inputs.</p>
+    st.markdown("---")
+    st.caption("Fuente de los resultados: Vásquez-Escobar & Benítez-Camargo (2021).")
+
+# ============================================================
+# MAPA DE PÁGINAS DEL ARTÍCULO
+# ============================================================
+page_map = {
+    "01 · Introducción": 1,
+    "02 · Contexto y pregunta": 3,
+    "03 · Datos y diseño": 5,
+    "04 · Prevalencia": 6,
+    "05 · Tabla 1 · Descriptivos": 7,
+    "06 · Modelo logístico": 8,
+    "07 · Tabla 2 · Modelo final": 9,
+    "08 · Interpretación del OR": 9,
+    "09 · Evaluación del modelo": 9,
+    "10 · Discusión": 11,
+    "11 · Conclusiones": 13,
+}
+
+current_page = page_map[section]
+
+# ============================================================
+# ENCABEZADO
+# ============================================================
+st.markdown(
+    '<div class="main-title">Intento suicida: un análisis municipal de factores asociados 2012–2017</div>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    '<div class="subtitle">Sogamoso, Boyacá · Una lectura del artículo desde la estadística</div>',
+    unsafe_allow_html=True,
+)
+
+# Barra superior
+c1, c2, c3, c4 = st.columns([1.2, 1.2, 1.2, 3.5])
+with c1:
+    st.metric("Casos", "524")
+with c2:
+    st.metric("Mujeres", "336")
+with c3:
+    st.metric("Hombres", "188")
+with c4:
+    st.markdown(
+        '<div class="big-question">🎯 Idea de la exposicion: reconstruir el camino desde los datos hasta la evidencia estadística.</div>',
+        unsafe_allow_html=True,
+    )
+
+st.markdown("---")
+
+# ============================================================
+# LAYOUT PRINCIPAL: PDF + EXPLICACIÓN
+# ============================================================
+left, right = st.columns([1.02, 1.18], gap="large")
+
+with left:
+    st.markdown("### 📄 Artículo original")
+    st.caption(f"Página mostrada: {current_page} de 15")
+    if pdf_bytes is not None:
+        pdf_viewer(pdf_bytes, page=current_page, height=820)
+    else:
+        st.error(
+            "⚠️ No se encontró el archivo PDF en el repositorio. Asegúrate de incluir 'intento suicidad.pdf' junto al archivo app.py."
+        )
+
+with right:
+    # ========================================================
+    # 01 INTRODUCCIÓN
+    # ========================================================
+    if section == "01 · Introducción":
+        section_header(
+            "1",
+            "Entrar al estudio",
+            "Antes de hablar de modelos, conozcamos qué estudiaron los autores y dónde ocurrió.",
+        )
+
+        a, b = st.columns(2)
+        with a:
+            card(
+                "¿Qué investigaron?",
+                "El comportamiento epidemiológico del intento de suicidio y las diferencias entre género y variables sociodemográficas, psicosociales y específicas durante 2012–2017.",
+                "🎯",
+            )
+        with b:
+            card(
+                "¿Dónde?",
+                "Municipio de <b>Sogamoso, Boyacá, Colombia</b>. El estudio utilizó casos reportados al SIVIGILA.",
+                "📍",
+            )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        a, b, c = st.columns(3)
+        with a:
+            card("Periodo", "<b>2012–2017</b>", "📅")
+        with b:
+            card("Casos analizados", "<b>524</b>", "👥")
+        with c:
+            card("Modelo", "<b>Regresión logística binaria</b>", "📐")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="interpretation"><b>Pregunta para abrir la exposición:</b><br>'
+            '¿Qué diferencias existen entre hombres y mujeres entre los casos de intento de suicidio registrados en Sogamoso y qué variables aparecen asociadas estadísticamente con el género?</div>',
+            unsafe_allow_html=True,
+        )
+        source_box("Resumen y objetivo del artículo.")
+
+    # ========================================================
+    # 02 CONTEXTO
+    # ========================================================
+    elif section == "02 · Contexto y pregunta":
+        section_header(
+            "2",
+            "Del problema de salud pública a la pregunta estadística",
+            "La investigación nace de un contexto territorial concreto.",
+        )
+
+        st.markdown(
+            """
+            <div class="card">
+            <h4>🌎 ¿Por qué Sogamoso?</h4>
+            <p>
+            El artículo señala que Sogamoso reportaba, desde 2010, el mayor número de
+            casos dentro del departamento y plantea la necesidad de caracterizar y
+            comprender el comportamiento epidemiológico del intento de suicidio para
+            orientar acciones de salud pública.
+            </p>
             </div>
-            """, unsafe_allow_html=True)
-            
-    st.markdown("</div>", unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="big-question">🔎 ¿Qué queremos explicar estadísticamente?</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.latex(r"Y = \text{género}")
+        st.markdown(
+            """
+            **Variable dependiente / de interés:** género.
+
+            **Variables explicativas:** edad o ciclo vital, área de ocurrencia,
+            ocupación, estado civil, método del intento, posible desencadenante,
+            violencia, enfermedad mental, consumo de alcohol, relaciones familiares,
+            redes de apoyo, entre otras consideradas por los autores.
+            """
+        )
+
+        source_box("El artículo define género como la variable de interés y describe las variables sociodemográficas, específicas y psicosociales.")
+
+    # ========================================================
+    # 03 DATOS Y DISEÑO
+    # ========================================================
+    elif section == "03 · Datos y diseño":
+        section_header(
+            "3",
+            "¿Cómo se construyó la información?",
+            "Aquí seguimos el recorrido de los datos antes de analizarlos.",
+        )
+
+        cols = st.columns(5)
+        steps = [
+            ("01", "Caso", "Persona con intento de suicidio"),
+            ("02", "UPGD", "Captación y notificación"),
+            ("03", "SIVIGILA", "Sistema de vigilancia"),
+            ("04", "Seguimiento", "Ficha e historia clínica"),
+            ("05", "Análisis", "524 casos incluidos"),
+        ]
+        for col, (num, title, body) in zip(cols, steps):
+            with col:
+                st.markdown(
+                    f"""
+                    <div class="step">
+                        <div class="step-number">{num}</div>
+                        <div class="step-title">{title}</div>
+                        <p>{body}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        a, b, c = st.columns(3)
+        with a:
+            card("Casos potenciales", "<b>579</b>", "📥")
+        with b:
+            card("Excluidos", "<b>55</b>", "↘️")
+        with c:
+            card("Analizados", "<b>524</b>", "✅")
+
+        st.markdown(
+            '<div class="interpretation"><b>Importante:</b> los 55 casos excluidos correspondieron a personas que no residían en Sogamoso o casos sin seguimiento.</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.markdown("### Diseño")
+        st.write(
+            "El artículo describe un **estudio analítico transversal**, con datos recolectados entre 2012 y 2017."
+        )
+        st.write(
+            "Para el análisis univariado se calcularon prevalencias ajustadas por edad mediante el método directo y una población estándar propuesta por la OMS. Para las variables asociadas al género se utilizó regresión logística bivariada."
+        )
+
+        source_box("Materiales y métodos del artículo.")
+
+    # ========================================================
+    # 04 PREVALENCIA
+    # ========================================================
+    elif section == "04 · Prevalencia":
+        section_header(
+            "4",
+            "Prevalencia ajustada por edad: ¿dónde se concentra el fenómeno?",
+            "Esta es una de las figuras centrales del artículo. No es una tasa anual simple: cruza año y grupo de edad.",
+        )
+
+        mode = st.radio(
+            "Forma de observar la Figura 1",
+            ["Curvas por año", "Mapa de calor", "Comparar un año"],
+            horizontal=True,
+        )
+
+        if mode == "Curvas por año":
+            fig = px.line(
+                prev_df,
+                x="Grupo de edad",
+                y="Prevalencia",
+                color="Año",
+                markers=True,
+                category_orders={"Grupo de edad": age_groups},
+                labels={
+                    "Grupo de edad": "Grupo de edad (años)",
+                    "Prevalencia": "Prevalencia ajustada",
+                    "Año": "Año",
+                },
+            )
+            fig.update_layout(
+                height=510,
+                margin=dict(l=10, r=10, t=30, b=10),
+                legend_title="Año",
+                xaxis_tickangle=-45,
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown(
+                """
+                <div class="interpretation">
+                <b>Lectura estadística:</b>
+                el patrón más marcado aparece en edades tempranas. El grupo de
+                <b>15–19 años</b> presenta valores elevados a lo largo del periodo;
+                el artículo señala un pico de 22,3 por 100.000 habitantes al inicio
+                y 21 por 100.000 al final del periodo.
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        elif mode == "Mapa de calor":
+            heat = prev_df.pivot(index="Grupo de edad", columns="Año", values="Prevalencia")
+            heat = heat.reindex(age_groups)
+
+            fig = px.imshow(
+                heat,
+                text_auto=".1f",
+                aspect="auto",
+                labels={"x": "Año", "y": "Grupo de edad", "color": "Prevalencia"},
+            )
+            fig.update_layout(
+                height=650,
+                margin=dict(l=10, r=10, t=30, b=10),
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.info(
+                "El mapa de calor permite identificar rápidamente dónde se concentran los valores altos: principalmente en adolescencia y adultez temprana."
+            )
+
+        else:
+            selected_year = st.selectbox("Seleccione un año", sorted(prevalence.keys()))
+            d = prev_df[prev_df["Año"] == selected_year]
+
+            fig = px.bar(
+                d,
+                x="Grupo de edad",
+                y="Prevalencia",
+                text="Prevalencia",
+                labels={
+                    "Grupo de edad": "Grupo de edad",
+                    "Prevalencia": "Prevalencia ajustada",
+                },
+            )
+            fig.update_traces(texttemplate="%{text:.1f}", textposition="outside")
+            fig.update_layout(
+                height=500,
+                margin=dict(l=10, r=10, t=30, b=10),
+                xaxis_tickangle=-45,
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### ¿Cómo interpretarla sin equivocarnos?")
+
+        a, b = st.columns(2)
+        with a:
+            card(
+                "No mirar solamente el máximo",
+                "La figura debe leerse como una estructura de edades a través del tiempo. El interés está en la concentración y en su comportamiento, no solo en encontrar el año con el valor más alto.",
+                "👁️",
+            )
+        with b:
+            card(
+                "Conclusión de los autores",
+                "Las prevalencias ajustadas por edad no muestran una reducción significativa desde el inicio hasta el final del periodo y existe concentración en edades tempranas.",
+                "📌",
+            )
+
+        source_box("Figura 1 y texto de resultados: prevalencia ajustada por grupo de edad y año de ocurrencia.")
+
+    # ========================================================
+    # 05 TABLA 1
+    # ========================================================
+    elif section == "05 · Tabla 1 · Descriptivos":
+        section_header(
+            "5",
+            "Tabla 1: primero conozcamos quiénes están en los datos",
+            "La estadística descriptiva permite descubrir patrones antes de llegar al modelo.",
+        )
+
+        variable = st.selectbox(
+            "Seleccione una variable de la Tabla 1",
+            table1_df["Variable"].drop_duplicates().tolist(),
+        )
+
+        d = table1_df[table1_df["Variable"] == variable].copy()
+
+        display = d[
+            ["Categoría", "Mujer %", "Mujer N", "Hombre %", "Hombre N", "Total %", "Total N", "p"]
+        ].copy()
+        display["Mujer %"] = display["Mujer %"].map(lambda x: f"{x:.2f}%")
+        display["Hombre %"] = display["Hombre %"].map(lambda x: f"{x:.2f}%")
+        display["Total %"] = display["Total %"].map(lambda x: f"{x:.2f}%")
+        display["p"] = display["p"].map(fmt_p)
+
+        st.dataframe(display, use_container_width=True, hide_index=True)
+
+        # Gráfico
+        chart_df = d.melt(
+            id_vars=["Categoría"],
+            value_vars=["Mujer %", "Hombre %"],
+            var_name="Sexo",
+            value_name="Porcentaje",
+        )
+        chart_df["Sexo"] = chart_df["Sexo"].str.replace(" %", "", regex=False)
+
+        fig = px.bar(
+            chart_df,
+            x="Categoría",
+            y="Porcentaje",
+            color="Sexo",
+            barmode="group",
+            text="Porcentaje",
+            labels={"Porcentaje": "% dentro del sexo"},
+        )
+        fig.update_traces(texttemplate="%{text:.1f}", textposition="outside")
+        fig.update_layout(
+            height=470,
+            margin=dict(l=10, r=10, t=30, b=10),
+            xaxis_tickangle=-35,
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("### 🧠 ¿Qué debe decir el expositor?")
+
+        interpretation_map = {
+            "Área de ocurrencia": "La mayoría de los casos corresponde al área urbana. La diferencia por sexo aparece estadísticamente significativa según el valor p reportado (0,02).",
+            "Edad agrupada": "La adolescencia concentra 50,3% de los casos de mujeres, mientras que en hombres la adultez temprana representa 45,7%. El valor p reportado es <0,001.",
+            "Estado civil": "Soltero es la categoría más frecuente en ambos grupos, pero el valor p reportado para la comparación global es 0,115.",
+            "Ocupación": "Estudiante es la categoría de mayor representación en ambos sexos; también aparecen diferencias marcadas en ama de casa, desempleo y otras categorías. El valor p reportado es <0,001.",
+            "Forma de realización": "La forma impulsiva es predominante en ambos grupos. El valor p es 0,551, por lo que no se observa evidencia de diferencia estadísticamente significativa bajo el umbral de 0,05.",
+            "Antecedentes de intento": "La distribución entre presencia y ausencia de antecedentes es parecida entre sexos; el valor p reportado es 0,80.",
+            "Método del intento": "La intoxicación con medicamentos es la categoría más frecuente en mujeres y también representa una proporción importante en hombres. El valor p reportado es <0,001.",
+            "Posible desencadenante": "El conflicto con la pareja es el desencadenante con mayor porcentaje en mujeres y uno de los principales en hombres. El valor p reportado es 0,005.",
+            "Enfermedad mental": "No se observa una diferencia marcada entre mujeres y hombres en la presencia de diagnóstico; el valor p es 0,68.",
+            "Violencia": "La proporción de violencia reportada es mayor en mujeres (54%) que en hombres (37,5%). El valor p reportado es 0,001.",
+            "Consumo de alcohol": "El consumo de alcohol aparece en 40,3% de mujeres y 59,7% de hombres. El valor p reportado es <0,001.",
+            "Relaciones familiares": "Las relaciones familiares disfuncionales son muy frecuentes en ambos grupos, con porcentajes cercanos al 80%. El valor p es 0,69.",
+            "Redes de apoyo": "La mayoría reporta redes de apoyo en ambos grupos. El valor p reportado es 0,23.",
+        }
+
+        st.markdown(
+            f'<div class="interpretation">{interpretation_map.get(variable, "Revise las diferencias descriptivas y el valor p reportado.")}</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            '<div class="small-note">⚠️ El valor p de la Tabla 1 describe la comparación reportada por los autores; no es todavía el resultado del modelo logístico.</div>',
+            unsafe_allow_html=True,
+        )
+        source_box("Tabla 1 del artículo. Los porcentajes y frecuencias fueron transcritos de la tabla publicada.")
+
+    # ========================================================
+    # 06 MODELO LOGÍSTICO
+    # ========================================================
+    elif section == "06 · Modelo logístico":
+        section_header(
+            "6",
+            "¿Por qué aparece la regresión logística?",
+            "Aquí comienza la parte matemática de la exposición.",
+        )
+
+        st.markdown(
+            '<div class="big-question">La variable de interés es binaria: queremos modelar la pertenencia al grupo de género.</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.latex(
+            r"""
+            Y_i =
+            \begin{cases}
+            1 & \text{si la observación pertenece a la categoría codificada como 1}\\
+            0 & \text{si pertenece a la categoría codificada como 0}
+            \end{cases}
+            """
+        )
+
+        st.markdown("### El vínculo o función ligamen (logit)")
+        st.latex(r"\pi_i = P(Y_i = 1 \mid X)")
+        st.latex(r"\text{logit}(\pi_i) = \ln\left(\frac{\pi_i}{1 - \pi_i}\right) = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki}")
+
+        st.markdown(
+            """
+            <div class="math-box">
+            <b>¿Por qué no usar regresión lineal simple?</b><br>
+            La regresión lineal clásica podría predecir probabilidades menores a 0 o mayores a 1.
+            La transformación logit mapea el rango de probabilidad (0, 1) a toda la recta real (-∞, +∞).
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        source_box("Marco teórico del modelo lineal generalizado para respuesta binaria.")
+
+    # ========================================================
+    # 07 TABLA 2
+    # ========================================================
+    elif section == "07 · Tabla 2 · Modelo final":
+        section_header(
+            "7",
+            "Modelo multivariado final (Tabla 2)",
+            "Resultados estimados en el artículo para el modelo multivariado.",
+        )
+
+        display_t2 = table2_df.copy()
+        display_t2["p"] = display_t2["p"].map(fmt_p)
+        display_t2["B"] = display_t2["B"].map(fmt_num)
+        display_t2["Wald"] = display_t2["Wald"].map(fmt_num)
+        display_t2["OR"] = display_t2["OR"].map(fmt_num)
+        display_t2["IC95% inf."] = display_t2["IC95% inf."].map(fmt_num)
+        display_t2["IC95% sup."] = display_t2["IC95% sup."].map(fmt_num)
+
+        st.dataframe(display_t2, use_container_width=True, hide_index=True)
+
+        st.markdown("### Forest Plot de los Odds Ratio (OR)")
+
+        plot_data = table2_df[table2_df["Variable"] != "Constante"].copy()
+
+        fig = go.Figure()
+
+        for idx, row in plot_data.iterrows():
+            fig.add_trace(
+                go.Scatter(
+                    x=[row["IC95% inf."], row["OR"], row["IC95% sup."]],
+                    y=[f"{row['Variable']}: {row['Categoría']}"] * 3,
+                    mode="lines+markers",
+                    marker=dict(size=[6, 10, 6], color=BLUE),
+                    line=dict(color=GRAY, width=2),
+                    showlegend=False,
+                )
+            )
+
+        fig.add_vline(x=1.0, line_dash="dash", line_color=RED)
+        fig.update_layout(
+            title="Odds Ratio (OR) e Intervalos de Confianza del 95%",
+            xaxis_title="OR (Escala logarítmica sugerida para interpretación)",
+            height=480,
+            margin=dict(l=10, r=10, t=40, b=10),
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+        source_box("Tabla 2 del artículo: estimadores del modelo multivariado.")
+
+    # ========================================================
+    # 08 INTERPRETACIÓN DEL OR
+    # ========================================================
+    elif section == "08 · Interpretación del OR":
+        section_header(
+            "8",
+            "¿Cómo interpretar el Odds Ratio (OR)?",
+            "Relación entre el coeficiente estimado B y la razón de momios e interpretación práctica.",
+        )
+
+        st.latex(r"\text{OR} = e^{\beta}")
+
+        st.markdown(
+            """
+            * **Si OR > 1:** La presencia de la característica incrementa los momios (odds) del evento en comparación con la categoría de referencia.
+            * **Si OR < 1:** La presencia de la característica disminuye los momios (odds) del evento en comparación con la categoría de referencia.
+            * **Si OR = 1:** No hay diferencia en los momios entre categorías.
+            """
+        )
+
+        st.markdown("### Ejemplo directo del artículo:")
+
+        col_a, col_b = st.columns(2)
+        with col_a:
+            card(
+                "Consumo de Alcohol (Sí)",
+                "<b>B = 1.28</b><br><b>OR = e^(1.28) ≈ 3.58</b><br>"
+                "<i>(IC 95%: 2.17 – 5.90, p < 0.001)</i><br><br>"
+                "Los momios asociadas a la categoría de interés son 3.58 veces mayores cuando se reporta consumo de alcohol en comparación con quienes no consumieron.",
+                "🍺",
+            )
+        with col_b:
+            card(
+                "Edad: Adolescencia",
+                "<b>B = -1.04</b><br><b>OR = e^(-1.04) ≈ 0.35</b><br>"
+                "<i>(IC 95%: 0.17 – 0.74, p = 0.01)</i><br><br>"
+                "El OR menor que 1 indica una reducción significativa en los momios respecto a la categoría de referencia.",
+                "📉",
+            )
+
+        source_box("Interpretación metodológica del Odds Ratio.")
+
+    # ========================================================
+    # 09 EVALUACIÓN DEL MODELO
+    # ========================================================
+    elif section == "09 · Evaluación del modelo":
+        section_header(
+            "9",
+            "Evaluación de la bondad de ajuste del modelo",
+            "Pruebas estadísticas para verificar la validez del modelo multivariado.",
+        )
+
+        c_a, c_b = st.columns(2)
+        with c_a:
+            card(
+                "Prueba de Hosmer-Lemeshow",
+                "Evalúa la coincidencia entre las frecuencias observadas y esperadas por el modelo.<br><br>"
+                "Un valor p > 0.05 indica que no hay diferencia significativa entre lo observado y lo predicho, sugiriendo un <b>buen ajuste del modelo</b>.",
+                "🧪",
+            )
+        with c_b:
+            card(
+                "Estadístico de Wald",
+                "Evalúa la significancia individual de cada coeficiente beta en el modelo.<br><br>"
+                "Valores de p < 0.05 sugieren que la variable aporta significativamente a la predicción del modelo.",
+                "📊",
+            )
+
+        source_box("Diagnóstico y validación del modelo estadístico.")
+
+    # ========================================================
+    # 10 DISCUSIÓN
+    # ========================================================
+    elif section == "10 · Discusión":
+        section_header(
+            "10",
+            "Discusión e integración con la literatura",
+            "Comparación de los hallazgos con otros estudios epidemiológicos.",
+        )
+
+        st.markdown(
+            """
+            <div class="card">
+            <h4>💡 Puntos clave de discusión:</h4>
+            <ul>
+                <li><b>Concentración en adolescentes y jóvenes:</b> coincide con reportes nacionales e internacionales donde las conductas autolesivas se manifiestan marcadamente en el ciclo vital joven.</li>
+                <li><b>Consumo de alcohol como factor crítico:</b> actúa como desinhibidor e incrementa la vulnerabilidad en situaciones de crisis emocional.</li>
+                <li><b>Diferencias según disparadores psicosociales:</b> los conflictos de pareja y familiares son detonantes recurrentes expuestos en la caracterización epidemiológica.</li>
+            </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        source_box("Sección de Discusión del artículo.")
+
+    # ========================================================
+    # 11 CONCLUSIONES
+    # ========================================================
+    elif section == "11 · Conclusiones":
+        section_header(
+            "11",
+            "Conclusiones y recomendaciones de salud pública",
+            "Implicaciones de la investigación para la toma de decisiones.",
+        )
+
+        a, b = st.columns(2)
+        with a:
+            card(
+                "Conclusiones Estadísticas",
+                "El modelo multivariado permitió identificar que factores como la edad, el consumo de alcohol y ciertos desencadenantes psicosociales presentan asociaciones estadísticamente significativas.",
+                "📌",
+            )
+        with b:
+            card(
+                "Recomendaciones en Salud Pública",
+                "Strengthen preventive strategies targeted at adolescents and young adults, focusing on early intervention in alcohol consumption and family conflict resolution.",
+                "🏛️",
+            )
+
+        source_box("Sección de Conclusiones y recomendaciones del artículo.")
