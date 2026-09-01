@@ -982,7 +982,7 @@ elif section == "09 · Evaluación del modelo":
 elif section == "10 · Discusión":
     section_header(
         "10",
-        "Discusión e integración con la literatura",
+        "Discusión",
         "Comparación de los hallazgos con otros estudios epidemiológicos.",
     )
     st.markdown(
