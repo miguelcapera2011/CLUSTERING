@@ -224,7 +224,7 @@ st.markdown(
             border-radius: 12px;
             background: white;
         }
-        /* Estilos de alto contraste para destacar texto específico */
+        /* Estilos de alto contraste para destacar cajas y títulos específicos */
         .highlight-card {
             background: #0F172A !important;
             border: 2px solid #F59E0B !important;
@@ -237,23 +237,17 @@ st.markdown(
         .highlight-card * {
             color: #FFD700 !important;
         }
-        .highlight-text {
-            color: #FFD700 !important;
-            font-weight: 700;
-        }
-        .highlight-math {
+        .highlight-header {
             background: #0F172A !important;
+            color: #FFD700 !important;
             border: 2px solid #F59E0B !important;
-            border-radius: 12px;
-            padding: 1rem 1.2rem;
-            margin: .7rem 0;
-            color: #FFD700 !important;
-            font-size: 1.15rem;
-            font-weight: bold;
-            overflow-x: auto;
-        }
-        .highlight-math * {
-            color: #FFD700 !important;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: inline-block;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
         }
     </style>
     """,
@@ -536,7 +530,6 @@ elif section == "02 · Contexto y pregunta":
         '<div class="big-question">🔎 ¿Qué queremos explicar estadísticamente?</div>',
         unsafe_allow_html=True,
     )
-    # MODIFICADO: Estilo destacado con alto contraste
     st.markdown(
         """
         <div class="highlight-card">
@@ -597,7 +590,6 @@ elif section == "03 · Datos y diseño":
         unsafe_allow_html=True,
     )
     st.markdown("### Diseño")
-    # MODIFICADO: Estilo destacado para la sección Diseño
     st.markdown(
         """
         <div class="highlight-card">
@@ -828,18 +820,18 @@ elif section == "06 · Modelo logístico":
         """,
         unsafe_allow_html=True,
     )
-    # MODIFICADO: Estilo destacado para los ítems 1 y 2
-    st.markdown("### 1. Probabilidad condicionada")
+    # MODIFICADO: Títulos con destaque alto contraste y fórmulas en color negro
+    st.markdown('<div class="highlight-header">1. Probabilidad condicionada</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="highlight-math">π<sub>i</sub> = P(Y<sub>i</sub> = 1 | X)</div>',
+        '<div class="math-visible"><b>π<sub>i</sub> = P(Y<sub>i</sub> = 1 | X)</b></div>',
         unsafe_allow_html=True,
     )
-    st.markdown("### 2. Transformación logit")
+    st.markdown('<div class="highlight-header">2. Transformación logit</div>', unsafe_allow_html=True)
     st.markdown(
         """
-        <div class="highlight-math">
-            logit(π<sub>i</sub>) = ln( π<sub>i</sub> / (1 − π<sub>i</sub>) )<br>
-            = β<sub>0</sub> + β<sub>1</sub>X<sub>1i</sub> + ⋯ + β<sub>k</sub>X<sub>ki</sub>
+        <div class="math-visible">
+            <b>logit(π<sub>i</sub>) = ln( π<sub>i</sub> / (1 − π<sub>i</sub>) )</b><br>
+            <b>= β<sub>0</sub> + β<sub>1</sub>X<sub>1i</sub> + ⋯ + β<sub>k</sub>X<sub>ki</sub></b>
         </div>
         """,
         unsafe_allow_html=True,
