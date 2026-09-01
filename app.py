@@ -512,7 +512,7 @@ st.markdown(
     """
     <div class="main-university-header">
         <div class="title">INTENTO SUICIDA:  un análisis municipal 
-de factores asociados 2012-2017*</div>
+de factores asociados 2012-2017</div>
         <div class="university"></div>
     </div>
     """,
