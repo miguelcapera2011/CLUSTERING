@@ -511,9 +511,9 @@ if logo_path.exists():
 st.markdown(
     """
     <div class="main-university-header">
-        <div class="title">INTENTO SUICIDA: </div>
-        <div class="university"> un análisis municipal 
+        <div class="title">INTENTO SUICIDA:  un análisis municipal 
 de factores asociados 2012-2017*</div>
+        <div class="university"></div>
     </div>
     """,
     unsafe_allow_html=True,
