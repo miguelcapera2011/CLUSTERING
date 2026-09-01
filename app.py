@@ -799,7 +799,7 @@ elif section == "06 · Modelo logístico":
     section_header(
         "6",
         "¿Por qué aparece la regresión logística?",
-        "Aquí comienza la parte matemática de la exposición.",
+      
     )
     st.markdown(
         '<div class="big-question">La variable de interés es binaria: queremos modelar la pertenencia al grupo de género.</div>',
@@ -812,8 +812,8 @@ elif section == "06 · Modelo logístico":
             <div style="font-size:1.12rem; line-height:2;">
                 <b><i>Y<sub>i</sub></i> =</b>
                 <span style="display:inline-block; vertical-align:middle; margin-left:.5rem;">
-                    { 1, &nbsp; si pertenece a la <b>categoría de interés</b><br>
-                      &nbsp;&nbsp;0, &nbsp; si pertenece a la <b>categoría de referencia</b> }
+                    { 1, &nbsp; si pertenece a la <b>Si la persona que realizó el intento de suicidio pertenece al género femenino</b><br>
+                      &nbsp;&nbsp;0, &nbsp; si pertenece a la <b>Si la persona pertenece al género masculino</b> }
                 </span>
             </div>
         </div>
