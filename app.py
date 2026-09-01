@@ -798,7 +798,7 @@ elif section == "05 · Tabla 1 · Descriptivos":
 elif section == "06 · Modelo logístico":
     section_header(
         "6",
-        "¿Por qué aparece la regresión logística?",
+        "¿Por qué aparece la regresión logística?"
       
     )
     st.markdown(
