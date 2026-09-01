@@ -12,7 +12,7 @@ import streamlit as st
 # ============================================================
 
 st.set_page_config(
-    page_title="Del artículo a la evidencia | Intento suicida",
+    page_title="Modelos lineales generalizados | Universidad del Tolima",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -34,15 +34,15 @@ BORDER = "#E2E8F0"
 # ============================================================
 
 st.markdown(
-    f"""
+    """
     <style>
-        .stApp {{
-            background: {LIGHT};
-        }}
+        .stApp {
+            background: #F8FAFC;
+        }
 
-        [data-testid="stSidebar"] {{
+        [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #0F172A 0%, #172554 100%);
-        }}
+        }
 
         [data-testid="stSidebar"] h1,
         [data-testid="stSidebar"] h2,
@@ -51,9 +51,9 @@ st.markdown(
         [data-testid="stSidebar"] span:not([data-baseweb]),
         [data-testid="stSidebar"] label,
         [data-testid="stSidebar"] [data-baseweb="select"] *,
-        [data-testid="stSidebar"] div[role="listbox"] * {{
+        [data-testid="stSidebar"] div[role="listbox"] * {
             color: #F8FAFC !important;
-        }}
+        }
 
         /* Solo los controles del contenido principal van en negro */
         [data-testid="stAppViewContainer"] .stSelectbox label,
@@ -61,6 +61,16 @@ st.markdown(
         [data-testid="stAppViewContainer"] [data-baseweb="select"] *,
         [data-testid="stAppViewContainer"] div[role="listbox"] *,
         [data-testid="stAppViewContainer"] .control-label {
+            color: #000000 !important;
+        }
+
+        /* Texto de controles del área principal: negro y visible */
+        [data-testid="stAppViewContainer"] .stSelectbox label,
+        [data-testid="stAppViewContainer"] .stSelectbox div,
+        [data-testid="stAppViewContainer"] .stRadio label,
+        [data-testid="stAppViewContainer"] .stRadio div,
+        [data-testid="stAppViewContainer"] [data-baseweb="select"],
+        [data-testid="stAppViewContainer"] [data-baseweb="select"] span {
             color: #000000 !important;
         }
 
@@ -109,152 +119,152 @@ st.markdown(
         .main-university-header .title { color: #0F172A; font-size: 1.85rem; font-weight: 900; margin: 0; }
         .main-university-header .university { color: #7A0C14; font-size: 1rem; font-weight: 800; letter-spacing: .04em; margin-top: .25rem; }
 
-        .main-title {{
+        .main-title {
             font-size: 2.0rem;
             font-weight: 800;
-            color: {NAVY};
+            color: #0F172A;
             margin-bottom: 0.1rem;
-        }}
+        }
 
-        .subtitle {{
-            color: {GRAY};
+        .subtitle {
+            color: #64748B;
             font-size: 1rem;
             margin-bottom: 1rem;
-        }}
+        }
 
-        .section-title {{
+        .section-title {
             font-size: 1.45rem;
             font-weight: 800;
-            color: {NAVY};
+            color: #0F172A;
             margin-top: 0.2rem;
-        }}
+        }
 
-        .section-subtitle {{
-            color: {GRAY};
+        .section-subtitle {
+            color: #64748B;
             margin-bottom: 0.8rem;
-        }}
+        }
 
-        .card {{
+        .card {
             background: white;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             border-radius: 14px;
             padding: 1rem 1.15rem;
             box-shadow: 0 2px 10px rgba(15,23,42,.05);
             height: 100%;
             color: #000000 !important;
-        }}
+        }
 
-        .card h4 {{
+        .card h4 {
             margin: 0 0 .45rem 0;
-            color: {NAVY} !important;
-        }}
+            color: #0F172A !important;
+        }
 
-        .card p, .card div, .card li {{
+        .card p, .card div, .card li {
             color: #000000 !important;
-        }}
+        }
 
-        .metric {{
+        .metric {
             font-size: 1.7rem;
             font-weight: 800;
-            color: {NAVY};
-        }}
+            color: #0F172A;
+        }
 
-        .metric-label {{
+        .metric-label {
             font-size: .85rem;
-            color: {GRAY};
-        }}
+            color: #64748B;
+        }
 
-        .interpretation {{
+        .interpretation {
             background: #FFF7ED;
-            border-left: 5px solid {ORANGE};
+            border-left: 5px solid #D97706;
             padding: .9rem 1rem;
             border-radius: 8px;
             margin: .7rem 0;
             color: #000000 !important;
-        }}
+        }
 
-        .math-box {{
+        .math-box {
             background: #EFF6FF;
             border: 1px solid #BFDBFE;
             border-radius: 12px;
             padding: 1rem;
             color: #000000 !important;
-        }}
+        }
 
-        .source-box {{
+        .source-box {
             background: #F1F5F9;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             border-radius: 10px;
             padding: .75rem 1rem;
             font-size: .82rem;
             color: #000000 !important;
-        }}
+        }
 
-        .step {{
+        .step {
             background: white;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             border-radius: 12px;
             padding: .9rem;
             text-align: center;
             min-height: 120px;
             color: #000000 !important;
-        }}
+        }
 
-        .step p {{
+        .step p {
             color: #000000 !important;
-        }}
+        }
 
-        .step-number {{
+        .step-number {
             font-size: .8rem;
             font-weight: 700;
-            color: {RED};
-        }}
+            color: #D7263D;
+        }
 
-        .step-title {{
+        .step-title {
             font-weight: 800;
-            color: {NAVY};
-        }}
+            color: #0F172A;
+        }
 
-        .small-note {{
+        .small-note {
             color: #000000;
             font-size: .82rem;
-        }}
+        }
 
-        .big-question {{
+        .big-question {
             font-size: 1.25rem;
             font-weight: 750;
-            color: {NAVY};
+            color: #0F172A;
             background: white;
             border-radius: 14px;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             padding: 1rem 1.2rem;
-        }}
+        }
 
-        div[data-testid="stMetric"] {{
+        div[data-testid="stMetric"] {
             background: white;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             padding: .7rem;
             border-radius: 12px;
-        }}
+        }
 
-        div[data-testid="stMetric"] * {{
+        div[data-testid="stMetric"] * {
             color: #000000 !important;
-        }}
+        }
 
-        .footer {{
-            color: {GRAY};
+        .footer {
+            color: #64748B;
             text-align: center;
             font-size: .78rem;
             margin-top: 1.5rem;
-        }}
+        }
 
-        .pdf-frame {{
+        .pdf-frame {
             width: 100%;
             height: 820px;
-            border: 1px solid {BORDER};
+            border: 1px solid #E2E8F0;
             border-radius: 12px;
             background: white;
-        }}
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -433,10 +443,10 @@ sections = [
 ]
 
 with st.sidebar:
-    # Logo institucional: si existe logo_ut.png en el repositorio se usa el oficial.
-    logo_path = Path(__file__).resolve().parent / "logo_ut.png"
+    # Logo institucional: si existe logo.png en el repositorio se usa el oficial.
+    logo_path = Path(__file__).resolve().parent / "logo.png"
     if logo_path.exists():
-        st.image(str(logo_path), width=82)
+        st.image(str(logo_path), width=105)
     else:
         st.markdown('<div class="ut-logo-fallback">UT</div>', unsafe_allow_html=True)
 
@@ -493,6 +503,13 @@ current_page = page_map[section]
 # ============================================================
 # ENCABEZADO PRINCIPAL
 # ============================================================
+
+# Logo institucional en el encabezado principal
+logo_path = Path(__file__).resolve().parent / "logo.png"
+if logo_path.exists():
+    c1, c2, c3 = st.columns([1, 1, 1])
+    with c2:
+        st.image(str(logo_path), width=105)
 
 st.markdown(
     """
@@ -910,8 +927,13 @@ elif section == "06 · Modelo logístico":
         """
         <div class="math-visible">
             <div class="formula-title">Variable respuesta</div>
-            <b><i>Y<sub>i</sub></i></b> = 1 si la observación pertenece a la categoría de interés<br>
-            <b><i>Y<sub>i</sub></i></b> = 0 si pertenece a la categoría de referencia
+            <div style="font-size:1.12rem; line-height:2;">
+                <b><i>Y<sub>i</sub></i> =</b>
+                <span style="display:inline-block; vertical-align:middle; margin-left:.5rem;">
+                    { 1, &nbsp; si pertenece a la <b>categoría de interés</b><br>
+                      &nbsp;&nbsp;0, &nbsp; si pertenece a la <b>categoría de referencia</b> }
+                </span>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1023,28 +1045,36 @@ elif section == "08 · Interpretación del OR":
     )
 
     st.markdown(
-        '<div class="math-visible"><b>OR = e<sup>β</sup></b></div>',
+        '<div class="math-visible"><b><i>OR</i> = e<sup>β</sup></b></div>',
         unsafe_allow_html=True,
     )
 
     st.markdown(
         """
-        * **Si OR > 1:** La presencia de la característica incrementa los momios (odds) del evento en comparación con la categoría de referencia.
-        * **Si OR < 1:** La presencia de la característica disminuye los momios (odds) del evento en comparación con la categoría de referencia.
-        * **Si OR = 1:** No hay diferencia en los momios entre categorías.
-        """
+        <div class="math-visible">
+            <ul style="margin:0; padding-left:1.3rem;">
+                <li><b>Si OR &gt; 1:</b> la presencia de la característica incrementa los momios (odds) del evento frente a la categoría de referencia.</li>
+                <li><b>Si OR &lt; 1:</b> la presencia de la característica disminuye los momios (odds) del evento frente a la categoría de referencia.</li>
+                <li><b>Si OR = 1:</b> no hay diferencia en los momios entre categorías.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.markdown("### Ejemplo 1 · Consumo de alcohol")
+    st.markdown(
+        '<div class="formula-title" style="font-size:1.15rem; margin-top:1rem;">Ejemplo 1 · Consumo de alcohol</div>',
+        unsafe_allow_html=True,
+    )
 
     col_a, col_b = st.columns(2)
 
     with col_a:
         card(
             "Consumo de Alcohol (Sí)",
-            "<b>B = 1.28</b><br><b>OR = e<sup>1.28</sup> ≈ 3.58</b><br>"
+            '<span style="color:#000000 !important;"><b>B = 1.28</b><br><b><i>OR</i> = e<sup>1.28</sup> ≈ 3.58</b><br>'
             "<i>(IC 95%: 2.17 – 5.90, p < 0.001)</i><br><br>"
-            "Los momios asociados a la categoría de interés son 3.58 veces mayores cuando se reporta consumo de alcohol en comparación con quienes no consumieron.",
+            "Los momios asociados a la categoría de interés son 3.58 veces mayores cuando se reporta consumo de alcohol en comparación con quienes no consumieron.</span>",
             "🍺",
         )
 
